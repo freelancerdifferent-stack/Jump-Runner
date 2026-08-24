@@ -38,21 +38,28 @@ jobs:
           set -o pipefail
           python3 tools/check_game_source.py 2>&1 | tee -a ci-diagnostics/latest.log
 
-      - name: Validate game JavaScript
+      - name: Validate packaged game JavaScript
         shell: bash
         run: |
           set -o pipefail
           python3 - <<'PY' 2>&1 | tee -a ci-diagnostics/latest.log
           from pathlib import Path
           import re
-          html=Path('app/src/main/assets/index.html').read_text()
-          blocks=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', html, re.S)
-          if not blocks:
-              raise SystemExit('ERROR: no inline game script found')
-          Path('/tmp/jumprunner.js').write_text('\n'.join(blocks))
-          print(f'HTML bytes={len(html)} script_blocks={len(blocks)}')
+          assets=Path('app/src/main/assets')
+          html=(assets/'index.html').read_text()
+          scripts=re.findall(r'<script[^>]+src=["\']([^"\']+)["\']',html,re.I)
+          if not scripts:
+              raise SystemExit('ERROR: no packaged game script found')
+          for script in scripts:
+              path=assets/script
+              if not path.is_file():
+                  raise SystemExit(f'ERROR: missing script {script}')
+              print(f'javascript={script} bytes={path.stat().st_size}')
+          print(f'javascript_files={len(scripts)}')
           PY
-          node --check /tmp/jumprunner.js 2>&1 | tee -a ci-diagnostics/latest.log
+          while IFS= read -r js; do
+            node --check "$js" 2>&1 | tee -a ci-diagnostics/latest.log
+          done < <(find app/src/main/assets -maxdepth 1 -type f -name '*.js' -print | sort)
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
