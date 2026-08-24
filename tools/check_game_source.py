@@ -1,0 +1,56 @@
+from pathlib import Path
+import re
+import sys
+
+HTML = Path("app/src/main/assets/index.html")
+MANIFEST = Path("app/src/main/AndroidManifest.xml")
+MAIN = Path("app/src/main/java/com/differentfreelancer/jumprunner/MainActivity.java")
+
+errors = []
+
+def require(condition, message):
+    if not condition:
+        errors.append(message)
+
+require(HTML.is_file(), "game asset index.html is missing")
+require(MANIFEST.is_file(), "AndroidManifest.xml is missing")
+require(MAIN.is_file(), "MainActivity.java is missing")
+
+if HTML.is_file():
+    html = HTML.read_text(encoding="utf-8")
+    lower = html.lower()
+    require(len(html) >= 2500, "game source is unexpectedly small")
+    require(len(re.findall(r'<canvas\b', html, re.I)) == 1, "exactly one game canvas is required")
+    require('id="game"' in lower or "id='game'" in lower, "game canvas must use id=game")
+    require('viewport-fit=cover' in lower, "mobile viewport must support safe areas")
+    require('touch-action:none' in lower.replace(' ', ''), "touch-action:none is required for reliable mobile controls")
+    require('jumprunnerpause' in html and 'jumprunnerresume' in html, "pause/resume lifecycle bridge is required")
+    require('<script' in lower and '</script>' in lower, "inline game JavaScript is required")
+    require(not re.search(r'<script[^>]+src\s*=\s*["\']https?://', html, re.I), "remote script dependencies are forbidden")
+    require(not re.search(r'<link[^>]+href\s*=\s*["\']https?://', html, re.I), "remote stylesheet dependencies are forbidden")
+    forbidden_network = [r'\bfetch\s*\(', r'\bXMLHttpRequest\b', r'\bWebSocket\b', r'\bEventSource\b']
+    for pattern in forbidden_network:
+        require(not re.search(pattern, html), f"offline baseline forbids network API: {pattern}")
+    for token in ("admob", "billingclient", "play billing", "rewarded ad"):
+        require(token not in lower, f"monetization is out of current scope: {token}")
+
+if MANIFEST.is_file():
+    manifest = MANIFEST.read_text(encoding="utf-8")
+    require('android:usesCleartextTraffic="false"' in manifest, "cleartext network traffic must remain disabled")
+    require('android.permission.INTERNET' not in manifest, "offline game must not request INTERNET permission")
+    require('android:screenOrientation="landscape"' in manifest, "game must stay landscape during current production phase")
+
+if MAIN.is_file():
+    main = MAIN.read_text(encoding="utf-8")
+    require('WebView.setWebContentsDebuggingEnabled(false)' in main, "WebView debugging must be disabled")
+    require('file:///android_asset/index.html' in main, "WebView must load packaged game asset")
+    require('setAllowContentAccess(false)' in main, "WebView content access must remain disabled")
+
+if errors:
+    print("GAME SOURCE QUALITY GATE: FAILED")
+    for i, error in enumerate(errors, 1):
+        print(f"{i}. {error}")
+    sys.exit(1)
+
+print("GAME SOURCE QUALITY GATE: PASSED")
+print("offline=yes lifecycle_bridge=yes canvas=1 monetization=absent")
