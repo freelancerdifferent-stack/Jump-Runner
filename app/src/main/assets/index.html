@@ -8,12 +8,13 @@
 </head>
 <body>
 <canvas id="game" aria-label="Jump Runner game canvas"></canvas>
-<div class="hud"><div><div class="brand">JUMP RUNNER · SKYLINE TRIAL</div><div class="score" id="score">000000</div></div><div class="stats"><div class="pill">CRYSTALS<b id="crystals">0 / 0</b></div><div class="pill">FLOW<b id="flow">x1</b></div></div></div>
+<div class="hud"><div><div class="brand">JUMP RUNNER · SKYLINE TRIAL</div><div class="score" id="score">000000</div></div><div class="stats"><div class="pill">INTEGRITY<b id="health">◆◆◆</b></div><div class="pill">CRYSTALS<b id="crystals">0 / 0</b></div><div class="pill">FLOW<b id="flow">x1</b></div></div></div>
 <div class="progress"><i id="progressBar"></i></div>
 <div class="controls"><button class="control" id="jumpBtn" aria-label="Jump">JUMP</button><button class="control dash" id="dashBtn" aria-label="Dash">DASH</button></div>
 <div id="overlay" class="overlay"><div class="panel" id="panel"></div></div>
 <div id="pause" class="pause">PAUSED</div><div id="flash" class="flash"></div>
 <script src="game.js"></script>
 <script src="checkpoints.js"></script>
+<script src="health.js"></script>
 </body>
 </html>
