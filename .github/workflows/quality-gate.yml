@@ -32,6 +32,12 @@ jobs:
             echo "started=$(date -u +%FT%TZ)"
           } > ci-diagnostics/latest.log
 
+      - name: Game source invariant checks
+        shell: bash
+        run: |
+          set -o pipefail
+          python3 tools/check_game_source.py 2>&1 | tee -a ci-diagnostics/latest.log
+
       - name: Validate game JavaScript
         shell: bash
         run: |
