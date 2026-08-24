@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 jobs:
   verify:
@@ -102,10 +103,21 @@ jobs:
           retention-days: 14
 
       - name: Upload APK from main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && success()
         uses: actions/upload-artifact@v4
         with:
           name: JumpRunner-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish main build status
+        if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ -s app/build/outputs/apk/debug/app-debug.apk ]; then APK_STATE=present; else APK_STATE=missing; fi
+          BODY=$(printf 'run_id=%s\nsha=%s\nstatus=%s\napk=%s\nrun_url=https://github.com/%s/actions/runs/%s' "$GITHUB_RUN_ID" "$GITHUB_SHA" "$JOB_STATUS" "$APK_STATE" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID")
+          gh issue comment 2 --repo "$GITHUB_REPOSITORY" --body "$BODY"
