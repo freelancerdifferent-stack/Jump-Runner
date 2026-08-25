@@ -59,6 +59,7 @@ if HTML.is_file():
     require('personal-best-feedback.js' in local_scripts and 'newhighscore' in flat and 'newfastest' in flat and 'aria-live' in flat, "successful runs must expose personal-best celebration feedback")
     require('near-miss-feedback.js' in local_scripts and 'closecall' in flat and 'wasthreatened' in flat, "close hazard escapes must expose restrained near-miss feedback")
     require('landing-feedback.js' in local_scripts and 'landing-ring' in combined and 'player.land>0' in flat, "landings must expose restrained grounded feedback")
+    require('boss-phase-feedback.js' in local_scripts and 'sentineloverdrive' in flat and 'sentinelcoreexposed' in flat and 'aria-live' in flat, "boss damage phases must expose readable escalation feedback")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource'):
         require(token not in flat, f"offline baseline forbids network API: {token}")
     for token in ("admob", "billingclient", "play billing", "rewarded ad"):
@@ -93,4 +94,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes flow_feedback=yes personal_best_feedback=yes near_miss_feedback=yes landing_feedback=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes flow_feedback=yes personal_best_feedback=yes near_miss_feedback=yes landing_feedback=yes boss_phase_feedback=yes monetization=absent")
