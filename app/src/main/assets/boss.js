@@ -5,7 +5,7 @@ let bossShots=[];
 const baseBossReset=resetRun,baseBossUpdate=update,baseBossDraw=drawWorld,baseBossShowResult=showResult;
 function bossRect(){return{x:boss.x-34,y:boss.y-28,w:68,h:56};}
 function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;bossShots=[];}
-function activateBoss(){boss.active=true;boss.intro=1.55;boss.shot=1.1;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
+function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
 function hitBoss(stomp){if(boss.dead||boss.hitCd>0)return;boss.hp--;boss.hitCd=.38;boss.flash=.2;score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
 function updateBoss(dt){
  if(state!=='play')return;
@@ -23,7 +23,7 @@ function updateBoss(dt){
 function drawBossBanner(){
  if(boss.intro<=0&&boss.victory<=0)return;
  ctx.save();ctx.setTransform(1,0,0,1,0,0);
- const intro=boss.intro>0,life=intro?boss.intro:boss.victory,max=intro?1.55:1.6,fade=Math.min(1,life/.28,(max-life)/.22+0.08);
+ const intro=boss.intro>0,life=intro?boss.intro:boss.victory,max=intro?1.75:1.6,fade=Math.min(1,life/.28,(max-life)/.22+0.08);
  ctx.globalAlpha=Math.max(0,Math.min(1,fade));ctx.textAlign='center';ctx.fillStyle='#07101edb';ctx.fillRect(VW/2-210,118,420,72);ctx.strokeStyle=intro?'#ff6d88':'#74f7c5';ctx.lineWidth=2;ctx.strokeRect(VW/2-210,118,420,72);ctx.fillStyle='#fff';ctx.font='900 22px system-ui';ctx.fillText(intro?'SKY SENTINEL':'SENTINEL DEFEATED',VW/2,149);ctx.fillStyle=intro?'#ffd86b':'#74f7c5';ctx.font='800 10px system-ui';ctx.fillText(intro?'DASH OR STOMP TO BREAK ITS CORE':'FINISH LINE UNLOCKED',VW/2,171);ctx.restore();
 }
 function drawBoss(){
