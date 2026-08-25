@@ -12,9 +12,9 @@
   function readSurface(){
     const root=document.documentElement;
     const vv=window.visualViewport;
-    const widths=[innerWidth||0,root?.clientWidth||0,vv?.width||0].filter(v=>v>0);
-    const heights=[innerHeight||0,root?.clientHeight||0,vv?.height||0].filter(v=>v>0);
-    return {w:Math.max(1,...widths),h:Math.max(1,...heights)};
+    const w=Math.max(1,innerWidth||0,root?.clientWidth||0,vv?.width||0);
+    const h=Math.max(1,innerHeight||0,root?.clientHeight||0,vv?.height||0);
+    return {w,h};
   }
 
   function adaptiveResize(force=false){
