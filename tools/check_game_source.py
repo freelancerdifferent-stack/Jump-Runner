@@ -48,7 +48,7 @@ if HTML.is_file():
     require('visualviewport' in flat and 'orientationchange' in flat, "adaptive viewport must react to device viewport/orientation changes")
     require('scale=surfaceh/vh' in flat, "gameplay scaling must anchor to the full WebView height")
     require('vieww=surfacew/math.max(scale' in flat, "horizontal virtual viewport must follow the full WebView aspect ratio")
-    require('math.max(1,...widths)' in flat and 'clientwidth' in flat, "canvas sizing must prefer the full layout surface over a reduced visual viewport")
+    require('math.max(1,innerwidth' in flat and 'clientwidth' in flat and 'visualviewport?.width' in flat, "canvas sizing must prefer the full layout surface over a reduced visual viewport")
     require('lastsurfacekey' in flat and 'requestanimationframe' in flat and 'cancelanimationframe' in flat, "viewport resize events must be coalesced and duplicate canvas reallocations skipped")
     require("visibilitychange" in flat and "pageshow" in flat and 'queueresize(true)' in flat, "viewport must recover after Android background/page restore")
     require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
