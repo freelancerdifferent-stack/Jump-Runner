@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
         android:allowBackup="false"
+        android:hardwareAccelerated="true"
         android:label="Jump Runner"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false">
