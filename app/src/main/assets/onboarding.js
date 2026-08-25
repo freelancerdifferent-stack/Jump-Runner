@@ -3,7 +3,7 @@
 const onboardingKey='jr_onboarding_v1';
 let onboardingDone=localStorage.getItem(onboardingKey)==='1';
 let onboardingStage=0;
-const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');document.body.appendChild(tip);
+const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.setAttribute('aria-atomic','true');document.body.appendChild(tip);
 const tips=[
   {x:0,text:'TAP JUMP · short taps give low hops, hold a little longer for height'},
   {x:760,text:'DASH THROUGH ENERGY BARRIERS · Dash also defeats drones from the side'},
@@ -12,7 +12,11 @@ const tips=[
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
   {x:6500,text:'SKY SENTINEL AHEAD · learn its pulse timing, then counter with stomp or Dash'}
 ];
-function showTip(text){tip.textContent=text;tip.classList.add('show');clearTimeout(showTip.t);showTip.t=setTimeout(()=>tip.classList.remove('show'),3600);}
+let tipAnnounceTimer=0;
+function showTip(text){
+  clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.classList.remove('show');tip.textContent='';
+  tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),3600);},20);
+}
 function onboardingLoop(){
   if(!onboardingDone&&state==='play'){
     const current=tips[onboardingStage];
@@ -22,7 +26,7 @@ function onboardingLoop(){
   requestAnimationFrame(onboardingLoop);
 }
 const onboardingReset=resetRun;
-resetRun=function(){if(!onboardingDone)onboardingStage=0;onboardingReset();};
+resetRun=function(){if(!onboardingDone)onboardingStage=0;clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.textContent='';tip.classList.remove('show');onboardingReset();};
 const onboardingMenu=showMenu;
 showMenu=function(){
   onboardingMenu();

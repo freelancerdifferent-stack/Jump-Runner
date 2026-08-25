@@ -38,6 +38,7 @@ jobs:
           set -o pipefail
           python3 tools/check_game_source.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_accessibility.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_onboarding_accessibility.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
