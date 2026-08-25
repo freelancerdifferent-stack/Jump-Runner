@@ -38,12 +38,17 @@ if HTML.is_file():
         if path.is_file():
             combined += "\n" + path.read_text(encoding="utf-8")
 
-    flat = combined.lower().replace(' ', '')
+    flat = re.sub(r'\s+', '', combined.lower())
     require('touch-action:none' in flat, "touch-action:none is required for reliable mobile controls")
     require('jumprunnerpause' in combined and 'jumprunnerresume' in combined, "pause/resume lifecycle bridge is required")
     require(len(combined) >= 9000, "combined game source is unexpectedly small")
-    for pattern in [r'\bfetch\s*\(', r'\bXMLHttpRequest\b', r'\bWebSocket\b', r'\bEventSource\b']:
-        require(not re.search(pattern, combined), f"offline baseline forbids network API: {pattern}")
+    require('adaptive-runtime.js' in local_scripts, "adaptive Android viewport runtime must be loaded")
+    require('visualviewport' in flat and 'orientationchange' in flat, "adaptive viewport must react to device viewport/orientation changes")
+    require('scale=h/vh' in flat, "gameplay scaling must anchor to virtual height to avoid landscape letterboxing")
+    require('vieww=w/math.max(scale' in flat, "horizontal virtual viewport must follow the actual device aspect ratio")
+    require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
+    for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource'):
+        require(token not in flat, f"offline baseline forbids network API: {token}")
     for token in ("admob", "billingclient", "play billing", "rewarded ad"):
         require(token not in combined.lower(), f"monetization is out of current scope: {token}")
 
@@ -65,4 +70,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 packaged_assets=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 packaged_assets=yes adaptive_android_viewport=yes finish_guard=yes monetization=absent")

@@ -1,0 +1,3 @@
+Target device: Samsung Galaxy S23 Ultra landscape.
+Viewport policy: scale from virtual height (540) and expand horizontal world width to the physical aspect ratio. Do not letterbox a fixed 960x540 scene.
+Finish policy: LEVEL_END remains locked while Sky Sentinel is alive; reaching the line returns the runner to the boss arena with an explicit message instead of repeatedly entering the result transition.
