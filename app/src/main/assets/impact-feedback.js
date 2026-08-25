@@ -2,6 +2,18 @@
 // Impact feedback adds a short, readable hit reaction without altering physics, damage, or timing.
 let impactPulse=0;
 let impactReason='';
+const impactStatus=document.createElement('div');
+impactStatus.className='sr-only';
+impactStatus.setAttribute('role','status');
+impactStatus.setAttribute('aria-live','polite');
+impactStatus.setAttribute('aria-atomic','true');
+document.body.appendChild(impactStatus);
+let impactAnnouncementTimer=0;
+function announceImpact(){
+  clearTimeout(impactAnnouncementTimer);
+  impactStatus.textContent='';
+  impactAnnouncementTimer=setTimeout(()=>{impactStatus.textContent=health>0?'Integrity hit. '+health+' remaining.':'Integrity depleted.';},20);
+}
 const baseImpactDamage=applyDamage;
 applyDamage=function(reason){
   const before=health;
@@ -9,6 +21,7 @@ applyDamage=function(reason){
   if(health<before){
     impactPulse=.34;
     impactReason=String(reason||'');
+    announceImpact();
   }
 };
 const baseImpactUpdate=update;
@@ -17,7 +30,7 @@ update=function(dt){
   impactPulse=Math.max(0,impactPulse-dt);
 };
 const baseImpactReset=resetRun;
-resetRun=function(){impactPulse=0;impactReason='';baseImpactReset();};
+resetRun=function(){impactPulse=0;impactReason='';impactStatus.textContent='';baseImpactReset();};
 const baseImpactDrawWorld=typeof drawWorld==='function'?drawWorld:null;
 if(baseImpactDrawWorld){
   drawWorld=function(){
