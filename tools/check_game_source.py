@@ -61,6 +61,7 @@ if HTML.is_file():
     require('danger-telegraphs.js' in local_scripts and 'drawwarningmarker' in flat and "'jump'" in combined.lower() and "'dash / stomp'" in combined.lower(), "hazards must expose readable reaction-window telegraphs")
     require('checkpoint-feedback.js' in local_scripts and 'progresssecured' in flat and 'recoveryonline' in flat and 'aria-live' in flat, "checkpoint milestones must expose visible and accessible recovery feedback")
     require('impact-feedback.js' in local_scripts and 'integrityhit' in flat and 'impactpulse' in flat and 'createradialgradient' in flat, "damage must expose short readable impact feedback")
+    require("setattribute('role','status')" in flat and "setattribute('aria-live','polite')" in flat and 'integritydepleted.' in flat and "'integrityhit.'+health+'remaining.'" in flat, "integrity damage must remain available as a polite assistive status announcement")
     require('flow-feedback.js' in local_scripts and 'maxflow' in flat and 'flow-hot' in flat and 'flow-max' in flat, "flow streaks must expose readable escalation feedback")
     require('personal-best-feedback.js' in local_scripts and 'newhighscore' in flat and 'newfastest' in flat and 'aria-live' in flat, "successful runs must expose personal-best celebration feedback")
     require('near-miss-feedback.js' in local_scripts and 'closecall' in flat and 'wasthreatened' in flat, "close hazard escapes must expose restrained near-miss feedback")
@@ -101,4 +102,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes viewport_resize_guard=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes control_accessibility=yes dash_ready_feedback=yes buffered_jump_feedback=yes coyote_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes flow_feedback=yes personal_best_feedback=yes near_miss_feedback=yes landing_feedback=yes boss_phase_feedback=yes boss_shot_telegraph=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes viewport_resize_guard=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes control_accessibility=yes dash_ready_feedback=yes buffered_jump_feedback=yes coyote_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes damage_accessibility=yes flow_feedback=yes personal_best_feedback=yes near_miss_feedback=yes landing_feedback=yes boss_phase_feedback=yes boss_shot_telegraph=yes monetization=absent")
