@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
         webView.setWebViewClient(new WebViewClient());
         setContentView(webView);
         webView.loadUrl("file:///android_asset/index.html");
+        scheduleViewportSync();
     }
 
     private void configureEdgeToEdgeWindow() {
@@ -84,10 +85,29 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void scheduleViewportSync() {
+        if (webView == null) return;
+        Runnable sync = () -> {
+            if (webView != null) {
+                webView.requestLayout();
+                webView.evaluateJavascript(
+                        "window.dispatchEvent(new Event('resize'));" +
+                                "if(window.visualViewport){window.visualViewport.dispatchEvent(new Event('resize'));}",
+                        null);
+            }
+        };
+        webView.postDelayed(sync, 80);
+        webView.postDelayed(sync, 240);
+    }
+
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) applyImmersiveMode();
+        if (hasFocus) {
+            configureEdgeToEdgeWindow();
+            applyImmersiveMode();
+            scheduleViewportSync();
+        }
     }
 
     @Override
@@ -116,6 +136,7 @@ public class MainActivity extends Activity {
         if (webView != null) {
             webView.onResume();
             webView.evaluateJavascript("window.dispatchEvent(new Event('jumprunnerresume'))", null);
+            scheduleViewportSync();
         }
     }
 
