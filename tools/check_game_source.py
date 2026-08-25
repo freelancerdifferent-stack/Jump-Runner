@@ -53,6 +53,7 @@ if HTML.is_file():
     require('dashorstomptobreakitscore' in flat and 'finishlineunlocked' in flat and 'boss.intro<=0' in flat, "boss encounter must preserve readable attack telegraph and victory feedback")
     require('control-feedback.js' in local_scripts and '--dash-charge' in combined and 'is-cooling' in combined and 'is-ready' in combined, "touch controls must expose dash readiness and cooldown feedback")
     require('danger-telegraphs.js' in local_scripts and 'drawwarningmarker' in flat and "'jump'" in combined.lower() and "'dash / stomp'" in combined.lower(), "hazards must expose readable reaction-window telegraphs")
+    require('checkpoint-feedback.js' in local_scripts and 'progresssecured' in flat and 'recoveryonline' in flat and 'aria-live' in flat, "checkpoint milestones must expose visible and accessible recovery feedback")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource'):
         require(token not in flat, f"offline baseline forbids network API: {token}")
     for token in ("admob", "billingclient", "play billing", "rewarded ad"):
@@ -87,4 +88,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes monetization=absent")
