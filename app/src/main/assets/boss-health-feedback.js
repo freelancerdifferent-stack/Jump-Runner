@@ -8,7 +8,7 @@
  function announce(message){clearTimeout(announceTimer);status.textContent='';announceTimer=setTimeout(()=>{status.textContent=message;},20);}
  function refresh(){
   if(!previousDead&&boss.dead)announce('Sky Sentinel defeated. Finish line unlocked.');
-  else if(boss.hp<previous){note.textContent='CORE HIT · '+boss.hp+'/'+boss.maxHp;note.classList.remove('show');void note.offsetWidth;note.classList.add('show');announce('Sentinel core hit. '+boss.hp+' of '+boss.maxHp+' integrity remaining.');}
+  else if(boss.hp<previous&&!boss.dead){note.textContent='CORE HIT · '+boss.hp+'/'+boss.maxHp;note.classList.remove('show');void note.offsetWidth;note.classList.add('show');announce('Sentinel core hit. '+boss.hp+' of '+boss.maxHp+' integrity remaining.');}
   previous=boss.hp;previousDead=boss.dead;
  }
  const base=updateBoss;updateBoss=function(dt){base(dt);refresh();};const reset=resetBoss;resetBoss=function(){reset();previous=boss.maxHp;previousDead=false;status.textContent='';clearTimeout(announceTimer);note.classList.remove('show');};
