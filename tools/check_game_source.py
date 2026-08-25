@@ -19,14 +19,14 @@ require(MAIN.is_file(), "MainActivity.java is missing")
 if HTML.is_file():
     html = HTML.read_text(encoding="utf-8")
     lower = html.lower()
-    require(len(re.findall(r'<canvas\b', html, re.I)) == 1, "exactly one game canvas is required")
+    require(len(re.findall(r'<canvas\\b', html, re.I)) == 1, "exactly one game canvas is required")
     require('id="game"' in lower or "id='game'" in lower, "game canvas must use id=game")
     require('viewport-fit=cover' in lower, "mobile viewport must support safe areas")
-    require(not re.search(r'<script[^>]+src\s*=\s*["\']https?://', html, re.I), "remote script dependencies are forbidden")
-    require(not re.search(r'<link[^>]+href\s*=\s*["\']https?://', html, re.I), "remote stylesheet dependencies are forbidden")
+    require(not re.search(r'<script[^>]+src\\s*=\\s*["\\\']https?://', html, re.I), "remote script dependencies are forbidden")
+    require(not re.search(r'<link[^>]+href\\s*=\\s*["\\\']https?://', html, re.I), "remote stylesheet dependencies are forbidden")
 
-    local_scripts = re.findall(r'<script[^>]+src\s*=\s*["\']([^"\']+)["\']', html, re.I)
-    local_styles = re.findall(r'<link[^>]+href\s*=\s*["\']([^"\']+)["\']', html, re.I)
+    local_scripts = re.findall(r'<script[^>]+src\\s*=\\s*["\\\']([^"\\\']+)["\\\']', html, re.I)
+    local_styles = re.findall(r'<link[^>]+href\\s*=\\s*["\\\']([^"\\\']+)["\\\']', html, re.I)
     require(local_scripts, "at least one packaged JavaScript asset is required")
     require(local_styles, "at least one packaged stylesheet is required")
 
@@ -38,16 +38,16 @@ if HTML.is_file():
         if path.is_file():
             combined += "\n" + path.read_text(encoding="utf-8")
 
-    flat = combined.lower().replace(' ', '')
+    flat = re.sub(r'\\s+', '', combined.lower())
     require('touch-action:none' in flat, "touch-action:none is required for reliable mobile controls")
     require('jumprunnerpause' in combined and 'jumprunnerresume' in combined, "pause/resume lifecycle bridge is required")
     require(len(combined) >= 9000, "combined game source is unexpectedly small")
     require('adaptive-runtime.js' in local_scripts, "adaptive Android viewport runtime must be loaded")
-    require('visualViewport' in combined and 'orientationchange' in combined, "adaptive viewport must react to device viewport/orientation changes")
-    require('scale=h/VH' in flat, "gameplay scaling must anchor to virtual height to avoid landscape letterboxing")
+    require('visualviewport' in flat and 'orientationchange' in flat, "adaptive viewport must react to device viewport/orientation changes")
+    require('scale=h/vh' in flat, "gameplay scaling must anchor to virtual height to avoid landscape letterboxing")
     require('vieww=w/math.max(scale' in flat, "horizontal virtual viewport must follow the actual device aspect ratio")
     require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
-    for pattern in [r'\bfetch\s*\(', r'\bXMLHttpRequest\b', r'\bWebSocket\b', r'\bEventSource\b']:
+    for pattern in [r'\\bfetch\\s*\\(', r'\\bXMLHttpRequest\\b', r'\\bWebSocket\\b', r'\\bEventSource\\b']:
         require(not re.search(pattern, combined), f"offline baseline forbids network API: {pattern}")
     for token in ("admob", "billingclient", "play billing", "rewarded ad"):
         require(token not in combined.lower(), f"monetization is out of current scope: {token}")
