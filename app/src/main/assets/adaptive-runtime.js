@@ -1,0 +1,83 @@
+'use strict';
+(()=>{
+  // Adaptive landscape viewport for Android phones, tablets and foldables.
+  // Physics keep the same 540-unit vertical world; horizontal visibility follows
+  // the device's real aspect ratio so no device needs letterboxing or stretching.
+  let viewW=VW;
+  function adaptiveResize(){
+    const d=Math.min(devicePixelRatio||1,2);
+    const w=Math.max(1,window.visualViewport?.width||innerWidth);
+    const h=Math.max(1,window.visualViewport?.height||innerHeight);
+    canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);
+    canvas.style.width=w+'px';canvas.style.height=h+'px';
+    ctx.setTransform(d,0,0,d,0,0);
+    scale=h/VH;
+    viewW=w/Math.max(scale,.0001);
+    ox=0;oy=0;
+    window.__JR_VIEW_W=viewW;
+    window.__JR_ASPECT=w/h;
+  }
+  resize=adaptiveResize;
+
+  drawSky=function(){
+    const g=ctx.createLinearGradient(0,0,0,VH);
+    g.addColorStop(0,'#0d1f3f');g.addColorStop(.56,'#173f63');g.addColorStop(1,'#08111e');
+    ctx.fillStyle=g;ctx.fillRect(0,0,viewW,VH);
+    const sunX=Math.max(120,Math.min(viewW-120,viewW*.76-cam*.025));
+    ctx.fillStyle='#ffd87822';ctx.beginPath();ctx.arc(sunX,116,78,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#ffd87855';ctx.beginPath();ctx.arc(sunX,116,39,0,Math.PI*2);ctx.fill();
+    for(let layer=0;layer<3;layer++){
+      const base=['#0d1b2d','#10243a','#15324b'][layer],par=.08+layer*.07;
+      ctx.fillStyle=base;
+      const count=Math.ceil(viewW/180)+4;
+      for(let i=0;i<count;i++){
+        const x=i*180-(cam*par%180)-180,w=70+(i%4)*25,h=50+((i*41)%110)+layer*35;
+        ctx.fillRect(x,VH-74-h,w,h);
+        ctx.fillStyle='#6de8ff0b';
+        for(let k=0;k<3;k++)ctx.fillRect(x+12+k*18,VH-62-h,8,14);
+        ctx.fillStyle=base;
+      }
+    }
+  };
+
+  // Full-screen draw uses the adaptive virtual width while preserving world scale.
+  draw=function(){
+    ctx.clearRect(0,0,innerWidth,innerHeight);toGame();
+    const sx=shake?(Math.random()-.5)*shake:0,sy=shake?(Math.random()-.5)*shake:0;
+    ctx.translate(sx,sy);shake*=.86;drawSky();drawWorld();
+    ctx.fillStyle='#02071188';ctx.fillRect(0,VH-28,viewW,28);
+    if(state==='play'){
+      ctx.fillStyle='#ffffff6b';ctx.font='700 11px system-ui';ctx.fillText(`SPEED ${Math.round(340+Math.min(115,time*3.2))}`,16,VH-10);
+      if(player.dashCd>0){ctx.fillStyle='#ffd86b55';ctx.fillRect(Math.max(12,viewW-150),VH-17,120*(1-player.dashCd/.72),4);}
+    }
+    fromGame();
+  };
+
+  // Prevent the core LEVEL_END condition from repeatedly entering the result
+  // transition while the final boss is still alive.
+  const chainedShowResult=showResult;
+  let finishGateCooldown=0;
+  showResult=function(win){
+    if(win&&typeof boss!=='undefined'&&!boss.dead){
+      state='play';paused=false;deathReason='';
+      player.x=Math.min(player.x,LEVEL_END-520);
+      player.inv=Math.max(player.inv,1.0);player.dash=0;
+      cam=Math.max(0,player.x-Math.min(210,viewW*.28));
+      overlay.classList.add('hidden');pauseEl.classList.remove('show');
+      last=performance.now();
+      if(finishGateCooldown<=0){
+        finishGateCooldown=2.5;
+        if(typeof showTip==='function')showTip('FINISH LOCKED · DEFEAT THE SKY SENTINEL FIRST');
+      }
+      return;
+    }
+    return chainedShowResult(win);
+  };
+  const chainedUpdate=update;
+  update=function(dt){finishGateCooldown=Math.max(0,finishGateCooldown-dt);chainedUpdate(dt);};
+
+  addEventListener('resize',adaptiveResize);
+  addEventListener('orientationchange',()=>setTimeout(adaptiveResize,100));
+  window.visualViewport?.addEventListener('resize',adaptiveResize);
+  adaptiveResize();
+})();
