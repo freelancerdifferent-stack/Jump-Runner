@@ -69,13 +69,13 @@ if MAIN.is_file():
     require('file:///android_asset/index.html' in main, "WebView must load packaged game asset")
     require('setAllowContentAccess(false)' in main, "WebView content access must remain disabled")
     require('setDecorFitsSystemWindows(false)' in main, "Android 11+ host must render edge to edge")
+    require('Build.VERSION.SDK_INT >= Build.VERSION_CODES.P' in main, "display cutout support must be API-guarded")
     require('LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES' in main, "display cutout short edges must be available to the game surface")
     require('ViewGroup.LayoutParams.MATCH_PARENT' in main, "WebView must fill the complete activity surface")
     require('setFitsSystemWindows(false)' in main, "WebView must not shrink itself to system-bar insets")
 
 if STYLES.is_file():
     styles = STYLES.read_text(encoding="utf-8")
-    require('windowLayoutInDisplayCutoutMode">shortEdges' in styles, "theme must permit short-edge display cutouts")
     require('@android:color/transparent' in styles, "system bars must be transparent for edge-to-edge rendering")
 
 if errors:
