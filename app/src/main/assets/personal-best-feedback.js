@@ -13,10 +13,20 @@ showResult=function(win){
   if(!actions)return;
   const card=document.createElement('div');
   card.className='legend';
+  card.setAttribute('role','status');
   card.setAttribute('aria-live','polite');
+  card.setAttribute('aria-atomic','true');
   const badges=[];
-  if(newHighScore)badges.push(`<span>NEW HIGH SCORE · ${String(Math.floor(score)).padStart(6,'0')}</span>`);
-  if(newFastest)badges.push(`<span>NEW FASTEST · ${time.toFixed(1)}s</span>`);
+  const announcements=[];
+  if(newHighScore){
+    badges.push(`<span>NEW HIGH SCORE · ${String(Math.floor(score)).padStart(6,'0')}</span>`);
+    announcements.push(`New high score ${Math.floor(score)}`);
+  }
+  if(newFastest){
+    badges.push(`<span>NEW FASTEST · ${time.toFixed(1)}s</span>`);
+    announcements.push(`New fastest time ${time.toFixed(1)} seconds`);
+  }
   card.innerHTML=badges.join('');
+  card.setAttribute('aria-label',announcements.join('. ')+'.');
   actions.before(card);
 };
