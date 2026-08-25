@@ -6,6 +6,7 @@ ASSETS = Path("app/src/main/assets")
 HTML = ASSETS / "index.html"
 MANIFEST = Path("app/src/main/AndroidManifest.xml")
 MAIN = Path("app/src/main/java/com/differentfreelancer/jumprunner/MainActivity.java")
+STYLES = Path("app/src/main/res/values/styles.xml")
 errors = []
 
 def require(condition, message):
@@ -15,6 +16,7 @@ def require(condition, message):
 require(HTML.is_file(), "game asset index.html is missing")
 require(MANIFEST.is_file(), "AndroidManifest.xml is missing")
 require(MAIN.is_file(), "MainActivity.java is missing")
+require(STYLES.is_file(), "Android theme styles.xml is missing")
 
 if HTML.is_file():
     html = HTML.read_text(encoding="utf-8")
@@ -44,8 +46,9 @@ if HTML.is_file():
     require(len(combined) >= 9000, "combined game source is unexpectedly small")
     require('adaptive-runtime.js' in local_scripts, "adaptive Android viewport runtime must be loaded")
     require('visualviewport' in flat and 'orientationchange' in flat, "adaptive viewport must react to device viewport/orientation changes")
-    require('scale=h/vh' in flat, "gameplay scaling must anchor to virtual height to avoid landscape letterboxing")
-    require('vieww=w/math.max(scale' in flat, "horizontal virtual viewport must follow the actual device aspect ratio")
+    require('scale=surfaceh/vh' in flat, "gameplay scaling must anchor to the full WebView height")
+    require('vieww=surfacew/math.max(scale' in flat, "horizontal virtual viewport must follow the full WebView aspect ratio")
+    require('math.max(1,innerwidth' in flat and 'clientwidth' in flat, "canvas sizing must prefer the full layout surface over a reduced visual viewport")
     require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource'):
         require(token not in flat, f"offline baseline forbids network API: {token}")
@@ -57,12 +60,23 @@ if MANIFEST.is_file():
     require('android:usesCleartextTraffic="false"' in manifest, "cleartext network traffic must remain disabled")
     require('android.permission.INTERNET' not in manifest, "offline game must not request INTERNET permission")
     require('android:screenOrientation="landscape"' in manifest, "game must stay landscape during current production phase")
+    require('android:resizeableActivity="true"' in manifest, "activity must remain resizable across Android display shapes")
+    require('android:maxAspectRatio="3.0"' in manifest, "wide Android aspect ratios must not be artificially capped")
 
 if MAIN.is_file():
     main = MAIN.read_text(encoding="utf-8")
     require('WebView.setWebContentsDebuggingEnabled(false)' in main, "WebView debugging must be disabled")
     require('file:///android_asset/index.html' in main, "WebView must load packaged game asset")
     require('setAllowContentAccess(false)' in main, "WebView content access must remain disabled")
+    require('setDecorFitsSystemWindows(false)' in main, "Android 11+ host must render edge to edge")
+    require('LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES' in main, "display cutout short edges must be available to the game surface")
+    require('ViewGroup.LayoutParams.MATCH_PARENT' in main, "WebView must fill the complete activity surface")
+    require('setFitsSystemWindows(false)' in main, "WebView must not shrink itself to system-bar insets")
+
+if STYLES.is_file():
+    styles = STYLES.read_text(encoding="utf-8")
+    require('windowLayoutInDisplayCutoutMode">shortEdges' in styles, "theme must permit short-edge display cutouts")
+    require('@android:color/transparent' in styles, "system bars must be transparent for edge-to-edge rendering")
 
 if errors:
     print("GAME SOURCE QUALITY GATE: FAILED")
@@ -70,4 +84,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 packaged_assets=yes adaptive_android_viewport=yes finish_guard=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes monetization=absent")
