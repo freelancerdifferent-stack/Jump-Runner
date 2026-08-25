@@ -51,6 +51,7 @@ if HTML.is_file():
     require('math.max(1,innerwidth' in flat and 'clientwidth' in flat and 'visualviewport?.width' in flat, "canvas sizing must prefer the full layout surface over a reduced visual viewport")
     require('lastsurfacekey' in flat and 'requestanimationframe' in flat and 'cancelanimationframe' in flat, "viewport resize events must be coalesced and duplicate canvas reallocations skipped")
     require("visibilitychange" in flat and "pageshow" in flat and 'queueresize(true)' in flat, "viewport must recover after Android background/page restore")
+    require('@media(min-width:1000px)and(min-height:600px)' in flat and 'clamp(88px,6.4vw,112px)' in flat and 'max-aspect-ratio:8/5' in flat, "large tablet/foldable landscape surfaces must keep scaled touch controls and HUD spacing")
     require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
     require('dashorstomptobreakitscore' in flat and 'finishlineunlocked' in flat and 'boss.intro<=0' in flat, "boss encounter must preserve readable attack telegraph and victory feedback")
     require('control-feedback.js' in local_scripts and '--dash-charge' in combined and 'is-cooling' in combined and 'is-ready' in combined, "touch controls must expose dash readiness and cooldown feedback")
@@ -97,4 +98,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes viewport_resize_guard=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes flow_feedback=yes personal_best_feedback=yes near_miss_feedback=yes landing_feedback=yes boss_phase_feedback=yes boss_shot_telegraph=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes viewport_resize_guard=yes large_screen_touch_scaling=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes flow_feedback=yes personal_best_feedback=yes near_miss_feedback=yes landing_feedback=yes boss_phase_feedback=yes boss_shot_telegraph=yes monetization=absent")
