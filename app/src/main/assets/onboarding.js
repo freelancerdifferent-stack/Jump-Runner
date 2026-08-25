@@ -10,12 +10,12 @@ const tips=[
   {x:1260,text:'STOMP DRONES FROM ABOVE · clean counters build Flow faster'},
   {x:2350,text:'COLLECT CRYSTALS TO BUILD FLOW · higher Flow multiplies score'},
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
-  {x:6500,text:'SKY SENTINEL AHEAD · learn its pulse timing, then counter with stomp or Dash'}
+  {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL'}
 ];
 let tipAnnounceTimer=0;
 function showTip(text){
   clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.classList.remove('show');tip.textContent='';
-  tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),3600);},20);
+  tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),4200);},20);
 }
 function onboardingLoop(){
   if(!onboardingDone&&state==='play'){
