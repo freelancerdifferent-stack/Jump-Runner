@@ -26,7 +26,10 @@ function updateBoss(dt){
  boss.x=player.x+lead;
  boss.y=285+Math.sin(boss.t*2.15)*70;
  boss.coreOpen=boss.intro<=0&&boss.hitCd<=0&&lead<150;
- if(boss.intro<=0){boss.shot-=dt;if(boss.shot<=0){boss.shot=Math.max(.62,1.35-(boss.maxHp-boss.hp)*.11);const sx=boss.x-30,sy=boss.y,dx=player.x+player.w/2-sx,dy=player.y+player.h/2-sy,l=Math.hypot(dx,dy)||1;bossShots.push({x:sx,y:sy,vx:dx/l*390,vy:dy/l*390,life:3.2,maxLife:3.2});}}
+ // Core-open windows are dedicated attack beats. Do not stack a newly spawned pulse
+ // on top of the player's only safe opportunity to commit to a Dash or Stomp.
+ if(boss.intro<=0&&!boss.coreOpen){boss.shot-=dt;if(boss.shot<=0){boss.shot=Math.max(.62,1.35-(boss.maxHp-boss.hp)*.11);const sx=boss.x-30,sy=boss.y,dx=player.x+player.w/2-sx,dy=player.y+player.h/2-sy,l=Math.hypot(dx,dy)||1;bossShots.push({x:sx,y:sy,vx:dx/l*390,vy:dy/l*390,life:3.2,maxLife:3.2});}}
+ else if(boss.coreOpen){boss.shot=Math.max(boss.shot,.42);}
  for(const s of bossShots){s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;const pr={x:player.x+6,y:player.y+5,w:player.w-12,h:player.h-7};if(s.life>0&&overlap(pr,{x:s.x-7,y:s.y-7,w:14,h:14})){s.life=0;kill('The Sky Sentinel pulse hit your Integrity.');}}
  bossShots=bossShots.filter(s=>s.life>0);
  const br=bossRect(),pr={x:player.x+6,y:player.y+5,w:player.w-12,h:player.h-7};
