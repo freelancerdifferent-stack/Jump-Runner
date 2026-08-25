@@ -2,7 +2,9 @@
 // Celebration layer for checkpoint milestones and recovery. Keeps checkpoint rules untouched.
 const checkpointToast=document.createElement('div');
 checkpointToast.className='checkpoint-toast';
+checkpointToast.setAttribute('role','status');
 checkpointToast.setAttribute('aria-live','polite');
+checkpointToast.setAttribute('aria-atomic','true');
 checkpointToast.innerHTML='<span class="checkpoint-kicker">CHECKPOINT</span><strong></strong><small>PROGRESS SECURED</small>';
 document.body.appendChild(checkpointToast);
 const checkpointStyle=document.createElement('style');
@@ -14,6 +16,7 @@ function showCheckpointToast(label,recovering){
  checkpointToast.querySelector('.checkpoint-kicker').textContent=recovering?'RECOVERY ONLINE':'CHECKPOINT';
  checkpointToast.querySelector('strong').textContent=label;
  checkpointToast.querySelector('small').textContent=recovering?'RUN RESUMED':'PROGRESS SECURED';
+ checkpointToast.setAttribute('aria-label',recovering?'Recovery online. '+label+'. Run resumed.':'Checkpoint. '+label+'. Progress secured.');
  checkpointToast.classList.remove('show');void checkpointToast.offsetWidth;checkpointToast.classList.add('show');checkpointToastTimer=1.65;
 }
 const checkpointFeedbackUpdate=update;
@@ -25,4 +28,4 @@ update=function(dt){
 const checkpointFeedbackRestore=restoreCheckpoint;
 restoreCheckpoint=function(){checkpointFeedbackRestore();if(activeCheckpoint>=0)showCheckpointToast(checkpointDefs[activeCheckpoint].label,true);};
 const checkpointFeedbackReset=resetRun;
-resetRun=function(){lastCheckpointSeen=-1;checkpointToastTimer=0;checkpointToast.classList.remove('show');checkpointFeedbackReset();};
+resetRun=function(){lastCheckpointSeen=-1;checkpointToastTimer=0;checkpointToast.classList.remove('show');checkpointToast.removeAttribute('aria-label');checkpointFeedbackReset();};
