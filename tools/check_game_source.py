@@ -54,7 +54,7 @@ if HTML.is_file():
     require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
     require('dashorstomptobreakitscore' in flat and 'finishlineunlocked' in flat and 'boss.intro<=0' in flat, "boss encounter must preserve readable attack telegraph and victory feedback")
     require('control-feedback.js' in local_scripts and '--dash-charge' in combined and 'is-cooling' in combined and 'is-ready' in combined, "touch controls must expose dash readiness and cooldown feedback")
-    require('coyote-feedback.js' in local_scripts and 'edgesave' in flat and 'coyote>0' in flat and 'coyote<.115' in flat, "late jumps must expose restrained coyote-grace acknowledgement")
+    require('coyote-grace-feedback.js' in local_scripts and 'edgesave' in flat and 'player.coyote>0' in flat and "grace&&!next&&state==='play'&&player.vy<0" in flat, "late jumps must expose restrained coyote-grace acknowledgement")
     require('danger-telegraphs.js' in local_scripts and 'drawwarningmarker' in flat and "'jump'" in combined.lower() and "'dash / stomp'" in combined.lower(), "hazards must expose readable reaction-window telegraphs")
     require('checkpoint-feedback.js' in local_scripts and 'progresssecured' in flat and 'recoveryonline' in flat and 'aria-live' in flat, "checkpoint milestones must expose visible and accessible recovery feedback")
     require('impact-feedback.js' in local_scripts and 'integrityhit' in flat and 'impactpulse' in flat and 'createradialgradient' in flat, "damage must expose short readable impact feedback")
