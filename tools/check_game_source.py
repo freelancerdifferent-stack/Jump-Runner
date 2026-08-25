@@ -55,6 +55,7 @@ if HTML.is_file():
     require('danger-telegraphs.js' in local_scripts and 'drawwarningmarker' in flat and "'jump'" in combined.lower() and "'dash / stomp'" in combined.lower(), "hazards must expose readable reaction-window telegraphs")
     require('checkpoint-feedback.js' in local_scripts and 'progresssecured' in flat and 'recoveryonline' in flat and 'aria-live' in flat, "checkpoint milestones must expose visible and accessible recovery feedback")
     require('impact-feedback.js' in local_scripts and 'integrityhit' in flat and 'impactpulse' in flat and 'createradialgradient' in flat, "damage must expose short readable impact feedback")
+    require('flow-feedback.js' in local_scripts and 'maxflow' in flat and 'flow-hot' in flat and 'flow-max' in flat, "flow streaks must expose readable escalation feedback")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource'):
         require(token not in flat, f"offline baseline forbids network API: {token}")
     for token in ("admob", "billingclient", "play billing", "rewarded ad"):
@@ -89,4 +90,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 adaptive_android_viewport=yes edge_to_edge_host=yes cutout_support=yes finish_guard=yes boss_readability=yes control_feedback=yes danger_telegraphs=yes checkpoint_feedback=yes impact_feedback=yes flow_feedback=yes monetization=absent")
