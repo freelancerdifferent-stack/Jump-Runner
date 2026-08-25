@@ -1,11 +1,22 @@
 'use strict';
 // Flow feedback: communicates combo build-up without altering scoring or physics.
 let flowBannerTimer=0,lastFlowShown=1;
+const flowStatus=document.createElement('div');
+flowStatus.className='sr-only';
+flowStatus.setAttribute('role','status');
+flowStatus.setAttribute('aria-live','polite');
+flowStatus.setAttribute('aria-atomic','true');
+document.body.appendChild(flowStatus);
+let flowAnnounceTimer=0;
 const baseFlowUpdateHud=updateHud;
 function announceFlow(level){
   if(level<=1)return;
   flowBannerTimer=.85;
   lastFlowShown=level;
+  if(level===4||level===8){
+    clearTimeout(flowAnnounceTimer);flowStatus.textContent='';
+    flowAnnounceTimer=setTimeout(()=>{flowStatus.textContent=level>=8?'Maximum flow reached.':'Flow streak active.';},20);
+  }
 }
 updateHud=function(){
   baseFlowUpdateHud();
