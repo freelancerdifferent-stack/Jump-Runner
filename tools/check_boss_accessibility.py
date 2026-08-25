@@ -26,6 +26,10 @@ if hit:
     require("'sentinelcorehit.'+boss.hp+'of'+boss.maxhp+'integrityremaining.'" in hit, "boss core-hit announcement must report remaining integrity")
     require("clearTimeout(announcetimer)".lower() in hit and "settimeout" in hit, "boss core-hit announcements must retrigger cleanly")
     require("boss.hp<previous&&!boss.dead" in hit, "boss core-hit announcements must only fire on real damage")
+    require("!previousdead&&boss.dead" in hit, "Sentinel defeat announcement must only fire on the alive-to-defeated transition")
+    require("'skysentineldefeated.finishlineunlocked.'" in hit, "Sentinel defeat must announce that the finish line is unlocked")
+    require("previousdead=boss.dead" in hit, "Sentinel defeat transition state must be latched after refresh")
+    require("previousdead=false" in hit, "Sentinel defeat transition state must reset for a new encounter")
 
 if phase:
     require("toast.setattribute('role','status')" in phase, "boss phase feedback must expose role=status")
@@ -40,4 +44,4 @@ if errors:
     sys.exit(1)
 
 print("BOSS ACCESSIBILITY QUALITY GATE: PASSED")
-print("boss_core_hit_status=yes boss_phase_status=yes atomic=yes polite=yes integrity_remaining=yes")
+print("boss_core_hit_status=yes boss_phase_status=yes boss_defeat_status=yes atomic=yes polite=yes integrity_remaining=yes")
