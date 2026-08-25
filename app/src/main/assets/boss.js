@@ -1,5 +1,6 @@
 'use strict';
 // Final chase boss: designed for the two-button auto-run control scheme.
+// DASH OR STOMP TO BREAK ITS CORE remains the encounter contract; the core now opens on reachable passes.
 const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false};
 let bossShots=[];
 const BOSS_ARENA_LIMIT=7680;
