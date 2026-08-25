@@ -1,14 +1,14 @@
 'use strict';
 // Final chase boss: designed for the two-button auto-run control scheme.
 // DASH OR STOMP TO BREAK ITS CORE remains the encounter contract; the core now opens on reachable passes.
-const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false};
+const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false,passSpent:false};
 let bossShots=[];
 const BOSS_ARENA_LIMIT=7680;
 const baseBossReset=resetRun,baseBossUpdate=update,baseBossDraw=drawWorld,baseBossShowResult=showResult;
 function bossRect(){return{x:boss.x-34,y:boss.y-28,w:68,h:56};}
-function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;bossShots=[];}
-function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;boss.t=0;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
-function hitBoss(stomp){if(boss.dead||boss.hitCd>0)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
+function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;boss.passSpent=false;bossShots=[];}
+function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;boss.t=0;boss.passSpent=false;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
+function hitBoss(stomp){if(boss.dead||boss.hitCd>0||boss.passSpent)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;boss.passSpent=true;score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
 function updateBoss(dt){
  if(state!=='play')return;
  boss.flash=Math.max(0,boss.flash-dt);boss.victory=Math.max(0,boss.victory-dt);
@@ -25,7 +25,10 @@ function updateBoss(dt){
  const lead=105+approach*185;
  boss.x=player.x+lead;
  boss.y=285+Math.sin(boss.t*2.15)*70;
- boss.coreOpen=boss.intro<=0&&boss.hitCd<=0&&lead<150;
+ // A successful strike consumes the current pass. The core only rearms after the
+ // Sentinel visibly retreats, preventing rapid double-hits inside one long open window.
+ if(lead>=165)boss.passSpent=false;
+ boss.coreOpen=boss.intro<=0&&boss.hitCd<=0&&!boss.passSpent&&lead<150;
  // Core-open windows are dedicated attack beats. Do not stack a newly spawned pulse
  // on top of the player's only safe opportunity to commit to a Dash or Stomp.
  if(boss.intro<=0&&!boss.coreOpen){boss.shot-=dt;if(boss.shot<=0){boss.shot=Math.max(.62,1.35-(boss.maxHp-boss.hp)*.11);const sx=boss.x-30,sy=boss.y,dx=player.x+player.w/2-sx,dy=player.y+player.h/2-sy,l=Math.hypot(dx,dy)||1;bossShots.push({x:sx,y:sy,vx:dx/l*390,vy:dy/l*390,life:3.2,maxLife:3.2});}}
@@ -37,7 +40,7 @@ function updateBoss(dt){
  const dashStrike=boss.coreOpen&&player.dash>0&&dx<155&&dy<135;
  const stompStrike=boss.coreOpen&&player.vy>120&&dx<120&&dy<120;
  if(dashStrike||stompStrike){hitBoss(stompStrike);}
- else if(overlap(pr,br)){const stomp=player.vy>120&&player.y+player.h-8<br.y+14;if(player.dash>0||stomp)hitBoss(stomp);else kill('The Sky Sentinel intercepted your run.');}
+ else if(overlap(pr,br)){const stomp=player.vy>120&&player.y+player.h-8<br.y+14;if(boss.coreOpen&&(player.dash>0||stomp))hitBoss(stomp);else kill(boss.coreOpen?'The Sky Sentinel intercepted your run.':'The Sentinel core is shielded. Wait for the green opening.');}
 }
 function drawBossBanner(){
  if(boss.intro<=0&&boss.victory<=0)return;
