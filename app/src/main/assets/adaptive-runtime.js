@@ -6,18 +6,23 @@
   let viewW=VW;
   let surfaceW=innerWidth;
   let surfaceH=innerHeight;
+  let resizeFrame=0;
+  let lastSurfaceKey='';
 
   function readSurface(){
     const root=document.documentElement;
     const vv=window.visualViewport;
-    const w=Math.max(1,innerWidth||0,root?.clientWidth||0,vv?.width||0);
-    const h=Math.max(1,innerHeight||0,root?.clientHeight||0,vv?.height||0);
-    return {w,h};
+    const widths=[innerWidth||0,root?.clientWidth||0,vv?.width||0].filter(v=>v>0);
+    const heights=[innerHeight||0,root?.clientHeight||0,vv?.height||0].filter(v=>v>0);
+    return {w:Math.max(1,...widths),h:Math.max(1,...heights)};
   }
 
-  function adaptiveResize(){
+  function adaptiveResize(force=false){
     const d=Math.min(devicePixelRatio||1,2);
     const surface=readSurface();
+    const key=`${Math.round(surface.w)}x${Math.round(surface.h)}@${d}`;
+    if(!force&&key===lastSurfaceKey)return;
+    lastSurfaceKey=key;
     surfaceW=surface.w;surfaceH=surface.h;
     canvas.width=Math.round(surfaceW*d);canvas.height=Math.round(surfaceH*d);
     canvas.style.width=surfaceW+'px';canvas.style.height=surfaceH+'px';
@@ -30,7 +35,8 @@
     window.__JR_ASPECT=surfaceW/surfaceH;
     window.__JR_SURFACE={width:surfaceW,height:surfaceH,visualWidth:window.visualViewport?.width||0,innerWidth:innerWidth||0};
   }
-  resize=adaptiveResize;
+  function queueResize(force=false){cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>adaptiveResize(force));}
+  resize=()=>queueResize(true);
 
   drawSky=function(){
     const g=ctx.createLinearGradient(0,0,0,VH);
@@ -88,8 +94,10 @@
   const chainedUpdate=update;
   update=function(dt){finishGateCooldown=Math.max(0,finishGateCooldown-dt);chainedUpdate(dt);};
 
-  addEventListener('resize',adaptiveResize);
-  addEventListener('orientationchange',()=>setTimeout(adaptiveResize,120));
-  window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(adaptiveResize));
-  adaptiveResize();
+  addEventListener('resize',()=>queueResize());
+  addEventListener('orientationchange',()=>setTimeout(()=>queueResize(true),120));
+  window.visualViewport?.addEventListener('resize',()=>queueResize());
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(()=>queueResize(true),60);});
+  addEventListener('pageshow',()=>queueResize(true));
+  adaptiveResize(true);
 })();
