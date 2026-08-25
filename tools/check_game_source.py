@@ -42,6 +42,11 @@ if HTML.is_file():
     require('touch-action:none' in flat, "touch-action:none is required for reliable mobile controls")
     require('jumprunnerpause' in combined and 'jumprunnerresume' in combined, "pause/resume lifecycle bridge is required")
     require(len(combined) >= 9000, "combined game source is unexpectedly small")
+    require('adaptive-runtime.js' in local_scripts, "adaptive Android viewport runtime must be loaded")
+    require('visualViewport' in combined and 'orientationchange' in combined, "adaptive viewport must react to device viewport/orientation changes")
+    require('scale=h/VH' in flat, "gameplay scaling must anchor to virtual height to avoid landscape letterboxing")
+    require('vieww=w/math.max(scale' in flat, "horizontal virtual viewport must follow the actual device aspect ratio")
+    require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
     for pattern in [r'\bfetch\s*\(', r'\bXMLHttpRequest\b', r'\bWebSocket\b', r'\bEventSource\b']:
         require(not re.search(pattern, combined), f"offline baseline forbids network API: {pattern}")
     for token in ("admob", "billingclient", "play billing", "rewarded ad"):
@@ -65,4 +70,4 @@ if errors:
         print(f"{i}. {error}")
     sys.exit(1)
 print("GAME SOURCE QUALITY GATE: PASSED")
-print("offline=yes lifecycle_bridge=yes canvas=1 packaged_assets=yes monetization=absent")
+print("offline=yes lifecycle_bridge=yes canvas=1 packaged_assets=yes adaptive_android_viewport=yes finish_guard=yes monetization=absent")
