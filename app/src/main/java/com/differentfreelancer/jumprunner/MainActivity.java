@@ -1,6 +1,7 @@
 package com.differentfreelancer.jumprunner;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build;
@@ -80,6 +81,7 @@ public class MainActivity extends Activity {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.R)
     private static class Api30Window {
         static void configureEdgeToEdge(android.view.Window window) {
             window.setDecorFitsSystemWindows(false);
