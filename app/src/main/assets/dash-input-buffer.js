@@ -17,6 +17,11 @@
     dashButton?.setAttribute('aria-label',on?'Dash queued':'Dash');
   }
 
+  function clearDashBuffer(){
+    dashBuffer=0;
+    setQueued(false);
+  }
+
   inputDash=function(){
     if(state!=='play')return;
     if(player.dashCd>0){
@@ -24,8 +29,7 @@
       setQueued(true);
       return;
     }
-    dashBuffer=0;
-    setQueued(false);
+    clearDashBuffer();
     baseInputDash();
   };
 
@@ -33,8 +37,7 @@
     if(dashBuffer>0){
       dashBuffer=Math.max(0,dashBuffer-dt);
       if(state==='play'&&player.dashCd<=0){
-        dashBuffer=0;
-        setQueued(false);
+        clearDashBuffer();
         baseInputDash();
       }else if(dashBuffer<=0){
         setQueued(false);
@@ -44,8 +47,11 @@
   };
 
   resetRun=function(){
-    dashBuffer=0;
-    setQueued(false);
+    clearDashBuffer();
     baseResetRun();
   };
+
+  // A queued Dash is an input intention, not durable run state. Never let a press
+  // made just before an Android/manual pause fire unexpectedly after resume.
+  addEventListener('jumprunnerpause',clearDashBuffer);
 })();
