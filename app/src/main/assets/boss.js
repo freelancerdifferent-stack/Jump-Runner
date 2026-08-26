@@ -24,7 +24,10 @@ function updateBoss(dt){
  const approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5;
  const lead=105+approach*185;
  boss.x=player.x+lead;
- boss.y=285+Math.sin(boss.t*2.15)*70;
+ const patrolY=285+Math.sin(boss.t*2.15)*70;
+ const attackLaneY=340+Math.sin(boss.t*4.3)*18;
+ const laneMix=Math.max(0,Math.min(1,(175-lead)/25));
+ boss.y=patrolY+(attackLaneY-patrolY)*laneMix;
  // A successful strike consumes the current pass. The core only rearms after the
  // Sentinel visibly retreats, preventing rapid double-hits inside one long open window.
  if(lead>=165)boss.passSpent=false;
