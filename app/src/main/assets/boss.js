@@ -15,12 +15,8 @@ function updateBoss(dt){
  if(boss.dead)return;
  if(!boss.active&&player.x>=6350)activateBoss();
  if(!boss.active)return;
- // Hold the runner inside the final arena until the boss is defeated. This prevents
- // the finish transition from repeatedly firing while the auto-runner cannot turn back.
  player.x=Math.min(player.x,BOSS_ARENA_LIMIT);
  boss.t+=dt;boss.hitCd=Math.max(0,boss.hitCd-dt);boss.intro=Math.max(0,boss.intro-dt);
- // The Sentinel now cycles toward and away from the runner instead of maintaining an
- // impossible fixed lead. During each close pass the core opens inside Dash/Stomp range.
  const approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5;
  const lead=105+approach*185;
  boss.x=player.x+lead;
@@ -28,12 +24,8 @@ function updateBoss(dt){
  const attackLaneY=340+Math.sin(boss.t*4.3)*18;
  const laneMix=Math.max(0,Math.min(1,(175-lead)/25));
  boss.y=patrolY+(attackLaneY-patrolY)*laneMix;
- // A successful strike consumes the current pass. The core only rearms after the
- // Sentinel visibly retreats, preventing rapid double-hits inside one long open window.
  if(lead>=165)boss.passSpent=false;
  boss.coreOpen=boss.intro<=0&&boss.hitCd<=0&&!boss.passSpent&&lead<150;
- // Core-open windows are dedicated attack beats. Do not stack a newly spawned pulse
- // on top of the player's only safe opportunity to commit to a Dash or Stomp.
  if(boss.intro<=0&&!boss.coreOpen){boss.shot-=dt;if(boss.shot<=0){boss.shot=Math.max(.62,1.35-(boss.maxHp-boss.hp)*.11);const sx=boss.x-30,sy=boss.y,dx=player.x+player.w/2-sx,dy=player.y+player.h/2-sy,l=Math.hypot(dx,dy)||1;bossShots.push({x:sx,y:sy,vx:dx/l*390,vy:dy/l*390,life:3.2,maxLife:3.2});}}
  else if(boss.coreOpen){boss.shot=Math.max(boss.shot,.42);}
  for(const s of bossShots){s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;const pr={x:player.x+6,y:player.y+5,w:player.w-12,h:player.h-7};if(s.life>0&&overlap(pr,{x:s.x-7,y:s.y-7,w:14,h:14})){s.life=0;kill('The Sky Sentinel pulse hit your Integrity.');}}
@@ -54,7 +46,7 @@ function drawBossBanner(){
 function drawBoss(){
  if(!boss.active&&!boss.dead&&boss.victory<=0)return;
  ctx.save();
- if(!boss.dead){const x=boss.x-cam,y=boss.y;ctx.translate(x,y);ctx.rotate(Math.sin(boss.t*3)*.08);ctx.shadowBlur=boss.coreOpen?38:(boss.flash>0?34:24);ctx.shadowColor=boss.coreOpen?'#74f7c5':(boss.flash>0?'#ffffff':'#ff6d88');ctx.fillStyle=boss.flash>0?'#fff3d4':'#1a2036';ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.fill();ctx.strokeStyle=boss.coreOpen?'#74f7c5':'#ffd86b';ctx.lineWidth=boss.coreOpen?7:5;ctx.beginPath();ctx.arc(0,0,25,boss.t,boss.t+Math.PI*1.45);ctx.stroke();ctx.fillStyle=boss.coreOpen?'#74f7c5':'#ff6d88';ctx.beginPath();ctx.arc(0,0,boss.coreOpen?12:9,0,Math.PI*2);ctx.fill();ctx.setTransform(1,0,0,1,0,0);const bw=240,bx=VW/2-bw/2;ctx.globalAlpha=.95;ctx.fillStyle='#09111ecc';ctx.fillRect(bx,54,bw,24);ctx.fillStyle='#2c2031';ctx.fillRect(bx+4,58,bw-8,7);ctx.fillStyle='#ff6d88';ctx.fillRect(bx+4,58,(bw-8)*(boss.hp/boss.maxHp),7);ctx.fillStyle='#fff';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText('SKY SENTINEL · '+boss.hp+'/'+boss.maxHp,VW/2,74);if(boss.coreOpen){ctx.fillStyle='#74f7c5';ctx.font='900 13px system-ui';ctx.fillText('CORE OPEN · DASH NOW',VW/2,96);}}
+ if(!boss.dead){const x=boss.x-cam,y=boss.y;ctx.translate(x,y);ctx.rotate(Math.sin(boss.t*3)*.08);ctx.shadowBlur=boss.coreOpen?38:(boss.flash>0?34:24);ctx.shadowColor=boss.coreOpen?'#74f7c5':(boss.flash>0?'#ffffff':'#ff6d88');ctx.fillStyle=boss.flash>0?'#fff3d4':'#1a2036';ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.fill();ctx.strokeStyle=boss.coreOpen?'#74f7c5':'#ffd86b';ctx.lineWidth=boss.coreOpen?7:5;ctx.beginPath();ctx.arc(0,0,25,boss.t,boss.t+Math.PI*1.45);ctx.stroke();ctx.fillStyle=boss.coreOpen?'#74f7c5':'#ff6d88';ctx.beginPath();ctx.arc(0,0,boss.coreOpen?12:9,0,Math.PI*2);ctx.fill();ctx.setTransform(1,0,0,1,0,0);const bw=240,bx=VW/2-bw/2;ctx.globalAlpha=.95;ctx.fillStyle='#09111ecc';ctx.fillRect(bx,54,bw,24);ctx.fillStyle='#2c2031';ctx.fillRect(bx+4,58,bw-8,7);ctx.fillStyle='#ff6d88';ctx.fillRect(bx+4,58,(bw-8)*(boss.hp/boss.maxHp),7);ctx.fillStyle='#fff';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText('SKY SENTINEL · '+boss.hp+'/'+boss.maxHp,VW/2,74);if(boss.coreOpen){ctx.fillStyle='#74f7c5';ctx.font='900 13px system-ui';ctx.fillText('CORE OPEN · DASH NOW',VW/2,96);}else if(boss.active&&boss.intro<=0&&!boss.passSpent){const approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5,readiness=Math.max(0,Math.min(1,(1-approach)*1.35));ctx.fillStyle='#0b1724dd';ctx.fillRect(VW/2-90,88,180,18);ctx.fillStyle='#ffd86b';ctx.fillRect(VW/2-86,92,172*readiness,5);ctx.fillStyle='#d9e5f2';ctx.font='800 9px system-ui';ctx.fillText(readiness>.58?'CORE CHARGING · GET READY':'CORE SHIELDED',VW/2,104);}}
  ctx.restore();ctx.save();ctx.fillStyle='#ffd86b';for(const s of bossShots){const px=s.x-cam,py=s.y;ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(px-s.vx*.035,py-s.vy*.035,11,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fill();}ctx.restore();drawBossBanner();
 }
 resetRun=function(){resetBoss();baseBossReset();};
