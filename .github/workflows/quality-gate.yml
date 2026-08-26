@@ -44,6 +44,7 @@ jobs:
           python3 tools/check_reduced_motion.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_checkpoint_recovery.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_contract_storage.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_resume_countdown.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
