@@ -1,15 +1,17 @@
 'use strict';
 // Final chase boss: designed for the two-button auto-run control scheme.
 // DASH OR STOMP TO BREAK ITS CORE remains the encounter contract; the core now opens on reachable passes.
-const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false,passSpent:false};
+const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false,passSpent:false,recoil:0};
 let bossShots=[];
 const BOSS_ARENA_LIMIT=7680;
 const BOSS_VICTORY_GRACE=1.4;
+const BOSS_HIT_GRACE=.42;
+const BOSS_HIT_RECOIL=96;
 const baseBossReset=resetRun,baseBossUpdate=update,baseBossDraw=drawWorld,baseBossShowResult=showResult;
 function bossRect(){return{x:boss.x-34,y:boss.y-28,w:68,h:56};}
-function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;boss.passSpent=false;bossShots=[];}
-function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;boss.t=0;boss.passSpent=false;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
-function hitBoss(stomp){if(boss.dead||boss.hitCd>0||boss.passSpent)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;boss.passSpent=true;score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;player.inv=Math.max(player.inv,BOSS_VICTORY_GRACE);score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
+function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;boss.passSpent=false;boss.recoil=0;bossShots=[];}
+function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;boss.t=0;boss.passSpent=false;boss.recoil=0;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
+function hitBoss(stomp){if(boss.dead||boss.hitCd>0||boss.passSpent)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;boss.passSpent=true;boss.recoil=BOSS_HIT_RECOIL;player.inv=Math.max(player.inv,BOSS_HIT_GRACE);score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;player.inv=Math.max(player.inv,BOSS_VICTORY_GRACE);score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
 function updateBoss(dt){
  if(state!=='play')return;
  boss.flash=Math.max(0,boss.flash-dt);boss.victory=Math.max(0,boss.victory-dt);
@@ -17,16 +19,17 @@ function updateBoss(dt){
  if(!boss.active&&player.x>=6350)activateBoss();
  if(!boss.active)return;
  player.x=Math.min(player.x,BOSS_ARENA_LIMIT);
- boss.t+=dt;boss.hitCd=Math.max(0,boss.hitCd-dt);boss.intro=Math.max(0,boss.intro-dt);
+ boss.t+=dt;boss.hitCd=Math.max(0,boss.hitCd-dt);boss.intro=Math.max(0,boss.intro-dt);boss.recoil=Math.max(0,boss.recoil-dt*220);
  const approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5;
- const lead=105+approach*185;
+ const baseLead=105+approach*185;
+ const lead=baseLead+boss.recoil;
  boss.x=player.x+lead;
  const patrolY=285+Math.sin(boss.t*2.15)*70;
  const attackLaneY=340+Math.sin(boss.t*4.3)*18;
- const laneMix=Math.max(0,Math.min(1,(175-lead)/25));
+ const laneMix=Math.max(0,Math.min(1,(175-baseLead)/25));
  boss.y=patrolY+(attackLaneY-patrolY)*laneMix;
- if(lead>=165)boss.passSpent=false;
- boss.coreOpen=boss.intro<=0&&boss.hitCd<=0&&!boss.passSpent&&lead<150;
+ if(baseLead>=165)boss.passSpent=false;
+ boss.coreOpen=boss.intro<=0&&boss.hitCd<=0&&!boss.passSpent&&baseLead<150&&boss.recoil<=0;
  if(boss.intro<=0&&!boss.coreOpen){boss.shot-=dt;if(boss.shot<=0){boss.shot=Math.max(.62,1.35-(boss.maxHp-boss.hp)*.11);const sx=boss.x-30,sy=boss.y,dx=player.x+player.w/2-sx,dy=player.y+player.h/2-sy,l=Math.hypot(dx,dy)||1;bossShots.push({x:sx,y:sy,vx:dx/l*390,vy:dy/l*390,life:3.2,maxLife:3.2});}}
  else if(boss.coreOpen){boss.shot=Math.max(boss.shot,.42);}
  for(const s of bossShots){s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;const pr={x:player.x+6,y:player.y+5,w:player.w-12,h:player.h-7};if(s.life>0&&overlap(pr,{x:s.x-7,y:s.y-7,w:14,h:14})){s.life=0;kill('The Sky Sentinel pulse hit your Integrity.');}}
