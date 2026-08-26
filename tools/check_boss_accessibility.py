@@ -33,7 +33,8 @@ if game:
     require("player.x=math.min(player.x,boss_arena_limit)" in game, "auto-runner must stay inside the Sentinel arena until victory")
     require("constlead=105+approach*185" in game and "boss.x=player.x+lead" in game, "Sentinel must cycle through reachable attack passes")
     require("boss.x=math.max(player.x+235,7040)" not in game, "Sentinel must never preserve an impossible fixed lead ahead of the auto-runner")
-    require("boss.coreopen=boss.intro<=0&&boss.hitcd<=0&&lead<150" in game, "Sentinel core must open during a reachable close pass")
+    require("boss.coreopen=boss.intro<=0&&boss.hitcd<=0&&!boss.passspent&&lead<150" in game, "Sentinel core must open during a reachable unspent close pass")
+    require("if(lead>=165)boss.passspent=false" in game, "Sentinel must rearm only after visibly retreating from a spent pass")
     require("dashstrike=boss.coreopen&&player.dash>0&&dx<155&&dy<135" in game, "Dash must have an explicit reachable Sentinel strike window")
     require("stompstrike=boss.coreopen&&player.vy>120&&dx<120&&dy<120" in game, "Stomp must have an explicit reachable Sentinel strike window")
     require("coreopen·dashnow" in game, "Sentinel must visibly tell the player when Dash can connect")
@@ -78,4 +79,4 @@ if errors:
     sys.exit(1)
 
 print("BOSS ACCESSIBILITY QUALITY GATE: PASSED")
-print("boss_reachable_arena=yes two_button_kill_path=yes missed_window_teaching=yes boss_core_hit_status=yes boss_phase_status=yes boss_intro_status=yes boss_defeat_status=yes atomic=yes polite=yes integrity_remaining=yes")
+print("boss_reachable_arena=yes two_button_kill_path=yes one_hit_per_pass=yes missed_window_teaching=yes boss_core_hit_status=yes boss_phase_status=yes boss_intro_status=yes boss_defeat_status=yes atomic=yes polite=yes integrity_remaining=yes")
