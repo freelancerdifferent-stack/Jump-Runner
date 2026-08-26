@@ -46,6 +46,7 @@ jobs:
           python3 tools/check_contract_storage.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_resume_countdown.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_victory_grace.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_mobile_input_resilience.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
