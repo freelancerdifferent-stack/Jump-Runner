@@ -4,11 +4,12 @@
 const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false,passSpent:false};
 let bossShots=[];
 const BOSS_ARENA_LIMIT=7680;
+const BOSS_VICTORY_GRACE=1.4;
 const baseBossReset=resetRun,baseBossUpdate=update,baseBossDraw=drawWorld,baseBossShowResult=showResult;
 function bossRect(){return{x:boss.x-34,y:boss.y-28,w:68,h:56};}
 function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;boss.passSpent=false;bossShots=[];}
 function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;boss.t=0;boss.passSpent=false;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
-function hitBoss(stomp){if(boss.dead||boss.hitCd>0||boss.passSpent)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;boss.passSpent=true;score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
+function hitBoss(stomp){if(boss.dead||boss.hitCd>0||boss.passSpent)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;boss.passSpent=true;score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;player.inv=Math.max(player.inv,BOSS_VICTORY_GRACE);score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
 function updateBoss(dt){
  if(state!=='play')return;
  boss.flash=Math.max(0,boss.flash-dt);boss.victory=Math.max(0,boss.victory-dt);
