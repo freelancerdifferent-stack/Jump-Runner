@@ -42,6 +42,7 @@ jobs:
           python3 tools/check_boss_arena_feedback.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_audio_lifecycle.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_reduced_motion.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_checkpoint_recovery.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
