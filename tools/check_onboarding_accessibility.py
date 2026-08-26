@@ -17,6 +17,10 @@ if ONBOARDING.is_file():
     require("tip.textcontent=''" in flat and 'settimeout' in flat,'onboarding tips must retrigger cleanly for assistive technology')
     require('cleartimeout(tipannouncetimer)' in flat and 'cleartimeout(showtip.t)' in flat,'onboarding reset must cancel stale tip timers')
     require("tip.classlist.remove('show')" in flat,'onboarding reset must clear stale visual tips')
+    require("action:'jump'" in flat and "action:'dash'" in flat,'first-run onboarding must explicitly teach both core touch actions')
+    require("if(current.action==='jump')return!player.onground||player.vy<-120" in flat,'Jump lesson must advance from performed gameplay input, not distance alone')
+    require("if(current.action==='dash')returnplayer.dash>0" in flat,'Dash lesson must advance only after a real Dash starts')
+    require('shownstage!==onboardingstage' in flat and 'shownstage=-1' in flat,'each onboarding lesson must announce once and rearm only on stage advance/reset')
 
 if errors:
     print('ONBOARDING ACCESSIBILITY QUALITY GATE: FAILED')
@@ -24,4 +28,4 @@ if errors:
         print(f'{i}. {error}')
     sys.exit(1)
 print('ONBOARDING ACCESSIBILITY QUALITY GATE: PASSED')
-print('role_status=yes polite=yes atomic=yes clean_retrigger=yes stale_timer_guard=yes')
+print('role_status=yes polite=yes atomic=yes clean_retrigger=yes stale_timer_guard=yes action_aware_jump=yes action_aware_dash=yes single_announce=yes')
