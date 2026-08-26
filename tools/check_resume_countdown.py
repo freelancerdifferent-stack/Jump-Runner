@@ -24,7 +24,7 @@ if resume:
     require("addeventlistener('jumprunnerresume',startresumecountdown)" in resume, "resume event must start the fairness countdown")
     require("paused=true" in resume and "paused=false" in resume, "countdown must freeze and then release gameplay")
     require("state!=='play'" in resume, "countdown must not interrupt menu/results states")
-    require("textcontent='go'" in resume and "letstep=3" in resume, "countdown must visibly run 3-2-1-GO")
+    require("showstep('go')" in resume and "letstep=3" in resume and "showstep(string(step))" in resume, "countdown must visibly run 3-2-1-GO")
     require("setattribute('role','status')" in resume, "countdown must expose role=status")
     require("setattribute('aria-live','assertive')" in resume, "countdown must announce resume timing promptly")
     require("setattribute('aria-atomic','true')" in resume, "countdown announcements must be atomic")
