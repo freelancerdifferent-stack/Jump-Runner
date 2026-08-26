@@ -3,7 +3,9 @@
 // The first two lessons advance only after the player actually performs Jump and Dash,
 // preventing distance-based tips from racing ahead of a new touch player.
 const onboardingKey='jr_onboarding_v1';
-let onboardingDone=localStorage.getItem(onboardingKey)==='1';
+function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='1';}catch(error){return false;}}
+function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
+let onboardingDone=readOnboardingDone();
 let onboardingStage=0,shownStage=-1;
 const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.setAttribute('aria-atomic','true');document.body.appendChild(tip);
 const tips=[
@@ -34,7 +36,7 @@ function onboardingLoop(){
         shownStage=-1;
       }
     }
-    if(onboardingStage>=tips.length&&player.x>7200){onboardingDone=true;localStorage.setItem(onboardingKey,'1');setTimeout(()=>tip.classList.remove('show'),1800);}
+    if(onboardingStage>=tips.length&&player.x>7200){onboardingDone=true;saveOnboardingDone(true);setTimeout(()=>tip.classList.remove('show'),1800);}
   }
   requestAnimationFrame(onboardingLoop);
 }
@@ -48,7 +50,7 @@ showMenu=function(){
     if(legend){const badge=document.createElement('span');badge.textContent='GUIDED FIRST RUN';legend.appendChild(badge);}
   }else{
     const actions=panel.querySelector('.actions');
-    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{onboardingDone=false;localStorage.removeItem(onboardingKey);onboardingStage=0;shownStage=-1;resetRun();};}
+    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{onboardingDone=false;saveOnboardingDone(false);onboardingStage=0;shownStage=-1;resetRun();};}
   }
 };
 onboardingLoop();showMenu();
