@@ -10,19 +10,24 @@ function checkpointCopySet(s){return new Set(Array.from(s));}
 function activateCheckpoint(index){
   if(index<=activeCheckpoint)return;
   activeCheckpoint=index;
+  // Award the gate before capturing the snapshot so recovery never erases a reward
+  // the player already earned. Capture run time too so repeated checkpoint attempts
+  // restart from the exact same competitive state instead of accumulating death time.
+  score+=500;flow=Math.min(8,flow+1);flowTimer=3;
   checkpointSnapshot={
     x:checkpointDefs[index].x+70,
+    time,
     score:Math.floor(score),crystals,flow,
     collected:checkpointCopySet(collected),
     broken:checkpointCopySet(broken),
     defeated:checkpointCopySet(defeated)
   };
-  score+=500;flow=Math.min(8,flow+1);flowTimer=3;
   shake=Math.max(shake,6);burst(checkpointDefs[index].x,GROUND-70,'#74f7c5',22,180);
 }
 function restoreCheckpoint(){
   if(!checkpointSnapshot){baseResetRun();return;}
   state='play';paused=false;deathReason='';particles=[];
+  time=checkpointSnapshot.time;
   score=checkpointSnapshot.score;crystals=checkpointSnapshot.crystals;flow=checkpointSnapshot.flow;flowTimer=2;
   collected=new Set(checkpointSnapshot.collected);broken=new Set(checkpointSnapshot.broken);defeated=new Set(checkpointSnapshot.defeated);
   Object.assign(player,{x:checkpointSnapshot.x,y:GROUND-52,vy:0,onGround:true,coyote:.12,jumpBuffer:0,jumpHeld:false,dash:0,dashCd:0,inv:1.1,land:0,trail:[]});
