@@ -7,6 +7,7 @@ BOSS_HIT = ASSETS / "boss-health-feedback.js"
 BOSS_PHASE = ASSETS / "boss-phase-feedback.js"
 BOSS_INTRO = ASSETS / "boss-intro-feedback.js"
 BOSS_WINDOW = ASSETS / "boss-core-window-feedback.js"
+HUD_CSS = ASSETS / "premium-hud.css"
 errors = []
 
 def require(condition, message):
@@ -21,12 +22,14 @@ require(BOSS_HIT.is_file(), "boss-health-feedback.js is missing")
 require(BOSS_PHASE.is_file(), "boss-phase-feedback.js is missing")
 require(BOSS_INTRO.is_file(), "boss-intro-feedback.js is missing")
 require(BOSS_WINDOW.is_file(), "boss-core-window-feedback.js is missing")
+require(HUD_CSS.is_file(), "premium-hud.css is missing")
 
 game = flat(BOSS_GAME)
 hit = flat(BOSS_HIT)
 phase = flat(BOSS_PHASE)
 intro = flat(BOSS_INTRO)
 window = flat(BOSS_WINDOW)
+hud = flat(HUD_CSS)
 
 if game:
     require("constboss_arena_limit=7680" in game, "Sentinel arena must cap auto-run before the locked finish")
@@ -68,9 +71,16 @@ if intro:
     require("status.setattribute('aria-live','polite')" in intro, "boss encounter feedback must use polite live announcements")
     require("status.setattribute('aria-atomic','true')" in intro, "boss encounter feedback must be atomic")
     require("!previousactive&&boss.active&&!boss.dead" in intro, "boss encounter announcement must only fire when the Sentinel becomes active")
-    require("'skysentinelengaged.dashorstomptobreakitscore.'" in intro, "boss encounter announcement must explain the core-break action")
+    require("waitforthegreencore" in intro and "dashthroughitorstompfromabove" in intro, "boss encounter announcement must explain the two-button kill path")
+    require("boss-onboarding-cue" in intro and "auto-runlocked·waitforthegreencore" in intro, "boss encounter must expose a visible auto-run-specific teaching cue")
+    require("settimeout(()=>cue.classlist.remove('show'),5200)" in intro, "boss teaching cue must dismiss automatically without blocking play")
     require("previousactive=boss.active" in intro, "boss encounter active state must be latched after refresh")
     require("previousactive=false" in intro, "boss encounter active state must reset for a new encounter")
+
+if hud:
+    require(".boss-onboarding-cue" in hud and ".boss-onboarding-cue.show" in hud, "boss teaching cue must have visible and hidden states")
+    require("env(safe-area-inset-top)" in hud, "boss teaching cue must respect display cutouts and safe-area top insets")
+    require("@media(max-height:430px)" in hud, "boss teaching cue must adapt to short landscape phone surfaces")
 
 if errors:
     print("BOSS ACCESSIBILITY QUALITY GATE: FAILED")
@@ -79,4 +89,4 @@ if errors:
     sys.exit(1)
 
 print("BOSS ACCESSIBILITY QUALITY GATE: PASSED")
-print("boss_reachable_arena=yes two_button_kill_path=yes one_hit_per_pass=yes missed_window_teaching=yes boss_core_hit_status=yes boss_phase_status=yes boss_intro_status=yes boss_defeat_status=yes atomic=yes polite=yes integrity_remaining=yes")
+print("boss_reachable_arena=yes two_button_kill_path=yes visible_boss_onboarding=yes safe_area_boss_cue=yes one_hit_per_pass=yes missed_window_teaching=yes boss_core_hit_status=yes boss_phase_status=yes boss_intro_status=yes boss_defeat_status=yes atomic=yes polite=yes integrity_remaining=yes")
