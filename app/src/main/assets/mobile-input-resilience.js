@@ -18,6 +18,17 @@
     jump.classList.remove('is-pressed');
   }
 
+  function clearTransientInput(){
+    releaseJump();
+    dash.classList.remove('is-pressed');
+    // Buffered jump input is an intent for the current moment. Clearing it on pause
+    // prevents an old touch from becoming an automatic jump after the resume countdown.
+    if(typeof player!=='undefined'){
+      player.jumpBuffer=0;
+      player.jumpHeld=false;
+    }
+  }
+
   jump.addEventListener('pointerdown',e=>{
     if(jumpPointer!==null)return;
     jumpPointer=e.pointerId;
@@ -43,15 +54,10 @@
   jump.addEventListener('lostpointercapture',e=>releaseJump(e.pointerId));
   dash.addEventListener('lostpointercapture',()=>dash.classList.remove('is-pressed'));
 
-  addEventListener('blur',()=>{
-    releaseJump();
-    dash.classList.remove('is-pressed');
-  });
+  addEventListener('blur',clearTransientInput);
+  addEventListener('jumprunnerpause',clearTransientInput);
 
   document.addEventListener('visibilitychange',()=>{
-    if(document.hidden){
-      releaseJump();
-      dash.classList.remove('is-pressed');
-    }
+    if(document.hidden)clearTransientInput();
   });
 })();
