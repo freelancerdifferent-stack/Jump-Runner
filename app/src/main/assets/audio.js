@@ -1,8 +1,11 @@
 'use strict';
 // Lightweight procedural SFX + optional haptics. No external audio assets or network access.
 let jrAudioEnabled=localStorage.getItem('jr_audio')!=='0',jrHapticsEnabled=localStorage.getItem('jr_haptics')!=='0';
-let jrAudioCtx=null;
-function ensureAudio(){if(!jrAudioEnabled)return null;if(!jrAudioCtx){const C=window.AudioContext||window.webkitAudioContext;if(C)jrAudioCtx=new C();}if(jrAudioCtx&&jrAudioCtx.state==='suspended')jrAudioCtx.resume().catch(()=>{});return jrAudioCtx;}
+let jrAudioCtx=null,jrAudioUnlocked=false;
+function ensureAudio(){if(!jrAudioEnabled)return null;if(!jrAudioCtx){const C=window.AudioContext||window.webkitAudioContext;if(C)jrAudioCtx=new C();}if(jrAudioCtx&&jrAudioCtx.state==='suspended'&&document.visibilityState!=='hidden')jrAudioCtx.resume().catch(()=>{});return jrAudioCtx;}
+function unlockAudio(){jrAudioUnlocked=true;ensureAudio();}
+function suspendAudio(){if(jrAudioCtx&&jrAudioCtx.state==='running')jrAudioCtx.suspend().catch(()=>{});}
+function resumeAudio(){if(!jrAudioEnabled||!jrAudioUnlocked||document.visibilityState==='hidden')return;if(jrAudioCtx&&jrAudioCtx.state==='suspended')jrAudioCtx.resume().catch(()=>{});}
 function tone(freq=440,dur=.06,vol=.035,type='sine',slide=0){const a=ensureAudio();if(!a)return;const o=a.createOscillator(),g=a.createGain(),t=a.currentTime;o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+dur+.01);}
 function chord(notes,dur=.12,vol=.025,type='triangle'){notes.forEach((n,i)=>setTimeout(()=>tone(n,dur,vol,type),i*22));}
 function haptic(pattern){if(!jrHapticsEnabled||!navigator.vibrate)return;try{navigator.vibrate(pattern);}catch(_){}}
@@ -25,6 +28,9 @@ if(typeof hitBoss==='function'){const b=hitBoss;hitBoss=function(stomp){const be
 // Crystal pickup feedback by observing the count after each update.
 const baseAudioUpdate=update;let lastAudioCrystals=crystals;
 update=function(dt){const before=crystals;baseAudioUpdate(dt);if(crystals>before)sfxCrystal();lastAudioCrystals=crystals;};
-function addAudioMenuControls(){const actions=panel&&panel.querySelector('.actions');if(!actions||document.getElementById('audioToggle'))return;const a=document.createElement('button');a.className='btn alt';a.id='audioToggle';a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.onclick=()=>{jrAudioEnabled=!jrAudioEnabled;localStorage.setItem('jr_audio',jrAudioEnabled?'1':'0');a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');if(jrAudioEnabled){ensureAudio();tone(520,.08,.03,'triangle',140);}};const h=document.createElement('button');h.className='btn alt';h.id='hapticToggle';h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.onclick=()=>{jrHapticsEnabled=!jrHapticsEnabled;localStorage.setItem('jr_haptics',jrHapticsEnabled?'1':'0');h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');if(jrHapticsEnabled)haptic(20);};actions.append(a,h);}
+function addAudioMenuControls(){const actions=panel&&panel.querySelector('.actions');if(!actions||document.getElementById('audioToggle'))return;const a=document.createElement('button');a.className='btn alt';a.id='audioToggle';a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.onclick=()=>{jrAudioEnabled=!jrAudioEnabled;localStorage.setItem('jr_audio',jrAudioEnabled?'1':'0');a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');if(jrAudioEnabled){unlockAudio();tone(520,.08,.03,'triangle',140);}else suspendAudio();};const h=document.createElement('button');h.className='btn alt';h.id='hapticToggle';h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.onclick=()=>{jrHapticsEnabled=!jrHapticsEnabled;localStorage.setItem('jr_haptics',jrHapticsEnabled?'1':'0');h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');if(jrHapticsEnabled)haptic(20);};actions.append(a,h);}
 const baseAudioMenu=showMenu;showMenu=function(){baseAudioMenu();addAudioMenuControls();};
-addEventListener('pointerdown',ensureAudio,{once:true,passive:true});addEventListener('keydown',ensureAudio,{once:true});
+addEventListener('pointerdown',unlockAudio,{once:true,passive:true});addEventListener('keydown',unlockAudio,{once:true});
+addEventListener('jumprunnerpause',suspendAudio);addEventListener('jumprunnerresume',resumeAudio);
+addEventListener('pagehide',suspendAudio);addEventListener('pageshow',resumeAudio);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')suspendAudio();else resumeAudio();});
