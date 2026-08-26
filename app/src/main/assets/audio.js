@@ -1,6 +1,8 @@
 'use strict';
 // Lightweight procedural SFX + optional haptics. No external audio assets or network access.
-let jrAudioEnabled=localStorage.getItem('jr_audio')!=='0',jrHapticsEnabled=localStorage.getItem('jr_haptics')!=='0';
+function readAudioSetting(key,fallback=true){try{const value=localStorage.getItem(key);return value===null?fallback:value!=='0';}catch(_){return fallback;}}
+function writeAudioSetting(key,enabled){try{localStorage.setItem(key,enabled?'1':'0');return true;}catch(_){return false;}}
+let jrAudioEnabled=readAudioSetting('jr_audio',true),jrHapticsEnabled=readAudioSetting('jr_haptics',true);
 let jrAudioCtx=null,jrAudioUnlocked=false;
 function ensureAudio(){if(!jrAudioEnabled)return null;if(!jrAudioCtx){const C=window.AudioContext||window.webkitAudioContext;if(C)jrAudioCtx=new C();}if(jrAudioCtx&&jrAudioCtx.state==='suspended'&&document.visibilityState!=='hidden')jrAudioCtx.resume().catch(()=>{});return jrAudioCtx;}
 function unlockAudio(){jrAudioUnlocked=true;ensureAudio();}
@@ -28,7 +30,7 @@ if(typeof hitBoss==='function'){const b=hitBoss;hitBoss=function(stomp){const be
 // Crystal pickup feedback by observing the count after each update.
 const baseAudioUpdate=update;let lastAudioCrystals=crystals;
 update=function(dt){const before=crystals;baseAudioUpdate(dt);if(crystals>before)sfxCrystal();lastAudioCrystals=crystals;};
-function addAudioMenuControls(){const actions=panel&&panel.querySelector('.actions');if(!actions||document.getElementById('audioToggle'))return;const a=document.createElement('button');a.className='btn alt';a.id='audioToggle';a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.onclick=()=>{jrAudioEnabled=!jrAudioEnabled;localStorage.setItem('jr_audio',jrAudioEnabled?'1':'0');a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');if(jrAudioEnabled){unlockAudio();tone(520,.08,.03,'triangle',140);}else suspendAudio();};const h=document.createElement('button');h.className='btn alt';h.id='hapticToggle';h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.onclick=()=>{jrHapticsEnabled=!jrHapticsEnabled;localStorage.setItem('jr_haptics',jrHapticsEnabled?'1':'0');h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');if(jrHapticsEnabled)haptic(20);};actions.append(a,h);}
+function addAudioMenuControls(){const actions=panel&&panel.querySelector('.actions');if(!actions||document.getElementById('audioToggle'))return;const a=document.createElement('button');a.className='btn alt';a.id='audioToggle';a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.setAttribute('aria-pressed',String(jrAudioEnabled));a.onclick=()=>{jrAudioEnabled=!jrAudioEnabled;writeAudioSetting('jr_audio',jrAudioEnabled);a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.setAttribute('aria-pressed',String(jrAudioEnabled));if(jrAudioEnabled){unlockAudio();tone(520,.08,.03,'triangle',140);}else suspendAudio();};const h=document.createElement('button');h.className='btn alt';h.id='hapticToggle';h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.setAttribute('aria-pressed',String(jrHapticsEnabled));h.onclick=()=>{jrHapticsEnabled=!jrHapticsEnabled;writeAudioSetting('jr_haptics',jrHapticsEnabled);h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.setAttribute('aria-pressed',String(jrHapticsEnabled));if(jrHapticsEnabled)haptic(20);};actions.append(a,h);}
 const baseAudioMenu=showMenu;showMenu=function(){baseAudioMenu();addAudioMenuControls();};
 addEventListener('pointerdown',unlockAudio,{once:true,passive:true});addEventListener('keydown',unlockAudio,{once:true});
 addEventListener('jumprunnerpause',suspendAudio);addEventListener('jumprunnerresume',resumeAudio);
