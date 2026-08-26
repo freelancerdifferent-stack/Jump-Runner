@@ -16,7 +16,10 @@ if AUDIO.is_file():
     require("addeventlistener('pageshow',resumeaudio)" in flat,'audio must recover after page restore')
     require("document.visibilitystate==='hidden'" in flat,'audio resume must respect document visibility')
     require('jraudiounlocked' in flat,'audio must not resume before a user gesture unlock')
-    require("else suspendaudio()" in flat,'turning sound off must suspend the active audio context')
+    # Guard behavior rather than one exact formatting shape. The toggle must persist OFF
+    # and suspend the current context in the same click handler.
+    require("localstorage.setitem('jr_audio',jraudioenabled?'1':'0')" in flat and "elsesuspendaudio();" in flat,
+            'turning sound off must suspend the active audio context')
 
 if errors:
     print('AUDIO LIFECYCLE QUALITY GATE: FAILED')
