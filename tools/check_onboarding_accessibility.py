@@ -22,9 +22,12 @@ if ONBOARDING.is_file():
     require("if(current.action==='dash')returnplayer.dash>0" in flat,'Dash lesson must advance only after a real Dash starts')
     require('shownstage!==onboardingstage' in flat and 'shownstage=-1' in flat,'each onboarding lesson must announce once and rearm only on stage advance/reset')
     require('functionreadonboardingdone(){try{returnlocalstorage.getitem(onboardingkey)' in flat and 'catch(error){returnfalse;}' in flat,'onboarding persistence reads must tolerate unavailable localStorage')
-    require('functionsaveonboardingdone(done){try{' in flat and 'localstorage.setitem(onboardingkey' in flat and 'localstorage.removeitem(onboardingkey)' in flat and 'catch(error)' in flat,'onboarding persistence writes and replay reset must tolerate storage failures')
+    require('functionsaveonboardingdone(done){try{' in flat and 'localstorage.setitem(onboardingkey' in flat and 'localstorage.removeitem(onboardingkey)' in flat and 'catch(error)' in flat,'onboarding persistence writes must tolerate storage failures')
     require('letonboardingdone=readonboardingdone()' in flat,'onboarding startup must use the guarded persistence reader')
-    require('saveonboardingdone(true)' in flat and 'saveonboardingdone(false)' in flat,'completion and tutorial replay must both use guarded persistence writes')
+    require('saveonboardingdone(true)' in flat,'successful first-run completion must use the guarded persistence writer')
+    require('letreplaytutorial=false' in flat and 'functiontutorialactive(){return!onboardingdone||replaytutorial;}' in flat,'tutorial replay must use temporary session state')
+    require('replay.onclick=()=>{replaytutorial=true' in flat,'tutorial replay must enter temporary replay mode')
+    require('replay.onclick=()=>{onboardingdone=false' not in flat and 'saveonboardingdone(false)' not in flat,'tutorial replay must not erase persisted completion')
 
 if errors:
     print('ONBOARDING ACCESSIBILITY QUALITY GATE: FAILED')
@@ -32,4 +35,4 @@ if errors:
         print(f'{i}. {error}')
     sys.exit(1)
 print('ONBOARDING ACCESSIBILITY QUALITY GATE: PASSED')
-print('role_status=yes polite=yes atomic=yes clean_retrigger=yes stale_timer_guard=yes action_aware_jump=yes action_aware_dash=yes single_announce=yes storage_read_guard=yes storage_write_guard=yes replay_storage_guard=yes')
+print('role_status=yes polite=yes atomic=yes clean_retrigger=yes stale_timer_guard=yes action_aware_jump=yes action_aware_dash=yes single_announce=yes storage_read_guard=yes storage_write_guard=yes replay_preserves_completion=yes')
