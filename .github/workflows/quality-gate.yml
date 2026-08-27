@@ -39,6 +39,7 @@ jobs:
           python3 tools/check_game_source.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_accessibility.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_onboarding_accessibility.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_onboarding_completion.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_arena_feedback.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_audio_lifecycle.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_reduced_motion.py 2>&1 | tee -a ci-diagnostics/latest.log
