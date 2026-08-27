@@ -18,6 +18,12 @@ if text:
     require("saveonboardingdone(true)" in text, "successful onboarding completion must persist")
     require("completeonboardingafterwin();" in text, "onboarding loop must evaluate successful completion")
     require("player.x>7200" not in text, "reaching the final arena must not mark onboarding complete")
+    require("letreplaytutorial=false" in text, "tutorial replay must use temporary session state")
+    require("functiontutorialactive(){return!onboardingdone||replaytutorial;}" in text, "tutorial tips must activate for first run or temporary replay")
+    require("onboardingdone||replaytutorial||onboardingstage<tips.length||state!=='win'" in text, "replay runs must not rewrite first-run completion")
+    require("replay.onclick=()=>{replaytutorial=true" in text, "replay control must start temporary tutorial mode")
+    require("replay.onclick=()=>{onboardingdone=false" not in text, "replay control must not clear completed onboarding state")
+    require("saveonboardingdone(false)" not in text, "tutorial replay must never erase persisted completion")
 
 if errors:
     print("ONBOARDING COMPLETION QUALITY GATE: FAILED")
@@ -26,4 +32,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes")
