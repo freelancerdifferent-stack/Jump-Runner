@@ -18,6 +18,7 @@ function sfxHit(){tone(150,.11,.045,'square',-70);haptic([35,20,30]);}
 function sfxEnemy(){chord([310,440,620],.07,.028,'triangle');haptic(18);}
 function sfxGate(){chord([440,554,659],.16,.026,'sine');haptic([12,25,18]);}
 function sfxBossHit(){chord([220,330,494],.1,.035,'sawtooth');haptic(28);}
+function sfxBossCoreOpen(){chord([523,659,784],.075,.022,'sine');haptic([10,28,16]);}
 function sfxWin(){chord([392,523,659,784],.2,.035,'triangle');haptic([20,30,20,30,45]);}
 const baseAudioJump=inputJump,baseAudioDash=inputDash,baseAudioDrone=defeatDrone,baseAudioShow=showResult;
 inputJump=function(down){if(down&&state==='play'&&player.jumpBuffer<=0)sfxJump();baseAudioJump(down);};
@@ -27,9 +28,14 @@ showResult=function(win){baseAudioShow(win);if(win)sfxWin();};
 if(typeof activateCheckpoint==='function'){const b=activateCheckpoint;activateCheckpoint=function(i){const prev=activeCheckpoint;b(i);if(activeCheckpoint>prev)sfxGate();};}
 if(typeof applyDamage==='function'){const b=applyDamage;applyDamage=function(reason){const before=health;b(reason);if(health<before)sfxHit();};}
 if(typeof hitBoss==='function'){const b=hitBoss;hitBoss=function(stomp){const before=boss.hp;b(stomp);if(boss.hp<before){sfxBossHit();if(boss.dead)chord([262,330,392,523,659],.22,.04,'triangle');}};}
-// Crystal pickup feedback by observing the count after each update.
-const baseAudioUpdate=update;let lastAudioCrystals=crystals;
-update=function(dt){const before=crystals;baseAudioUpdate(dt);if(crystals>before)sfxCrystal();lastAudioCrystals=crystals;};
+// Crystal pickup feedback and a single non-visual cue when each Sentinel core window opens.
+const baseAudioUpdate=update;let lastAudioCrystals=crystals,lastBossCoreOpen=false;
+update=function(dt){
+ const before=crystals;baseAudioUpdate(dt);if(crystals>before)sfxCrystal();lastAudioCrystals=crystals;
+ const coreOpen=state==='play'&&typeof boss!=='undefined'&&boss.active&&!boss.dead&&boss.coreOpen;
+ if(coreOpen&&!lastBossCoreOpen)sfxBossCoreOpen();
+ lastBossCoreOpen=coreOpen;
+};
 function addAudioMenuControls(){const actions=panel&&panel.querySelector('.actions');if(!actions||document.getElementById('audioToggle'))return;const a=document.createElement('button');a.className='btn alt';a.id='audioToggle';a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.setAttribute('aria-pressed',String(jrAudioEnabled));a.onclick=()=>{jrAudioEnabled=!jrAudioEnabled;writeAudioSetting('jr_audio',jrAudioEnabled);a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.setAttribute('aria-pressed',String(jrAudioEnabled));if(jrAudioEnabled){unlockAudio();tone(520,.08,.03,'triangle',140);}else suspendAudio();};const h=document.createElement('button');h.className='btn alt';h.id='hapticToggle';h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.setAttribute('aria-pressed',String(jrHapticsEnabled));h.onclick=()=>{jrHapticsEnabled=!jrHapticsEnabled;writeAudioSetting('jr_haptics',jrHapticsEnabled);h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.setAttribute('aria-pressed',String(jrHapticsEnabled));if(jrHapticsEnabled)haptic(20);};actions.append(a,h);}
 const baseAudioMenu=showMenu;showMenu=function(){baseAudioMenu();addAudioMenuControls();};
 addEventListener('pointerdown',unlockAudio,{once:true,passive:true});addEventListener('keydown',unlockAudio,{once:true});
