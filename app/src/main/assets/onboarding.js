@@ -2,6 +2,8 @@
 // First-run contextual onboarding. No gameplay slowdown, no network dependency.
 // The first two lessons advance only after the player actually performs Jump and Dash,
 // preventing distance-based tips from racing ahead of a new touch player.
+// Tutorial completion is persisted only after a successful run, so players who reach
+// the final arena but lose still receive the full guided run on their next attempt.
 const onboardingKey='jr_onboarding_v1';
 function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='1';}catch(error){return false;}}
 function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
@@ -26,6 +28,13 @@ function lessonComplete(current){
   if(current.action==='dash')return player.dash>0;
   return player.x>=current.x;
 }
+function completeOnboardingAfterWin(){
+  if(onboardingDone||onboardingStage<tips.length||state!=='win')return;
+  onboardingDone=true;
+  saveOnboardingDone(true);
+  clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);
+  tip.classList.remove('show');
+}
 function onboardingLoop(){
   if(!onboardingDone&&state==='play'){
     const current=tips[onboardingStage];
@@ -36,8 +45,8 @@ function onboardingLoop(){
         shownStage=-1;
       }
     }
-    if(onboardingStage>=tips.length&&player.x>7200){onboardingDone=true;saveOnboardingDone(true);setTimeout(()=>tip.classList.remove('show'),1800);}
   }
+  completeOnboardingAfterWin();
   requestAnimationFrame(onboardingLoop);
 }
 const onboardingReset=resetRun;
