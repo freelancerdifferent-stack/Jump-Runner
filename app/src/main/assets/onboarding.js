@@ -5,11 +5,12 @@
 // Tutorial completion is persisted only after a successful first guided run. Replaying
 // the tutorial is a temporary practice mode and never erases the player's completion.
 const onboardingKey='jr_onboarding_v1';
+const ACTION_TIP_REPEAT_MS=6200;
 function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='1';}catch(error){return false;}}
 function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
 let onboardingDone=readOnboardingDone();
 let replayTutorial=false;
-let onboardingStage=0,shownStage=-1;
+let onboardingStage=0,shownStage=-1,tipRepeatAt=0;
 const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.setAttribute('aria-atomic','true');document.body.appendChild(tip);
 const tips=[
   {x:0,text:'TAP JUMP · short taps give low hops, hold a little longer for height',action:'jump'},
@@ -21,8 +22,9 @@ const tips=[
 ];
 let tipAnnounceTimer=0;
 function tutorialActive(){return !onboardingDone||replayTutorial;}
-function showTip(text){
+function showTip(text,repeatable=false){
   clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.classList.remove('show');tip.textContent='';
+  tipRepeatAt=repeatable?performance.now()+ACTION_TIP_REPEAT_MS:0;
   tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),4200);},20);
 }
 function lessonComplete(current){
@@ -35,16 +37,27 @@ function completeOnboardingAfterWin(){
   onboardingDone=true;
   saveOnboardingDone(true);
   clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);
+  tipRepeatAt=0;
   tip.classList.remove('show');
 }
 function onboardingLoop(){
   if(tutorialActive()&&state==='play'){
     const current=tips[onboardingStage];
     if(current){
-      if(player.x>=current.x&&shownStage!==onboardingStage){showTip(current.text);shownStage=onboardingStage;}
-      if(player.x>=current.x&&lessonComplete(current)){
+      const reached=player.x>=current.x;
+      const complete=reached&&lessonComplete(current);
+      if(reached&&shownStage!==onboardingStage){
+        showTip(current.text,Boolean(current.action));
+        shownStage=onboardingStage;
+      }else if(reached&&current.action&&shownStage===onboardingStage&&!complete&&tipRepeatAt>0&&performance.now()>=tipRepeatAt){
+        // Action lessons remain useful after their first toast disappears. Repeat at a
+        // restrained cadence until the player demonstrates the input, then stop forever.
+        showTip(current.text,true);
+      }
+      if(complete){
         onboardingStage++;
         shownStage=-1;
+        tipRepeatAt=0;
       }
     }
   }
@@ -52,7 +65,7 @@ function onboardingLoop(){
   requestAnimationFrame(onboardingLoop);
 }
 const onboardingReset=resetRun;
-resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;}clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.textContent='';tip.classList.remove('show');onboardingReset();};
+resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;}tipRepeatAt=0;clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.textContent='';tip.classList.remove('show');onboardingReset();};
 const onboardingMenu=showMenu;
 showMenu=function(){
   replayTutorial=false;
@@ -62,7 +75,7 @@ showMenu=function(){
     if(legend){const badge=document.createElement('span');badge.textContent='GUIDED FIRST RUN';legend.appendChild(badge);}
   }else{
     const actions=panel.querySelector('.actions');
-    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;resetRun();};}
+    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;tipRepeatAt=0;resetRun();};}
   }
 };
 onboardingLoop();showMenu();
