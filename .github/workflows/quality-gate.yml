@@ -50,6 +50,7 @@ jobs:
           python3 tools/check_mobile_input_resilience.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_manual_pause_control.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_hit_confirmation.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_boss_dash_button_cue.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
