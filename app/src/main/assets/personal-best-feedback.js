@@ -23,7 +23,7 @@ showResult=function(win){
     const scoreDelta=previousBest>0?finalScore-previousBest:0;
     const scoreContext=scoreDelta>0?` · +${scoreDelta.toLocaleString('en-US')}`:' · FIRST RECORD';
     badges.push(`<span>NEW HIGH SCORE · ${String(finalScore).padStart(6,'0')}${scoreContext}</span>`);
-    announcements.push(`New high score ${finalScore}${scoreDelta>0?`, improved by ${scoreDelta} points`:', first recorded score'}`);
+    announcements.push(`New high score ${Math.floor(score)}${scoreDelta>0?`, improved by ${scoreDelta} points`:', first recorded score'}`);
   }
   if(newFastest){
     const timeDelta=previousTime>0?Math.max(0,previousTime-time):0;
