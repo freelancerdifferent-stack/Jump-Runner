@@ -22,8 +22,9 @@ const tips=[
 ];
 let tipAnnounceTimer=0;
 function tutorialActive(){return !onboardingDone||replayTutorial;}
+function hideTip(){clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.classList.remove('show');tip.textContent='';}
 function showTip(text,repeatable=false){
-  clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.classList.remove('show');tip.textContent='';
+  hideTip();
   tipRepeatAt=repeatable?performance.now()+ACTION_TIP_REPEAT_MS:0;
   tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),4200);},20);
 }
@@ -36,9 +37,8 @@ function completeOnboardingAfterWin(){
   if(onboardingDone||replayTutorial||onboardingStage<tips.length||state!=='win')return;
   onboardingDone=true;
   saveOnboardingDone(true);
-  clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);
+  hideTip();
   tipRepeatAt=0;
-  tip.classList.remove('show');
 }
 function onboardingLoop(){
   if(tutorialActive()&&state==='play'){
@@ -55,6 +55,9 @@ function onboardingLoop(){
         showTip(current.text,true);
       }
       if(complete){
+        // Action coaching has served its purpose the instant the requested input lands.
+        // Remove the stale toast instead of obscuring the next few seconds of play.
+        if(current.action)hideTip();
         onboardingStage++;
         shownStage=-1;
         tipRepeatAt=0;
@@ -65,7 +68,7 @@ function onboardingLoop(){
   requestAnimationFrame(onboardingLoop);
 }
 const onboardingReset=resetRun;
-resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;}tipRepeatAt=0;clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.textContent='';tip.classList.remove('show');onboardingReset();};
+resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;}tipRepeatAt=0;hideTip();onboardingReset();};
 const onboardingMenu=showMenu;
 showMenu=function(){
   replayTutorial=false;
