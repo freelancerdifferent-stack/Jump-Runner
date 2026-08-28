@@ -46,6 +46,8 @@ if text:
     require("tip.textcontent='guidecomplete·finishtherun'" in text, "guided mode must visibly acknowledge that all lessons are complete")
     require("if(onboardingstage===tips.length)showguidecomplete();" in text, "the completion cue must fire only after the final lesson advances")
     require("guidecompleteshown=false" in text, "guide completion acknowledgement must reset between guided attempts")
+    require("finalarena·waitforgreencoreopen,thendashorstomptheskysentinel',action:'boss'" in text, "final arena lesson must remain active until the Sentinel objective is completed")
+    require("if(current.action==='boss')returntypeofboss!=='undefined'&&boss.dead;" in text, "final arena lesson must complete only after the Sentinel is defeated")
 
 if errors:
     print("ONBOARDING COMPLETION QUALITY GATE: FAILED")
@@ -54,4 +56,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes final_boss_lesson_requires_defeat=yes")
