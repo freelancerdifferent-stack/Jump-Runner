@@ -40,6 +40,8 @@ if text:
     require("functionskipfirstrunguide(){if(onboardingdone)return;onboardingdone=true;replaytutorial=false;" in text, "guide skip must only complete an unfinished first-run tutorial")
     require("saveonboardingdone(true);showmenu();" in text, "guide skip must persist completion and rebuild the normal menu")
     require("replay.textcontent='replaytutorial'" in text, "skipped players must retain a discoverable tutorial replay path")
+    require("functionguideprogresstext(text){conststep=math.min(onboardingstage+1,tips.length);return'guide'+step+'/'+tips.length+'·'+text;}" in text, "guided coaching must expose the current lesson number and total lesson count")
+    require("tip.textcontent=guideprogresstext(text)" in text, "every visible coaching tip must include lesson progress")
 
 if errors:
     print("ONBOARDING COMPLETION QUALITY GATE: FAILED")
@@ -48,4 +50,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes first_run_skip=yes replay_after_skip=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes")
