@@ -43,6 +43,17 @@ function completeOnboardingAfterWin(){
   hideTip();
   tipRepeatAt=0;
 }
+function skipFirstRunGuide(){
+  if(onboardingDone)return;
+  onboardingDone=true;
+  replayTutorial=false;
+  onboardingStage=0;
+  shownStage=-1;
+  tipRepeatAt=0;
+  hideTip();
+  saveOnboardingDone(true);
+  showMenu();
+}
 function onboardingLoop(){
   if(tutorialActive()&&state==='play'){
     const current=tips[onboardingStage];
@@ -79,6 +90,8 @@ showMenu=function(){
   if(!onboardingDone){
     const legend=panel.querySelector('.legend');
     if(legend){const badge=document.createElement('span');badge.textContent='GUIDED FIRST RUN';legend.appendChild(badge);}
+    const actions=panel.querySelector('.actions');
+    if(actions){const skip=document.createElement('button');skip.className='btn alt';skip.textContent='SKIP GUIDE';skip.setAttribute('aria-label','Skip guided first run');actions.appendChild(skip);skip.onclick=skipFirstRunGuide;}
   }else{
     const actions=panel.querySelector('.actions');
     if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;tipRepeatAt=0;resetRun();};}

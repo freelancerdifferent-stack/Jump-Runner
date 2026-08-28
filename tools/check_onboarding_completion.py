@@ -34,6 +34,12 @@ if text:
     require("performance.now()>=tiprepeatat" in text, "action reminders must wait for their repeat deadline")
     require("showtip(current.text,true)" in text, "unfinished action lessons must be able to re-show their coaching prompt")
     require("if(complete){" in text and "if(current.action)hidetip();" in text and "onboardingstage++;shownstage=-1;tiprepeatat=0;" in text, "completed lessons must dismiss stale action coaching and clear the reminder latch")
+    require("functionskipfirstrunguide()" in text, "first-run onboarding must provide an explicit opt-out path")
+    require("skip.textcontent='skipguide'" in text and "skip.onclick=skipfirstrunguide" in text, "first-run menu must expose the guide skip control")
+    require("skip.setattribute('aria-label','skipguidedfirstrun')" in text, "guide skip control must have an explicit accessible label")
+    require("functionskipfirstrunguide(){if(onboardingdone)return;onboardingdone=true;replaytutorial=false;" in text, "guide skip must only complete an unfinished first-run tutorial")
+    require("saveonboardingdone(true);showmenu();" in text, "guide skip must persist completion and rebuild the normal menu")
+    require("replay.textcontent='replaytutorial'" in text, "skipped players must retain a discoverable tutorial replay path")
 
 if errors:
     print("ONBOARDING COMPLETION QUALITY GATE: FAILED")
@@ -42,4 +48,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes first_run_skip=yes replay_after_skip=yes")
