@@ -6,6 +6,8 @@
 // the tutorial is a temporary practice mode and never erases the player's completion.
 const onboardingKey='jr_onboarding_v1';
 const ACTION_TIP_REPEAT_MS=6200;
+const ACTION_TIP_VISIBLE_MS=4200;
+const PASSIVE_TIP_VISIBLE_MS=2600;
 function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='1';}catch(error){return false;}}
 function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
 let onboardingDone=readOnboardingDone();
@@ -26,7 +28,8 @@ function hideTip(){clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.cl
 function showTip(text,repeatable=false){
   hideTip();
   tipRepeatAt=repeatable?performance.now()+ACTION_TIP_REPEAT_MS:0;
-  tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),4200);},20);
+  const visibleMs=repeatable?ACTION_TIP_VISIBLE_MS:PASSIVE_TIP_VISIBLE_MS;
+  tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),visibleMs);},20);
 }
 function lessonComplete(current){
   if(current.action==='jump')return !player.onGround||player.vy<-120;
