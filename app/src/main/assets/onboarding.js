@@ -20,7 +20,7 @@ const tips=[
   {x:1260,text:'STOMP DRONES FROM ABOVE · clean counters build Flow faster'},
   {x:2350,text:'COLLECT CRYSTALS TO BUILD FLOW · higher Flow multiplies score'},
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
-  {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL'}
+  {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL',action:'boss'}
 ];
 let tipAnnounceTimer=0;
 function tutorialActive(){return !onboardingDone||replayTutorial;}
@@ -41,6 +41,7 @@ function showGuideComplete(){
 function lessonComplete(current){
   if(current.action==='jump')return !player.onGround||player.vy<-120;
   if(current.action==='dash')return player.dash>0;
+  if(current.action==='boss')return typeof boss!=='undefined'&&boss.dead;
   return player.x>=current.x;
 }
 function completeOnboardingAfterWin(){
