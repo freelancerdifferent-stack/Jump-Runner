@@ -25,7 +25,11 @@ if text:
     require("replay.onclick=()=>{onboardingdone=false" not in text, "replay control must not clear completed onboarding state")
     require("saveonboardingdone(false)" not in text, "tutorial replay must never erase persisted completion")
     require("constaction_tip_repeat_ms=6200" in text, "unfinished action lessons must use a restrained repeat cadence")
+    require("constaction_tip_visible_ms=4200" in text, "action coaching must retain enough dwell time for first-run input guidance")
+    require("constpassive_tip_visible_ms=2600" in text, "passive coaching must clear quickly enough to avoid covering later hazards")
     require("tiprepeatat=repeatable?performance.now()+action_tip_repeat_ms:0" in text, "only repeatable action prompts may schedule another reminder")
+    require("constvisiblems=repeatable?action_tip_visible_ms:passive_tip_visible_ms" in text, "action and passive coaching must use distinct dwell times")
+    require("settimeout(()=>tip.classlist.remove('show'),visiblems)" in text, "coach-tip dismissal must use the selected dwell time")
     require("current.action&&shownstage===onboardingstage&&!complete" in text, "action reminders must stop immediately after the lesson is completed")
     require("performance.now()>=tiprepeatat" in text, "action reminders must wait for their repeat deadline")
     require("showtip(current.text,true)" in text, "unfinished action lessons must be able to re-show their coaching prompt")
@@ -38,4 +42,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes")
