@@ -29,7 +29,7 @@ if text:
     require("current.action&&shownstage===onboardingstage&&!complete" in text, "action reminders must stop immediately after the lesson is completed")
     require("performance.now()>=tiprepeatat" in text, "action reminders must wait for their repeat deadline")
     require("showtip(current.text,true)" in text, "unfinished action lessons must be able to re-show their coaching prompt")
-    require("if(complete){onboardingstage++;shownstage=-1;tiprepeatat=0;}" in text, "completed lessons must clear the reminder latch")
+    require("if(complete){" in text and "if(current.action)hidetip();" in text and "onboardingstage++;shownstage=-1;tiprepeatat=0;" in text, "completed lessons must dismiss stale action coaching and clear the reminder latch")
 
 if errors:
     print("ONBOARDING COMPLETION QUALITY GATE: FAILED")
@@ -38,4 +38,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes")
