@@ -12,7 +12,7 @@ function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='
 function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
 let onboardingDone=readOnboardingDone();
 let replayTutorial=false;
-let onboardingStage=0,shownStage=-1,tipRepeatAt=0;
+let onboardingStage=0,shownStage=-1,tipRepeatAt=0,guideCompleteShown=false;
 const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.setAttribute('aria-atomic','true');document.body.appendChild(tip);
 const tips=[
   {x:0,text:'TAP JUMP · short taps give low hops, hold a little longer for height',action:'jump'},
@@ -31,6 +31,12 @@ function showTip(text,repeatable=false){
   tipRepeatAt=repeatable?performance.now()+ACTION_TIP_REPEAT_MS:0;
   const visibleMs=repeatable?ACTION_TIP_VISIBLE_MS:PASSIVE_TIP_VISIBLE_MS;
   tipAnnounceTimer=setTimeout(()=>{tip.textContent=guideProgressText(text);tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),visibleMs);},20);
+}
+function showGuideComplete(){
+  if(guideCompleteShown)return;
+  guideCompleteShown=true;
+  hideTip();
+  tipAnnounceTimer=setTimeout(()=>{tip.textContent='GUIDE COMPLETE · FINISH THE RUN';tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),PASSIVE_TIP_VISIBLE_MS);},20);
 }
 function lessonComplete(current){
   if(current.action==='jump')return !player.onGround||player.vy<-120;
@@ -51,6 +57,7 @@ function skipFirstRunGuide(){
   onboardingStage=0;
   shownStage=-1;
   tipRepeatAt=0;
+  guideCompleteShown=false;
   hideTip();
   saveOnboardingDone(true);
   showMenu();
@@ -76,6 +83,7 @@ function onboardingLoop(){
         onboardingStage++;
         shownStage=-1;
         tipRepeatAt=0;
+        if(onboardingStage===tips.length)showGuideComplete();
       }
     }
   }
@@ -83,7 +91,7 @@ function onboardingLoop(){
   requestAnimationFrame(onboardingLoop);
 }
 const onboardingReset=resetRun;
-resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;}tipRepeatAt=0;hideTip();onboardingReset();};
+resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;guideCompleteShown=false;}tipRepeatAt=0;hideTip();onboardingReset();};
 const onboardingMenu=showMenu;
 showMenu=function(){
   replayTutorial=false;
@@ -95,7 +103,7 @@ showMenu=function(){
     if(actions){const skip=document.createElement('button');skip.className='btn alt';skip.textContent='SKIP GUIDE';skip.setAttribute('aria-label','Skip guided first run');actions.appendChild(skip);skip.onclick=skipFirstRunGuide;}
   }else{
     const actions=panel.querySelector('.actions');
-    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;tipRepeatAt=0;resetRun();};}
+    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;tipRepeatAt=0;guideCompleteShown=false;resetRun();};}
   }
 };
 onboardingLoop();showMenu();
