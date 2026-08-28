@@ -42,6 +42,10 @@ if text:
     require("replay.textcontent='replaytutorial'" in text, "skipped players must retain a discoverable tutorial replay path")
     require("functionguideprogresstext(text){conststep=math.min(onboardingstage+1,tips.length);return'guide'+step+'/'+tips.length+'·'+text;}" in text, "guided coaching must expose the current lesson number and total lesson count")
     require("tip.textcontent=guideprogresstext(text)" in text, "every visible coaching tip must include lesson progress")
+    require("functionshowguidecomplete(){if(guidecompleteshown)return;guidecompleteshown=true;" in text, "guided mode must latch its completion acknowledgement")
+    require("tip.textcontent='guidecomplete·finishtherun'" in text, "guided mode must visibly acknowledge that all lessons are complete")
+    require("if(onboardingstage===tips.length)showguidecomplete();" in text, "the completion cue must fire only after the final lesson advances")
+    require("guidecompleteshown=false" in text, "guide completion acknowledgement must reset between guided attempts")
 
 if errors:
     print("ONBOARDING COMPLETION QUALITY GATE: FAILED")
@@ -50,4 +54,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes")
