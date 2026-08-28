@@ -6,7 +6,8 @@ showResult=function(win){
   const previousTime=bestTime;
   basePersonalBestShowResult(win);
   if(!win)return;
-  const newHighScore=Math.floor(score)>previousBest;
+  const finalScore=Math.floor(score);
+  const newHighScore=finalScore>previousBest;
   const newFastest=!previousTime||time<previousTime;
   if(!newHighScore&&!newFastest)return;
   const actions=panel.querySelector('.actions');
@@ -19,12 +20,16 @@ showResult=function(win){
   const badges=[];
   const announcements=[];
   if(newHighScore){
-    badges.push(`<span>NEW HIGH SCORE · ${String(Math.floor(score)).padStart(6,'0')}</span>`);
-    announcements.push(`New high score ${Math.floor(score)}`);
+    const scoreDelta=previousBest>0?finalScore-previousBest:0;
+    const scoreContext=scoreDelta>0?` · +${scoreDelta.toLocaleString('en-US')}`:' · FIRST RECORD';
+    badges.push(`<span>NEW HIGH SCORE · ${String(finalScore).padStart(6,'0')}${scoreContext}</span>`);
+    announcements.push(`New high score ${finalScore}${scoreDelta>0?`, improved by ${scoreDelta} points`:', first recorded score'}`);
   }
   if(newFastest){
-    badges.push(`<span>NEW FASTEST · ${time.toFixed(1)}s</span>`);
-    announcements.push(`New fastest time ${time.toFixed(1)} seconds`);
+    const timeDelta=previousTime>0?Math.max(0,previousTime-time):0;
+    const timeContext=timeDelta>=.05?` · ${timeDelta.toFixed(1)}s FASTER`:' · FIRST CLEAR';
+    badges.push(`<span>NEW FASTEST · ${time.toFixed(1)}s${timeContext}</span>`);
+    announcements.push(`New fastest time ${time.toFixed(1)} seconds${timeDelta>=.05?`, ${timeDelta.toFixed(1)} seconds faster`:', first recorded clear'}`);
   }
   card.innerHTML=badges.join('');
   card.setAttribute('aria-label',announcements.join('. ')+'.');
