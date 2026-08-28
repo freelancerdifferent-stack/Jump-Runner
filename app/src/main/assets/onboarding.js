@@ -25,11 +25,12 @@ const tips=[
 let tipAnnounceTimer=0;
 function tutorialActive(){return !onboardingDone||replayTutorial;}
 function hideTip(){clearTimeout(tipAnnounceTimer);clearTimeout(showTip.t);tip.classList.remove('show');tip.textContent='';}
+function guideProgressText(text){const step=Math.min(onboardingStage+1,tips.length);return 'GUIDE '+step+'/'+tips.length+' · '+text;}
 function showTip(text,repeatable=false){
   hideTip();
   tipRepeatAt=repeatable?performance.now()+ACTION_TIP_REPEAT_MS:0;
   const visibleMs=repeatable?ACTION_TIP_VISIBLE_MS:PASSIVE_TIP_VISIBLE_MS;
-  tipAnnounceTimer=setTimeout(()=>{tip.textContent=text;tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),visibleMs);},20);
+  tipAnnounceTimer=setTimeout(()=>{tip.textContent=guideProgressText(text);tip.classList.add('show');showTip.t=setTimeout(()=>tip.classList.remove('show'),visibleMs);},20);
 }
 function lessonComplete(current){
   if(current.action==='jump')return !player.onGround||player.vy<-120;
