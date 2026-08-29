@@ -18,7 +18,7 @@ require('clean-sweep-progress.js' in html,'clean sweep progression must be loade
 require("constclean_sweep_storage_key='jr_clean_sweep_clears'" in script,'clean sweep persistence key is missing')
 require('boolean(win)&&crystals===totalcrystals&&defeated.size===drones.length' in script,'clean sweep must require a win, every crystal, and every patrol drone')
 require('localstorage.setitem(clean_sweep_storage_key,string(total))' in script,'clean sweep total must persist locally')
-require('data-cleansweeps' in script,'menu must surface earned clean sweeps')
+require('data-clean-sweeps' in script,'menu must surface earned clean sweeps')
 require('allcrystals·alldrones' in script,'menu mastery label must explain clean sweep requirements')
 require("note.setattribute('role','status')" in script,'clean sweep result must expose role=status')
 require("note.setattribute('aria-live','polite')" in script,'clean sweep result must use polite announcements')
