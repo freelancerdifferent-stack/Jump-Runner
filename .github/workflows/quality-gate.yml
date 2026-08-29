@@ -56,6 +56,7 @@ jobs:
           python3 tools/check_flawless_clear_progress.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_clean_sweep_progress.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_perfect_trial_progress.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_perfect_trial_streak.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
