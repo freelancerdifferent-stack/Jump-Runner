@@ -17,7 +17,7 @@ function showCleanSweepsOnMenu(){
   if(!actions||panel.querySelector('[data-clean-sweeps]'))return;
   const badge=document.createElement('div');
   badge.className='legend';
-  badge.dataset.cleanSweeps=String(total);
+  badge.setAttribute('data-clean-sweeps',String(total));
   badge.setAttribute('aria-label',`${total} clean sweep Skyline Trial clears`);
   badge.innerHTML=`<span>CLEAN SWEEPS · ${total}</span><span>ALL CRYSTALS · ALL DRONES</span>`;
   actions.before(badge);
