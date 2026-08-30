@@ -5,6 +5,7 @@ ASSETS = Path('app/src/main/assets')
 FX = ASSETS / 'speed-fx.js'
 READOUT = ASSETS / 'sentinel-arena-speed-readout.js'
 PROGRESS_LOCK = ASSETS / 'sentinel-arena-progress-lock.js'
+BOSS = ASSETS / 'boss.js'
 INDEX = ASSETS / 'index.html'
 errors = []
 
@@ -15,6 +16,7 @@ def require(condition, message):
 require(FX.is_file(), 'speed-fx.js is missing')
 require(READOUT.is_file(), 'sentinel-arena-speed-readout.js is missing')
 require(PROGRESS_LOCK.is_file(), 'sentinel-arena-progress-lock.js is missing')
+require(BOSS.is_file(), 'boss.js is missing')
 require(INDEX.is_file(), 'index.html is missing')
 
 if FX.is_file():
@@ -43,6 +45,13 @@ if PROGRESS_LOCK.is_file():
     require('boss_arena_limit/level_end*100' in progress, 'arena progress lock must derive the held HUD position from the arena boundary')
     require("progressel.style.width=heldprogress+'%'" in progress, 'arena progress lock must override the transient base-update progress value')
 
+if BOSS.is_file():
+    boss = ''.join(BOSS.read_text(encoding='utf-8').lower().split())
+    require('arenapinned:false' in boss, 'Sentinel must track whether the final arena pin has latched')
+    require('if(player.x>=boss_arena_limit-1)boss.arenapinned=true' in boss, 'arena pin must latch when the runner reaches the final boundary')
+    require('if(boss.arenapinned){player.x=boss_arena_limit;cam=boss_arena_limit-210;}' in boss, 'pinned encounter must hold both runner and camera at deterministic coordinates')
+    require('boss.arenapinned=false' in boss, 'arena pin state must reset for each run and encounter')
+
 if INDEX.is_file():
     html = INDEX.read_text(encoding='utf-8').lower()
     speed_pos = html.find('src="speed-fx.js"')
@@ -60,4 +69,4 @@ if errors:
     sys.exit(1)
 
 print('SENTINEL ARENA MOMENTUM QUALITY GATE: PASSED')
-print('arena_speed_streaks_suppressed=yes arena_speed_readout=locked arena_progress=stable dash_bloom_preserved=yes landing_feedback_preserved=yes')
+print('arena_speed_streaks_suppressed=yes arena_speed_readout=locked arena_progress=stable arena_position=stable arena_camera=stable dash_bloom_preserved=yes landing_feedback_preserved=yes')
