@@ -9,7 +9,7 @@ const ACTION_TIP_REPEAT_MS=6200;
 const ACTION_TIP_VISIBLE_MS=4200;
 const PASSIVE_TIP_VISIBLE_MS=2600;
 function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='1';}catch(error){return false;}}
-function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
+function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1';else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
 let onboardingDone=readOnboardingDone();
 let replayTutorial=false;
 let onboardingStage=0,shownStage=-1,tipRepeatAt=0,guideCompleteShown=false;
@@ -20,7 +20,7 @@ const tips=[
   {x:1260,text:'STOMP DRONES FROM ABOVE · clean counters build Flow faster'},
   {x:2350,text:'COLLECT CRYSTALS TO BUILD FLOW · higher Flow multiplies score'},
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
-  {x:6200,text:'FINAL ARENA · AUTO-RUN PAUSES · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL',action:'boss'}
+  {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL · AUTO-RUN PAUSES HERE',action:'boss'}
 ];
 let tipAnnounceTimer=0;
 function tutorialActive(){return !onboardingDone||replayTutorial;}
