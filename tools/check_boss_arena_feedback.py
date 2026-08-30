@@ -19,7 +19,8 @@ if HTML.is_file():
 
 if SCRIPT.is_file():
     flat = ''.join(SCRIPT.read_text(encoding='utf-8').lower().split())
-    require("'sentinelarena·holdposition'" in flat, 'arena hold cue must explain why forward movement stops')
+    require("'arenamode·auto-runpaused·jump/dashtofight'" in flat, 'arena hold cue must explain that auto-run pauses and Jump/Dash remain active')
+    require("'sentinelarenamode.auto-runpaused.usejumpanddashtofight.'" in flat, 'arena hold cue must expose the control-mode explanation to assistive technology')
     require("boss.active&&!boss.dead" in flat, 'arena hold cue must only appear during the active boss encounter')
     require('boss_arena_limit-6' in flat or 'bossarenalimit-6' in flat, 'arena hold cue must key off the actual arena clamp')
     require("setattribute('role','status')" in flat, 'arena hold cue must expose role=status')
@@ -35,4 +36,4 @@ if errors:
     sys.exit(1)
 
 print('BOSS ARENA FEEDBACK QUALITY GATE: PASSED')
-print('arena_hold_cue=yes accessible=yes touch_through=yes safe_area=yes')
+print('arena_control_mode_cue=yes accessible=yes touch_through=yes safe_area=yes')
