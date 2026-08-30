@@ -15,12 +15,12 @@ let replayTutorial=false;
 let onboardingStage=0,shownStage=-1,tipRepeatAt=0,guideCompleteShown=false;
 const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.setAttribute('aria-atomic','true');document.body.appendChild(tip);
 const tips=[
-  {x:0,text:'TAP JUMP · short taps give low hops, hold a little longer for height',action:'jump'},
+  {x:0,text:'AUTO-RUN ACTIVE · RUNNER MOVES FORWARD ON ITS OWN · TAP JUMP TO CLEAR HAZARDS',action:'jump'},
   {x:650,text:'TRY DASH · tap DASH for a burst, then use it to break energy barriers',action:'dash'},
   {x:1260,text:'STOMP DRONES FROM ABOVE · clean counters build Flow faster'},
   {x:2350,text:'COLLECT CRYSTALS TO BUILD FLOW · higher Flow multiplies score'},
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
-  {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL',action:'boss'}
+  {x:6200,text:'FINAL ARENA · AUTO-RUN PAUSES · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL',action:'boss'}
 ];
 let tipAnnounceTimer=0;
 function tutorialActive(){return !onboardingDone||replayTutorial;}
@@ -99,7 +99,7 @@ showMenu=function(){
   onboardingMenu();
   if(!onboardingDone){
     const legend=panel.querySelector('.legend');
-    if(legend){const badge=document.createElement('span');badge.textContent='GUIDED FIRST RUN';legend.appendChild(badge);}
+    if(legend){const badge=document.createElement('span');badge.textContent='GUIDED FIRST RUN · AUTO-RUN';legend.appendChild(badge);}
     const actions=panel.querySelector('.actions');
     if(actions){const skip=document.createElement('button');skip.className='btn alt';skip.textContent='SKIP GUIDE';skip.setAttribute('aria-label','Skip guided first run');actions.appendChild(skip);skip.onclick=skipFirstRunGuide;}
   }else{
