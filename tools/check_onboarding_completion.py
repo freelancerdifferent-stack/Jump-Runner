@@ -42,6 +42,8 @@ if text:
     require("tapdashasyoureachthefirstenergybarrier" in text and "breakittocompletethislesson" in text, "Dash lesson must teach a concrete barrier-break use instead of an empty burst")
     require("if(current.action==='dash')returnbrokeninstanceofset&&broken.has(0);" in text, "Dash lesson must complete only after the first energy barrier is actually broken")
     require("if(current.action==='dash')returnplayer.dash>0;" not in text, "Dash lesson must not complete from a context-free Dash tap")
+    require("counterthefirstdrone" in text and "stompfromaboveordashthroughit" in text and "defeatittocompletethislesson" in text, "Drone lesson must teach both valid counters and a concrete defeat objective")
+    require("if(current.action==='counter')returndefeatedinstanceofset&&defeated.has(0);" in text, "Drone lesson must complete only after the first drone is actually defeated")
     require("functionskipfirstrunguide()" in text, "first-run onboarding must provide an explicit opt-out path")
     require("skip.textcontent='skipguide'" in text and "skip.onclick=skipfirstrunguide" in text, "first-run menu must expose the guide skip control")
     require("skip.setattribute('aria-label','skipguidedfirstrun')" in text, "guide skip control must have an explicit accessible label")
@@ -70,4 +72,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes guided_jump_shape_feedback=yes functional_dash_lesson=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes final_boss_lesson_requires_defeat=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes guided_jump_shape_feedback=yes functional_dash_lesson=yes functional_drone_counter=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes final_boss_lesson_requires_defeat=yes")
