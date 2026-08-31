@@ -19,7 +19,7 @@ const tips=[
   {x:650,text:'TRY DASH · tap DASH as you reach the first energy barrier · BREAK IT TO COMPLETE THIS LESSON',action:'dash'},
   {x:1260,text:'COUNTER THE FIRST DRONE · STOMP FROM ABOVE OR DASH THROUGH IT · DEFEAT IT TO COMPLETE THIS LESSON',action:'counter'},
   {x:2350,text:'BUILD FLOW · COLLECT THE NEXT CRYSTAL · EACH PICKUP RAISES FLOW AND BOOSTS SCORE',action:'collect'},
-  {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
+  {x:3800,text:'SECURE GATE 2 · CROSS THE NEXT CHECKPOINT GATE · CHECKPOINTS SAVE YOUR RUN PROGRESS FOR RECOVERY',action:'checkpoint'},
   {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL · AUTO-RUN PAUSES HERE',action:'boss'}
 ];
 let tipAnnounceTimer=0;
@@ -43,6 +43,7 @@ function lessonComplete(current){
   if(current.action==='dash')return broken instanceof Set&&broken.has(0);
   if(current.action==='counter')return defeated instanceof Set&&defeated.has(0);
   if(current.action==='collect')return crystals>lessonCrystalBaseline;
+  if(current.action==='checkpoint')return typeof activeCheckpoint!=='undefined'&&activeCheckpoint>=1;
   if(current.action==='boss')return typeof boss!=='undefined'&&boss.dead;
   return player.x>=current.x;
 }
