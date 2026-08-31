@@ -9,7 +9,7 @@ const ACTION_TIP_REPEAT_MS=6200;
 const ACTION_TIP_VISIBLE_MS=4200;
 const PASSIVE_TIP_VISIBLE_MS=2600;
 function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='1';}catch(error){return false;}}
-function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1';else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
+function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
 let onboardingDone=readOnboardingDone();
 let replayTutorial=false;
 let onboardingStage=0,shownStage=-1,tipRepeatAt=0,guideCompleteShown=false;
