@@ -34,7 +34,7 @@ if text:
     require("performance.now()>=tiprepeatat" in text, "action reminders must wait for their repeat deadline")
     require("showtip(current.text,true)" in text, "unfinished action lessons must be able to re-show their coaching prompt")
     require("if(complete){" in text and "if(current.action)hidetip();" in text and "onboardingstage++;shownstage=-1;tiprepeatat=0;" in text, "completed lessons must dismiss stale action coaching and clear the reminder latch")
-    require("autorunactive" in text and "runnermovesforwardonitsown" in text, "first lesson must explain automatic forward movement")
+    require(("auto-runactive" in text or "autorunactive" in text) and "runnermovesforwardonitsown" in text, "first lesson must explain automatic forward movement")
     require("tapjumpforalowhop" in text and "holdalittlelongerforheight" in text, "first lesson must teach variable jump height without adding new controls")
     require("functionskipfirstrunguide()" in text, "first-run onboarding must provide an explicit opt-out path")
     require("skip.textcontent='skipguide'" in text and "skip.onclick=skipfirstrunguide" in text, "first-run menu must expose the guide skip control")
