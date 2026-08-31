@@ -50,7 +50,7 @@ if HTML.is_file():
     require('@media(min-width:1000px)and(min-height:600px)' in flat and 'clamp(88px,6.4vw,112px)' in flat and 'max-aspect-ratio:8/5' in flat, "large tablet/foldable landscape surfaces must keep scaled touch controls and HUD spacing")
     require('finishlocked' in flat and 'level_end-520' in flat, "finish gate regression guard is required")
     require('dashorstomptobreakitscore' in flat and 'finishlineunlocked' in flat and 'boss.intro<=0' in flat, "boss encounter must preserve readable attack telegraph and victory feedback")
-    require('finalarena·waitforgreencoreopen,thendashorstomptheskysentinel' in flat, "first-run coaching must explain the Sentinel's reachable green core window")
+    require('breakthecoreonce·waitforgreencoreopen·landonedashorstomphittoprovethetiming' in flat and 'finishthesentinel·repeatthegreen-coredashorstompuntilitsintegrityreacheszero·auto-runpauseshere' in flat, "first-run coaching must teach one reachable green-core hit before full Sentinel defeat")
     require('corecharging·getready' in flat and 'coreshielded' in flat and '172*readiness' in flat, "Sentinel must telegraph the next core-open timing before the attack window")
     require('arenamode·auto-runpaused·jump/dashtofight' in flat and 'sentinelarenamode.auto-runpaused.usejumpanddashtofight.' in flat, "Sentinel arena lock must explain that auto-run is intentionally paused and two-button combat remains active")
     require('control-feedback.js' in local_scripts and '--dash-charge' in combined and 'is-cooling' in combined and 'is-ready' in combined, "touch controls must expose dash readiness and cooldown feedback")

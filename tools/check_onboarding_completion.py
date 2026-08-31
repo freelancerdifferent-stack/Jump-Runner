@@ -52,6 +52,10 @@ if text:
     require("securegate2" in text and "crossthenextcheckpointgate" in text and "checkpointssaveyourrunprogressforrecovery" in text, "Checkpoint lesson must teach recovery through a concrete gate objective")
     require("action:'checkpoint'" in text, "Checkpoint lesson must be an action lesson rather than a passive distance tip")
     require("if(current.action==='checkpoint')returntypeofactivecheckpoint!=='undefined'&&activecheckpoint>=1;" in text, "Checkpoint lesson must complete only after Gate 2 is actually secured")
+    require("breakthecoreonce" in text and "landonedashorstomphit" in text and "provethetiming" in text and "action:'bosshit'" in text, "Sentinel onboarding must teach a concrete first core-hit objective before asking for a full defeat")
+    require("if(current.action==='bosshit')returntypeofboss!=='undefined'&&boss.hp<boss.maxhp;" in text, "first Sentinel lesson must complete only after real boss damage lands")
+    require("finishthesentinel" in text and "repeat the green-core dash or stomp".replace(" ","") in text and "integrityreacheszero" in text and "action:'boss'" in text, "final Sentinel lesson must explicitly teach repeating the proven timing until defeat")
+    require("if(current.action==='boss')returntypeofboss!=='undefined'&&boss.dead;" in text, "final arena lesson must complete only after the Sentinel is defeated")
     require("functionskipfirstrunguide()" in text, "first-run onboarding must provide an explicit opt-out path")
     require("skip.textcontent='skipguide'" in text and "skip.onclick=skipfirstrunguide" in text, "first-run menu must expose the guide skip control")
     require("skip.setattribute('aria-label','skipguidedfirstrun')" in text, "guide skip control must have an explicit accessible label")
@@ -64,8 +68,6 @@ if text:
     require("tip.textcontent='guidecomplete·finishtherun'" in text, "guided mode must visibly acknowledge that all lessons are complete")
     require("if(onboardingstage===tips.length)showguidecomplete();" in text, "the completion cue must fire only after the final lesson advances")
     require("guidecompleteshown=false" in text, "guide completion acknowledgement must reset between guided attempts")
-    require("finalarena·" in text and "greencoreopen" in text and "dashorstomptheskysentinel" in text and "action:'boss'" in text, "final arena lesson must remain active until the Sentinel objective is completed")
-    require("if(current.action==='boss')returntypeofboss!=='undefined'&&boss.dead;" in text, "final arena lesson must complete only after the Sentinel is defeated")
 
 if apex:
     require("constguideactive=()=>typeoftutorialactive==='function'&&tutorialactive();" in apex, "jump-shape reinforcement must stay limited to guided tutorial sessions")
@@ -80,4 +82,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes guided_jump_shape_feedback=yes functional_dash_lesson=yes functional_drone_counter=yes functional_flow_collect=yes functional_checkpoint_lesson=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes final_boss_lesson_requires_defeat=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes guided_jump_shape_feedback=yes functional_dash_lesson=yes functional_drone_counter=yes functional_flow_collect=yes functional_checkpoint_lesson=yes functional_boss_first_hit=yes functional_boss_defeat=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes")
