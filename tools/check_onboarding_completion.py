@@ -68,6 +68,11 @@ if text:
     require("tip.textcontent='guidecomplete·finishtherun'" in text, "guided mode must visibly acknowledge that all lessons are complete")
     require("if(onboardingstage===tips.length)showguidecomplete();" in text, "the completion cue must fire only after the final lesson advances")
     require("guidecompleteshown=false" in text, "guide completion acknowledgement must reset between guided attempts")
+    require("functionshowfirstguidemastery()" in text, "first successful guided run must have a dedicated mastery acknowledgement")
+    require("showfirstguidemastery();onboardingdone=true;" in text, "mastery acknowledgement must happen only on the successful completion path before persistence")
+    require("guidemastered·chaseahigherrank·replaytutorialfromhome" in text, "first guided win must explain the next progression goal and tutorial replay path")
+    require("badge.setattribute('role','status')" in text and "badge.setattribute('aria-live','polite')" in text and "badge.setattribute('aria-atomic','true')" in text, "first guided win acknowledgement must remain an atomic polite status")
+    require("panel.queryselector('.guide-mastery')" in text, "first guided win acknowledgement must guard against duplicate insertion")
 
 if apex:
     require("constguideactive=()=>typeoftutorialactive==='function'&&tutorialactive();" in apex, "jump-shape reinforcement must stay limited to guided tutorial sessions")
@@ -82,4 +87,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes guided_jump_shape_feedback=yes functional_dash_lesson=yes functional_drone_counter=yes functional_flow_collect=yes functional_checkpoint_lesson=yes functional_boss_first_hit=yes functional_boss_defeat=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes guided_jump_shape_feedback=yes functional_dash_lesson=yes functional_drone_counter=yes functional_flow_collect=yes functional_checkpoint_lesson=yes functional_boss_first_hit=yes functional_boss_defeat=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes first_guided_win_acknowledgement=yes")
