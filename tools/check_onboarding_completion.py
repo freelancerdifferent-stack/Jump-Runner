@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 
 ONBOARDING = Path("app/src/main/assets/onboarding.js")
+APEX = Path("app/src/main/assets/apex-feedback.js")
 errors = []
 
 def require(condition, message):
@@ -9,7 +10,9 @@ def require(condition, message):
         errors.append(message)
 
 require(ONBOARDING.is_file(), "onboarding.js is missing")
+require(APEX.is_file(), "apex-feedback.js is missing")
 text = "".join(ONBOARDING.read_text(encoding="utf-8").lower().split()) if ONBOARDING.is_file() else ""
+apex = "".join(APEX.read_text(encoding="utf-8").lower().split()) if APEX.is_file() else ""
 
 if text:
     require("functioncompleteonboardingafterwin()" in text, "onboarding must isolate successful-run completion")
@@ -51,6 +54,12 @@ if text:
     require("finalarena·" in text and "greencoreopen" in text and "dashorstomptheskysentinel" in text and "action:'boss'" in text, "final arena lesson must remain active until the Sentinel objective is completed")
     require("if(current.action==='boss')returntypeofboss!=='undefined'&&boss.dead;" in text, "final arena lesson must complete only after the Sentinel is defeated")
 
+if apex:
+    require("constguideactive=()=>typeoftutorialactive==='function'&&tutorialactive();" in apex, "jump-shape reinforcement must stay limited to guided tutorial sessions")
+    require("shapelabel=holdtime>=.11?'fullarc':'shorthop';" in apex, "apex feedback must distinguish short hops from held full arcs")
+    require("if(guideactive()&&shapelabel)" in apex, "jump-shape labels must not clutter normal completed runs")
+    require("ctx.filltext(shapelabel" in apex, "guided jump-shape feedback must render at the jump apex")
+
 if errors:
     print("ONBOARDING COMPLETION QUALITY GATE: FAILED")
     for i, error in enumerate(errors, 1):
@@ -58,4 +67,4 @@ if errors:
     sys.exit(1)
 
 print("ONBOARDING COMPLETION QUALITY GATE: PASSED")
-print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes final_boss_lesson_requires_defeat=yes")
+print("completion_requires_win=yes final_arena_failure_replays_tutorial=yes persistence_after_success=yes replay_preserves_completion=yes action_prompt_repeat=yes action_prompt_stops_on_success=yes action_prompt_dismisses_immediately=yes passive_prompt_short_dwell=yes autorun_explained=yes variable_jump_explained=yes guided_jump_shape_feedback=yes first_run_skip=yes replay_after_skip=yes lesson_progress=yes lesson_completion_cue=yes final_boss_lesson_requires_defeat=yes")
