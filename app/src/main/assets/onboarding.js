@@ -1,8 +1,7 @@
 'use strict';
 // First-run contextual onboarding. No gameplay slowdown, no network dependency.
-// The first two lessons advance only after the player actually performs Jump and a
-// functional Dash barrier break, preventing distance-based tips from racing ahead of
-// a new touch player or teaching Dash as an empty burst with no gameplay purpose.
+// Early lessons advance only after the player demonstrates the requested gameplay action,
+// preventing distance-based tips from racing ahead or teaching mechanics without purpose.
 // Tutorial completion is persisted only after a successful first guided run. Replaying
 // the tutorial is a temporary practice mode and never erases the player's completion.
 const onboardingKey='jr_onboarding_v1';
@@ -18,7 +17,7 @@ const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribu
 const tips=[
   {x:0,text:'AUTO-RUN ACTIVE · RUNNER MOVES FORWARD ON ITS OWN · TAP JUMP FOR A LOW HOP, HOLD A LITTLE LONGER FOR HEIGHT',action:'jump'},
   {x:650,text:'TRY DASH · tap DASH as you reach the first energy barrier · BREAK IT TO COMPLETE THIS LESSON',action:'dash'},
-  {x:1260,text:'STOMP DRONES FROM ABOVE · clean counters build Flow faster'},
+  {x:1260,text:'COUNTER THE FIRST DRONE · STOMP FROM ABOVE OR DASH THROUGH IT · DEFEAT IT TO COMPLETE THIS LESSON',action:'counter'},
   {x:2350,text:'COLLECT CRYSTALS TO BUILD FLOW · higher Flow multiplies score'},
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
   {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL · AUTO-RUN PAUSES HERE',action:'boss'}
@@ -42,6 +41,7 @@ function showGuideComplete(){
 function lessonComplete(current){
   if(current.action==='jump')return !player.onGround||player.vy<-120;
   if(current.action==='dash')return broken instanceof Set&&broken.has(0);
+  if(current.action==='counter')return defeated instanceof Set&&defeated.has(0);
   if(current.action==='boss')return typeof boss!=='undefined'&&boss.dead;
   return player.x>=current.x;
 }
@@ -75,7 +75,7 @@ function onboardingLoop(){
         shownStage=onboardingStage;
       }else if(reached&&current.action&&shownStage===onboardingStage&&!complete&&tipRepeatAt>0&&performance.now()>=tipRepeatAt){
         // Action lessons remain useful after their first toast disappears. Repeat at a
-        // restrained cadence until the player demonstrates the input, then stop forever.
+        // restrained cadence until the player demonstrates the mechanic, then stop forever.
         showTip(current.text,true);
       }
       if(complete){
