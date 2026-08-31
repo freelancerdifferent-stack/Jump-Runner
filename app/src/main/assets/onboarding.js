@@ -1,7 +1,8 @@
 'use strict';
 // First-run contextual onboarding. No gameplay slowdown, no network dependency.
-// The first two lessons advance only after the player actually performs Jump and Dash,
-// preventing distance-based tips from racing ahead of a new touch player.
+// The first two lessons advance only after the player actually performs Jump and a
+// functional Dash barrier break, preventing distance-based tips from racing ahead of
+// a new touch player or teaching Dash as an empty burst with no gameplay purpose.
 // Tutorial completion is persisted only after a successful first guided run. Replaying
 // the tutorial is a temporary practice mode and never erases the player's completion.
 const onboardingKey='jr_onboarding_v1';
@@ -16,7 +17,7 @@ let onboardingStage=0,shownStage=-1,tipRepeatAt=0,guideCompleteShown=false;
 const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.setAttribute('aria-atomic','true');document.body.appendChild(tip);
 const tips=[
   {x:0,text:'AUTO-RUN ACTIVE · RUNNER MOVES FORWARD ON ITS OWN · TAP JUMP FOR A LOW HOP, HOLD A LITTLE LONGER FOR HEIGHT',action:'jump'},
-  {x:650,text:'TRY DASH · tap DASH for a burst, then use it to break energy barriers',action:'dash'},
+  {x:650,text:'TRY DASH · tap DASH as you reach the first energy barrier · BREAK IT TO COMPLETE THIS LESSON',action:'dash'},
   {x:1260,text:'STOMP DRONES FROM ABOVE · clean counters build Flow faster'},
   {x:2350,text:'COLLECT CRYSTALS TO BUILD FLOW · higher Flow multiplies score'},
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
@@ -40,7 +41,7 @@ function showGuideComplete(){
 }
 function lessonComplete(current){
   if(current.action==='jump')return !player.onGround||player.vy<-120;
-  if(current.action==='dash')return player.dash>0;
+  if(current.action==='dash')return broken instanceof Set&&broken.has(0);
   if(current.action==='boss')return typeof boss!=='undefined'&&boss.dead;
   return player.x>=current.x;
 }
@@ -78,8 +79,8 @@ function onboardingLoop(){
         showTip(current.text,true);
       }
       if(complete){
-        // Action coaching has served its purpose the instant the requested input lands.
-        // Remove the stale toast instead of obscuring the next few seconds of play.
+        // Action coaching has served its purpose the instant the requested gameplay
+        // action lands. Remove stale coaching before the next lesson enters view.
         if(current.action)hideTip();
         onboardingStage++;
         shownStage=-1;
