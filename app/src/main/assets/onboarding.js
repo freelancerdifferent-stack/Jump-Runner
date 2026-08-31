@@ -49,8 +49,22 @@ function lessonComplete(current){
   if(current.action==='boss')return typeof boss!=='undefined'&&boss.dead;
   return player.x>=current.x;
 }
+function showFirstGuideMastery(){
+  if(!panel||panel.querySelector('.guide-mastery'))return;
+  const badge=document.createElement('div');
+  badge.className='legend guide-mastery';
+  badge.setAttribute('role','status');
+  badge.setAttribute('aria-live','polite');
+  badge.setAttribute('aria-atomic','true');
+  const message=document.createElement('span');
+  message.textContent='GUIDE MASTERED · CHASE A HIGHER RANK · REPLAY TUTORIAL FROM HOME';
+  badge.appendChild(message);
+  const actions=panel.querySelector('.actions');
+  if(actions)panel.insertBefore(badge,actions);else panel.appendChild(badge);
+}
 function completeOnboardingAfterWin(){
   if(onboardingDone||replayTutorial||onboardingStage<tips.length||state!=='win')return;
+  showFirstGuideMastery();
   onboardingDone=true;
   saveOnboardingDone(true);
   hideTip();
