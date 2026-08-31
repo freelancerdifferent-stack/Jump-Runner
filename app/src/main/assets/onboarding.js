@@ -12,13 +12,13 @@ function readOnboardingDone(){try{return localStorage.getItem(onboardingKey)==='
 function saveOnboardingDone(done){try{if(done)localStorage.setItem(onboardingKey,'1');else localStorage.removeItem(onboardingKey);}catch(error){/* Storage may be unavailable in private/restricted WebViews. */}}
 let onboardingDone=readOnboardingDone();
 let replayTutorial=false;
-let onboardingStage=0,shownStage=-1,tipRepeatAt=0,guideCompleteShown=false;
+let onboardingStage=0,shownStage=-1,tipRepeatAt=0,guideCompleteShown=false,lessonCrystalBaseline=0;
 const tip=document.createElement('div');tip.className='coach-tip';tip.setAttribute('role','status');tip.setAttribute('aria-live','polite');tip.setAttribute('aria-atomic','true');document.body.appendChild(tip);
 const tips=[
   {x:0,text:'AUTO-RUN ACTIVE · RUNNER MOVES FORWARD ON ITS OWN · TAP JUMP FOR A LOW HOP, HOLD A LITTLE LONGER FOR HEIGHT',action:'jump'},
   {x:650,text:'TRY DASH · tap DASH as you reach the first energy barrier · BREAK IT TO COMPLETE THIS LESSON',action:'dash'},
   {x:1260,text:'COUNTER THE FIRST DRONE · STOMP FROM ABOVE OR DASH THROUGH IT · DEFEAT IT TO COMPLETE THIS LESSON',action:'counter'},
-  {x:2350,text:'COLLECT CRYSTALS TO BUILD FLOW · higher Flow multiplies score'},
+  {x:2350,text:'BUILD FLOW · COLLECT THE NEXT CRYSTAL · EACH PICKUP RAISES FLOW AND BOOSTS SCORE',action:'collect'},
   {x:4300,text:'CHECKPOINT GATES SAVE YOUR PROGRESS · recovery keeps the run alive'},
   {x:6200,text:'FINAL ARENA · WAIT FOR GREEN CORE OPEN, THEN DASH OR STOMP THE SKY SENTINEL · AUTO-RUN PAUSES HERE',action:'boss'}
 ];
@@ -42,6 +42,7 @@ function lessonComplete(current){
   if(current.action==='jump')return !player.onGround||player.vy<-120;
   if(current.action==='dash')return broken instanceof Set&&broken.has(0);
   if(current.action==='counter')return defeated instanceof Set&&defeated.has(0);
+  if(current.action==='collect')return crystals>lessonCrystalBaseline;
   if(current.action==='boss')return typeof boss!=='undefined'&&boss.dead;
   return player.x>=current.x;
 }
@@ -60,6 +61,7 @@ function skipFirstRunGuide(){
   shownStage=-1;
   tipRepeatAt=0;
   guideCompleteShown=false;
+  lessonCrystalBaseline=0;
   hideTip();
   saveOnboardingDone(true);
   showMenu();
@@ -71,6 +73,7 @@ function onboardingLoop(){
       const reached=player.x>=current.x;
       const complete=reached&&lessonComplete(current);
       if(reached&&shownStage!==onboardingStage){
+        if(current.action==='collect')lessonCrystalBaseline=crystals;
         showTip(current.text,Boolean(current.action));
         shownStage=onboardingStage;
       }else if(reached&&current.action&&shownStage===onboardingStage&&!complete&&tipRepeatAt>0&&performance.now()>=tipRepeatAt){
@@ -93,7 +96,7 @@ function onboardingLoop(){
   requestAnimationFrame(onboardingLoop);
 }
 const onboardingReset=resetRun;
-resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;guideCompleteShown=false;}tipRepeatAt=0;hideTip();onboardingReset();};
+resetRun=function(){if(tutorialActive()){onboardingStage=0;shownStage=-1;guideCompleteShown=false;lessonCrystalBaseline=0;}tipRepeatAt=0;hideTip();onboardingReset();};
 const onboardingMenu=showMenu;
 showMenu=function(){
   replayTutorial=false;
@@ -105,7 +108,7 @@ showMenu=function(){
     if(actions){const skip=document.createElement('button');skip.className='btn alt';skip.textContent='SKIP GUIDE';skip.setAttribute('aria-label','Skip guided first run');actions.appendChild(skip);skip.onclick=skipFirstRunGuide;}
   }else{
     const actions=panel.querySelector('.actions');
-    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;tipRepeatAt=0;guideCompleteShown=false;resetRun();};}
+    if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;tipRepeatAt=0;guideCompleteShown=false;lessonCrystalBaseline=0;resetRun();};}
   }
 };
 onboardingLoop();showMenu();
