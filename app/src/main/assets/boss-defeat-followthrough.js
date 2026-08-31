@@ -16,9 +16,9 @@
   function showCue(){
     const el=ensureCard();
     clearTimeout(timer);
-    el.textContent='SENTINEL DOWN · FINISH UNLOCKED';
+    el.textContent='SENTINEL DOWN · AUTO-RUN RESUMED · FINISH AHEAD →';
     el.style.opacity='1';
-    timer=setTimeout(()=>{el.style.opacity='0';},1250);
+    timer=setTimeout(()=>{el.style.opacity='0';},1800);
   }
   const baseUpdate=window.update;
   if(typeof baseUpdate!=='function')return;
