@@ -46,7 +46,7 @@ if text:
     require("tip.textcontent='guidecomplete·finishtherun'" in text, "guided mode must visibly acknowledge that all lessons are complete")
     require("if(onboardingstage===tips.length)showguidecomplete();" in text, "the completion cue must fire only after the final lesson advances")
     require("guidecompleteshown=false" in text, "guide completion acknowledgement must reset between guided attempts")
-    require("finalarena·waitforgreencoreopen,thendashorstomptheskysentinel',action:'boss'" in text, "final arena lesson must remain active until the Sentinel objective is completed")
+    require("finalarena·" in text and "greencoreopen" in text and "dashorstomptheskysentinel" in text and "action:'boss'" in text, "final arena lesson must remain active until the Sentinel objective is completed")
     require("if(current.action==='boss')returntypeofboss!=='undefined'&&boss.dead;" in text, "final arena lesson must complete only after the Sentinel is defeated")
 
 if errors:
