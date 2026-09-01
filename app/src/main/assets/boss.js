@@ -4,6 +4,7 @@
 const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false};
 let bossShots=[];
 const BOSS_ARENA_LIMIT=7680;
+const BOSS_ARENA_CAMERA=Math.max(0,BOSS_ARENA_LIMIT-210);
 const baseBossReset=resetRun,baseBossUpdate=update,baseBossDraw=drawWorld,baseBossShowResult=showResult;
 function bossRect(){return{x:boss.x-34,y:boss.y-28,w:68,h:56};}
 function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;bossShots=[];}
@@ -18,8 +19,12 @@ function updateBoss(dt){
  // Hold the runner inside the final arena until the boss is defeated. This prevents
  // the finish transition from repeatedly firing while the auto-runner cannot turn back.
  player.x=Math.min(player.x,BOSS_ARENA_LIMIT);
+ // Base gameplay advances the camera before this boss layer clamps the runner. Once the
+ // arena edge is reached, pin the camera to the same world coordinate too; otherwise the
+ // camera keeps nudging forward and snapping back every frame, producing visible jitter.
+ if(player.x>=BOSS_ARENA_LIMIT-.5)cam=BOSS_ARENA_CAMERA;
  boss.t+=dt;boss.hitCd=Math.max(0,boss.hitCd-dt);boss.intro=Math.max(0,boss.intro-dt);
- // The Sentinel now cycles toward and away from the runner instead of maintaining an
+ // The Sentinel cycles toward and away from the runner instead of maintaining an
  // impossible fixed lead. During each close pass the core opens inside Dash/Stomp range.
  const approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5;
  const lead=105+approach*185;
@@ -51,4 +56,4 @@ function drawBoss(){
 resetRun=function(){resetBoss();baseBossReset();};
 update=function(dt){baseBossUpdate(dt);updateBoss(dt);};
 drawWorld=function(){baseBossDraw();drawBoss();};
-showResult=function(win){if(win&&!boss.dead){state='play';overlay.classList.add('hidden');deathReason='';player.x=Math.min(player.x,BOSS_ARENA_LIMIT);player.inv=Math.max(player.inv,.6);last=performance.now();return;}baseBossShowResult(win);};
+showResult=function(win){if(win&&!boss.dead){state='play';overlay.classList.add('hidden');deathReason='';player.x=Math.min(player.x,BOSS_ARENA_LIMIT);if(player.x>=BOSS_ARENA_LIMIT-.5)cam=BOSS_ARENA_CAMERA;player.inv=Math.max(player.inv,.6);last=performance.now();return;}baseBossShowResult(win);};
