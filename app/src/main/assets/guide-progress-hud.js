@@ -45,7 +45,8 @@
     const celebrating=now<completeUntil;
     const complete=total>0&&stage>=total;
     const objective=currentObjective();
-    const text=celebrating?'✓ GUIDE · LESSON COMPLETE':complete?'GUIDE · ALL LESSONS COMPLETE':`GUIDE · ${Math.min(stage+1,total)} / ${total}${objective?' · '+objective:''}`;
+    const completionText=`✓ GUIDE · LESSON COMPLETE${objective&&!complete?' · NEXT: '+objective:''}`;
+    const text=celebrating?completionText:complete?'GUIDE · ALL LESSONS COMPLETE':`GUIDE · ${Math.min(stage+1,total)} / ${total}${objective?' · '+objective:''}`;
     if(text!==lastText){chip.textContent=text;lastText=text;}
     setCompletionStyle(celebrating);
     chip.style.opacity='1';
