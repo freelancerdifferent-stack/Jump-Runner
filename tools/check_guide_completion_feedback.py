@@ -16,7 +16,10 @@ if text:
     require("constcomplete_hold_ms=720" in flat, 'guide completion acknowledgement must have a short bounded hold')
     require("stage>laststage" in flat and "completeuntil=now+complete_hold_ms" in flat, 'guide completion must trigger only when the lesson stage advances')
     require("✓guide·lessoncomplete" in flat, 'guide chip must expose an explicit lesson-complete acknowledgement')
-    require("'·next:'+objective" in flat and "objective&&!complete" in flat, 'lesson completion must hand off to the next objective without overriding the final state')
+    require("'·next:'+objectivetext" in flat and "objective&&!complete" in flat, 'lesson completion must hand off to the next objective without overriding the final state')
+    require("constinputlabels=" in flat and "jump:'jump'" in flat and "dash:'dash'" in flat, 'guided objectives must preserve explicit Jump and Dash input hints')
+    require("counter:'jump/dash'" in flat and "bosshit:'jump/dash'" in flat and "boss:'jump/dash'" in flat, 'multi-solution combat lessons must expose both supported inputs')
+    require("'·input'+input" in flat, 'required input must remain visible in the persistent guide chip')
     require("prefers-reduced-motion:reduce" in flat and "reducedmotion.matches" in flat, 'guide completion motion must respect reduced-motion preference')
     require("chip.setattribute('role','status')" in flat and "chip.setattribute('aria-live','polite')" in flat and "chip.setattribute('aria-atomic','true')" in flat, 'guide completion acknowledgement must remain a polite atomic status')
     require("alllessonscomplete" in flat, 'final all-lessons-complete state must remain present')
@@ -28,4 +31,4 @@ if errors:
     sys.exit(1)
 
 print('GUIDE COMPLETION FEEDBACK QUALITY GATE: PASSED')
-print('stage_transition=yes bounded_hold=yes next_objective_handoff=yes reduced_motion=yes accessible_status=yes final_state=yes')
+print('stage_transition=yes bounded_hold=yes next_objective_handoff=yes required_input_hints=yes reduced_motion=yes accessible_status=yes final_state=yes')
