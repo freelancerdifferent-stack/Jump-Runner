@@ -70,6 +70,18 @@ function completeOnboardingAfterWin(){
   hideTip();
   tipRepeatAt=0;
 }
+function clearSkipGuideDialog(){panel.removeAttribute('role');panel.removeAttribute('aria-modal');panel.removeAttribute('aria-labelledby');}
+function confirmSkipFirstRunGuide(){
+  if(onboardingDone)return;
+  panel.setAttribute('role','dialog');
+  panel.setAttribute('aria-modal','true');
+  panel.setAttribute('aria-labelledby','skipGuideTitle');
+  panel.innerHTML='<div class="eyebrow">GUIDED FIRST RUN</div><h1 id="skipGuideTitle">SKIP <em>GUIDE?</em></h1><div class="sub">The guide teaches Jump, Dash, Flow, checkpoints, and the Sentinel. You can replay it later from Home.</div><div class="actions"><button class="btn" id="keepGuide">KEEP GUIDE</button><button class="btn alt" id="confirmSkipGuide">SKIP ANYWAY</button></div>';
+  const keep=document.getElementById('keepGuide'),confirm=document.getElementById('confirmSkipGuide');
+  keep.onclick=()=>{clearSkipGuideDialog();showMenu();};
+  confirm.onclick=()=>{clearSkipGuideDialog();skipFirstRunGuide();};
+  keep.focus();
+}
 function skipFirstRunGuide(){
   if(onboardingDone)return;
   onboardingDone=true;
@@ -122,7 +134,7 @@ showMenu=function(){
     const legend=panel.querySelector('.legend');
     if(legend){const badge=document.createElement('span');badge.textContent='GUIDED FIRST RUN · AUTO-RUN';legend.appendChild(badge);}
     const actions=panel.querySelector('.actions');
-    if(actions){const skip=document.createElement('button');skip.className='btn alt';skip.textContent='SKIP GUIDE';skip.setAttribute('aria-label','Skip guided first run');actions.appendChild(skip);skip.onclick=skipFirstRunGuide;}
+    if(actions){const skip=document.createElement('button');skip.className='btn alt';skip.textContent='SKIP GUIDE';skip.setAttribute('aria-label','Review skip guided first run');actions.appendChild(skip);skip.onclick=confirmSkipFirstRunGuide;}
   }else{
     const actions=panel.querySelector('.actions');
     if(actions){const replay=document.createElement('button');replay.className='btn alt';replay.textContent='REPLAY TUTORIAL';actions.appendChild(replay);replay.onclick=()=>{replayTutorial=true;onboardingStage=0;shownStage=-1;tipRepeatAt=0;guideCompleteShown=false;lessonCrystalBaseline=0;resetRun();};}
