@@ -8,6 +8,10 @@
   chip.setAttribute('aria-atomic','true');
   chip.style.cssText='position:fixed;z-index:12;left:50%;top:max(72px,calc(env(safe-area-inset-top) + 50px));transform:translateX(-50%) scale(1);padding:6px 12px;border:1px solid rgba(105,237,255,.22);border-radius:999px;background:rgba(4,12,22,.78);box-shadow:0 8px 24px rgba(0,0,0,.28);font:800 9px/1 system-ui;letter-spacing:.12em;color:#bfefff;pointer-events:none;opacity:0;transition:opacity .18s ease,transform .18s ease,background .18s ease,border-color .18s ease,color .18s ease;white-space:nowrap';
   document.body.appendChild(chip);
+  const focusStyle=document.createElement('style');
+  focusStyle.textContent='.control.guide-control-focus{outline:2px solid rgba(191,255,232,.92);outline-offset:5px;box-shadow:0 0 0 5px rgba(105,237,255,.14),0 0 28px rgba(105,237,255,.28);transform:scale(1.045)}@media(prefers-reduced-motion:reduce){.control.guide-control-focus{transform:none}}';
+  document.head.appendChild(focusStyle);
+  const jumpControl=document.getElementById('jumpBtn'),dashControl=document.getElementById('dashBtn');
   const objectiveLabels={jump:'JUMP',dash:'BREAK BARRIER',counter:'DEFEAT DRONE',collect:'COLLECT CRYSTAL',checkpoint:'SECURE GATE 2',bossHit:'HIT GREEN CORE',boss:'DEFEAT SENTINEL'};
   const inputLabels={jump:'JUMP',dash:'DASH',counter:'JUMP / DASH',bossHit:'JUMP / DASH',boss:'JUMP / DASH'};
   const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)');
@@ -16,6 +20,12 @@
   function currentTip(){return Array.isArray(tips)?tips[onboardingStage]:null;}
   function currentObjective(){const current=currentTip();return current&&objectiveLabels[current.action]||'';}
   function currentInput(){const current=currentTip();return current&&inputLabels[current.action]||'';}
+  function setControlFocus(input,active){
+    const jumpNeeded=active&&(input==='JUMP'||input==='JUMP / DASH');
+    const dashNeeded=active&&(input==='DASH'||input==='JUMP / DASH');
+    jumpControl?.classList.toggle('guide-control-focus',jumpNeeded);
+    dashControl?.classList.toggle('guide-control-focus',dashNeeded);
+  }
   function setCompletionStyle(active){
     chip.style.background=active?'rgba(16,58,46,.9)':'rgba(4,12,22,.78)';
     chip.style.borderColor=active?'rgba(116,247,197,.62)':'rgba(105,237,255,.22)';
@@ -24,7 +34,7 @@
   }
   function refresh(now=performance.now()){
     const active=typeof tutorialActive==='function'&&tutorialActive()&&state==='play';
-    if(!active){chip.style.opacity='0';setCompletionStyle(false);lastText='';lastStage=null;completeUntil=0;requestAnimationFrame(refresh);return;}
+    if(!active){chip.style.opacity='0';setCompletionStyle(false);setControlFocus('',false);lastText='';lastStage=null;completeUntil=0;requestAnimationFrame(refresh);return;}
     const total=Array.isArray(tips)?tips.length:0;
     const stage=Math.min(onboardingStage,total);
     if(lastStage!==null&&stage>lastStage&&stage<=total)completeUntil=now+COMPLETE_HOLD_MS;
@@ -37,6 +47,7 @@
     const text=celebrating?completionText:complete?'GUIDE · ALL LESSONS COMPLETE':`GUIDE · ${Math.min(stage+1,total)} / ${total}${objectiveText?' · '+objectiveText:''}`;
     if(text!==lastText){chip.textContent=text;lastText=text;}
     setCompletionStyle(celebrating);
+    setControlFocus(input,!complete&&!celebrating);
     chip.style.opacity='1';
     requestAnimationFrame(refresh);
   }
