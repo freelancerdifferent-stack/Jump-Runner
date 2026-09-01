@@ -9,7 +9,8 @@
   const NORMAL_TOP='max(72px,calc(env(safe-area-inset-top) + 50px))';
   const BOSS_TOP='max(112px,calc(env(safe-area-inset-top) + 90px))';
   const SAFE_WIDTH='calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 32px)';
-  chip.style.cssText=`position:fixed;z-index:12;left:50%;top:${NORMAL_TOP};transform:translateX(-50%) scale(1);box-sizing:border-box;max-width:${SAFE_WIDTH};overflow:hidden;text-overflow:ellipsis;padding:6px 12px;border:1px solid rgba(105,237,255,.22);border-radius:999px;background:rgba(4,12,22,.78);box-shadow:0 8px 24px rgba(0,0,0,.28);font:800 9px/1 system-ui;letter-spacing:.12em;color:#bfefff;pointer-events:none;opacity:0;transition:opacity .18s ease,transform .18s ease,background .18s ease,border-color .18s ease,color .18s ease,top .18s ease;white-space:nowrap`;
+  const SAFE_CENTER='calc(env(safe-area-inset-left) + (100vw - env(safe-area-inset-left) - env(safe-area-inset-right)) / 2)';
+  chip.style.cssText=`position:fixed;z-index:12;left:${SAFE_CENTER};top:${NORMAL_TOP};transform:translateX(-50%) scale(1);box-sizing:border-box;max-width:${SAFE_WIDTH};overflow:hidden;text-overflow:ellipsis;padding:6px 12px;border:1px solid rgba(105,237,255,.22);border-radius:999px;background:rgba(4,12,22,.78);box-shadow:0 8px 24px rgba(0,0,0,.28);font:800 9px/1 system-ui;letter-spacing:.12em;color:#bfefff;pointer-events:none;opacity:0;transition:opacity .18s ease,transform .18s ease,background .18s ease,border-color .18s ease,color .18s ease,top .18s ease;white-space:nowrap`;
   document.body.appendChild(chip);
   const focusStyle=document.createElement('style');
   focusStyle.textContent='.control.guide-control-focus{outline:2px solid rgba(191,255,232,.92);outline-offset:5px;box-shadow:0 0 0 5px rgba(105,237,255,.14),0 0 28px rgba(105,237,255,.28);transform:scale(1.045)}@media(prefers-reduced-motion:reduce){.control.guide-control-focus{transform:none}}';
