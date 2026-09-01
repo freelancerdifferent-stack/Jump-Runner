@@ -38,7 +38,8 @@
   }
   function setBossHudClearance(active){chip.style.top=active?BOSS_TOP:NORMAL_TOP;}
   function refresh(now=performance.now()){
-    const active=typeof tutorialActive==='function'&&tutorialActive()&&state==='play';
+    const gameplayPaused=typeof paused!=='undefined'&&paused;
+    const active=typeof tutorialActive==='function'&&tutorialActive()&&state==='play'&&!gameplayPaused;
     const bossHudActive=typeof boss!=='undefined'&&!boss.dead&&(boss.active||boss.intro>0);
     setBossHudClearance(active&&bossHudActive);
     if(!active){chip.style.opacity='0';setCompletionStyle(false);setControlFocus('',false);lastText='';lastStage=null;completeUntil=0;requestAnimationFrame(refresh);return;}
