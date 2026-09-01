@@ -6,7 +6,9 @@
   chip.setAttribute('role','status');
   chip.setAttribute('aria-live','polite');
   chip.setAttribute('aria-atomic','true');
-  chip.style.cssText='position:fixed;z-index:12;left:50%;top:max(72px,calc(env(safe-area-inset-top) + 50px));transform:translateX(-50%) scale(1);padding:6px 12px;border:1px solid rgba(105,237,255,.22);border-radius:999px;background:rgba(4,12,22,.78);box-shadow:0 8px 24px rgba(0,0,0,.28);font:800 9px/1 system-ui;letter-spacing:.12em;color:#bfefff;pointer-events:none;opacity:0;transition:opacity .18s ease,transform .18s ease,background .18s ease,border-color .18s ease,color .18s ease;white-space:nowrap';
+  const NORMAL_TOP='max(72px,calc(env(safe-area-inset-top) + 50px))';
+  const BOSS_TOP='max(112px,calc(env(safe-area-inset-top) + 90px))';
+  chip.style.cssText=`position:fixed;z-index:12;left:50%;top:${NORMAL_TOP};transform:translateX(-50%) scale(1);padding:6px 12px;border:1px solid rgba(105,237,255,.22);border-radius:999px;background:rgba(4,12,22,.78);box-shadow:0 8px 24px rgba(0,0,0,.28);font:800 9px/1 system-ui;letter-spacing:.12em;color:#bfefff;pointer-events:none;opacity:0;transition:opacity .18s ease,transform .18s ease,background .18s ease,border-color .18s ease,color .18s ease,top .18s ease;white-space:nowrap`;
   document.body.appendChild(chip);
   const focusStyle=document.createElement('style');
   focusStyle.textContent='.control.guide-control-focus{outline:2px solid rgba(191,255,232,.92);outline-offset:5px;box-shadow:0 0 0 5px rgba(105,237,255,.14),0 0 28px rgba(105,237,255,.28);transform:scale(1.045)}@media(prefers-reduced-motion:reduce){.control.guide-control-focus{transform:none}}';
@@ -32,8 +34,11 @@
     chip.style.color=active?'#bfffe8':'#bfefff';
     chip.style.transform=`translateX(-50%) scale(${active&&!reducedMotion.matches?'1.045':'1'})`;
   }
+  function setBossHudClearance(active){chip.style.top=active?BOSS_TOP:NORMAL_TOP;}
   function refresh(now=performance.now()){
     const active=typeof tutorialActive==='function'&&tutorialActive()&&state==='play';
+    const bossHudActive=typeof boss!=='undefined'&&!boss.dead&&(boss.active||boss.intro>0);
+    setBossHudClearance(active&&bossHudActive);
     if(!active){chip.style.opacity='0';setCompletionStyle(false);setControlFocus('',false);lastText='';lastStage=null;completeUntil=0;requestAnimationFrame(refresh);return;}
     const total=Array.isArray(tips)?tips.length:0;
     const stage=Math.min(onboardingStage,total);
