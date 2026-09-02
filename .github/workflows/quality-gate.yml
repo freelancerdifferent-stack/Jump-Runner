@@ -67,6 +67,7 @@ jobs:
           python3 tools/check_sentinel_arena_momentum.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_defeat_followthrough.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_sentinel_pulse_near_miss.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_near_miss_reduced_motion.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
