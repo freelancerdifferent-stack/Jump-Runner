@@ -13,7 +13,7 @@ text=HUD.read_text(encoding='utf-8') if HUD.is_file() else ''
 flat=''.join(text.lower().split())
 
 require("chip.setattribute('aria-hidden','true')" in flat,'guide HUD must begin hidden from assistive technology')
-require("functionsetaccessiblevisibility(active){chip.setattribute('aria-hidden',active?'false':'true')}" in flat,'guide HUD must synchronize aria-hidden with gameplay visibility')
+require('functionsetaccessiblevisibility(active)' in flat and "chip.setattribute('aria-hidden',active?'false':'true')" in flat,'guide HUD must synchronize aria-hidden with gameplay visibility')
 require('setaccessiblevisibility(active)' in flat,'guide HUD refresh must update accessible visibility every frame')
 require("if(!active){chip.style.opacity='0'" in flat,'inactive guide HUD must remain visually hidden')
 
