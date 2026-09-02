@@ -2,9 +2,9 @@
 // Near-miss feedback rewards close calls without changing collision, scoring, or physics.
 (()=>{
   const toast=document.createElement('div');
-  toast.className='near-miss-toast';toast.setAttribute('aria-live','polite');toast.textContent='CLOSE CALL';document.body.appendChild(toast);
+  toast.className='near-miss-toast';toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');toast.setAttribute('aria-atomic','true');toast.textContent='CLOSE CALL';document.body.appendChild(toast);
   const style=document.createElement('style');
-  style.textContent='.near-miss-toast{position:fixed;z-index:6;left:50%;top:max(116px,calc(env(safe-area-inset-top) + 96px));transform:translate(-50%,-8px) scale(.96);padding:6px 14px;border:1px solid #ffd86b55;border-radius:999px;background:#111d2be6;box-shadow:0 10px 28px #0006,0 0 22px #ffd86b1f;color:#ffe9a7;font-size:9px;font-weight:950;letter-spacing:.18em;pointer-events:none;opacity:0;transition:opacity .14s ease,transform .18s ease}.near-miss-toast.show{opacity:1;transform:translate(-50%,0) scale(1)}@media(max-height:390px){.near-miss-toast{top:max(82px,calc(env(safe-area-inset-top) + 66px));font-size:8px;padding:5px 12px}}';
+  style.textContent='.near-miss-toast{position:fixed;z-index:6;left:50%;top:max(116px,calc(env(safe-area-inset-top) + 96px));transform:translate(-50%,-8px) scale(.96);padding:6px 14px;border:1px solid #ffd86b55;border-radius:999px;background:#111d2be6;box-shadow:0 10px 28px #0006,0 0 22px #ffd86b1f;color:#ffe9a7;font-size:9px;font-weight:950;letter-spacing:.18em;pointer-events:none;opacity:0;transition:opacity .14s ease,transform .18s ease}.near-miss-toast.show{opacity:1;transform:translate(-50%,0) scale(1)}@media(max-height:390px){.near-miss-toast{top:max(82px,calc(env(safe-area-inset-top) + 66px));font-size:8px;padding:5px 12px}}@media(prefers-reduced-motion:reduce){.near-miss-toast{transform:translate(-50%,0);transition:opacity .14s ease}.near-miss-toast.show{transform:translate(-50%,0)}}';
   document.head.appendChild(style);
   let cooldown=0,timer=0,wasThreatened='';
   function threatSource(){
