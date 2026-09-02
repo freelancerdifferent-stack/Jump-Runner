@@ -21,6 +21,8 @@ require("getelementbyid('dashbtn')" in cue, "Sentinel cue must target the Dash c
 require("boss.coreopen" in cue and "player.dashcd<=0.001" in cue, "Dash cue must only arm during a real open core window when Dash is ready")
 require("sentinel-strike-window" in cue and "'hitnow'" in cue, "Dash cue must expose a clear HIT NOW visual state")
 require("prefers-reduced-motion:reduce" in cue, "Dash cue animation must respect reduced-motion preference")
+require("#dashbtn.sentinel-strike-window{transform:none}" in cue, "Reduced-motion mode must remove the persistent Dash cue scale transform")
+require("#dashbtn.sentinel-strike-pop{animation:none}" in cue, "Reduced-motion mode must disable the Dash cue pop animation")
 require("previousopen" in cue, "Dash cue must latch core-window transitions instead of retriggering every frame")
 require("classlist.remove('sentinel-strike-window','sentinel-strike-pop')" in cue, "Dash cue must clear cleanly on a new run")
 
@@ -31,4 +33,4 @@ if errors:
     sys.exit(1)
 
 print("BOSS DASH BUTTON CUE QUALITY GATE: PASSED")
-print("dash_target=yes core_open_only=yes dash_ready_only=yes visual_hit_now=yes reduced_motion=yes transition_latched=yes reset_clean=yes")
+print("dash_target=yes core_open_only=yes dash_ready_only=yes visual_hit_now=yes reduced_motion=yes reduced_motion_static=yes transition_latched=yes reset_clean=yes")

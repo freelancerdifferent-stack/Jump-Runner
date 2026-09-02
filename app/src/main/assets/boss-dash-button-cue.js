@@ -10,7 +10,10 @@
     #dashBtn.sentinel-strike-window::after{content:'HIT NOW';position:absolute;left:50%;top:-24px;transform:translateX(-50%);padding:3px 8px;border-radius:999px;background:#07101ee8;border:1px solid #74f7c5;color:#dffff3;font:900 9px system-ui;letter-spacing:1px;white-space:nowrap;pointer-events:none}
     #dashBtn.sentinel-strike-pop{animation:sentinelDashStrikePop .34s ease-out}
     @keyframes sentinelDashStrikePop{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1.06)}}
-    @media (prefers-reduced-motion:reduce){#dashBtn.sentinel-strike-pop{animation:none}}
+    @media (prefers-reduced-motion:reduce){
+      #dashBtn.sentinel-strike-window{transform:none}
+      #dashBtn.sentinel-strike-pop{animation:none}
+    }
   `;
   document.head.appendChild(style);
   const baseUpdate=window.update;
