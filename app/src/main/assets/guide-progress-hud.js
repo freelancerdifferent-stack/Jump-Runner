@@ -6,6 +6,7 @@
   chip.setAttribute('role','status');
   chip.setAttribute('aria-live','polite');
   chip.setAttribute('aria-atomic','true');
+  chip.setAttribute('aria-hidden','true');
   const NORMAL_TOP='max(72px,calc(env(safe-area-inset-top) + 50px))';
   const BOSS_TOP='max(112px,calc(env(safe-area-inset-top) + 90px))';
   const SAFE_WIDTH='calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 32px)';
@@ -37,11 +38,13 @@
     chip.style.transform=`translateX(-50%) scale(${active&&!reducedMotion.matches?'1.045':'1'})`;
   }
   function setBossHudClearance(active){chip.style.top=active?BOSS_TOP:NORMAL_TOP;}
+  function setAccessibleVisibility(active){chip.setAttribute('aria-hidden',active?'false':'true');}
   function refresh(now=performance.now()){
     const gameplayPaused=typeof paused!=='undefined'&&paused;
     const active=typeof tutorialActive==='function'&&tutorialActive()&&state==='play'&&!gameplayPaused;
     const bossHudActive=typeof boss!=='undefined'&&!boss.dead&&(boss.active||boss.intro>0);
     setBossHudClearance(active&&bossHudActive);
+    setAccessibleVisibility(active);
     if(!active){chip.style.opacity='0';setCompletionStyle(false);setControlFocus('',false);lastText='';lastStage=null;completeUntil=0;requestAnimationFrame(refresh);return;}
     const total=Array.isArray(tips)?tips.length:0;
     const stage=Math.min(onboardingStage,total);
