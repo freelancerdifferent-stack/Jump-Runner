@@ -60,6 +60,7 @@ jobs:
           python3 tools/check_boss_hit_confirmation.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_dash_button_cue.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_boss_core_cue_accessibility.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_boss_core_charge_accessibility.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_clear_streak_progress.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_flawless_clear_progress.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_clean_sweep_progress.py 2>&1 | tee -a ci-diagnostics/latest.log
