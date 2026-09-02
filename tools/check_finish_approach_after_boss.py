@@ -17,7 +17,13 @@ if PATH.is_file():
             'finish approach cue must suppress itself during the boss encounter')
     require('player.x/level_end' in flat and 'pct>=.88' in flat,
             'finish approach cue must retain the final-stretch distance threshold')
-    require("announced=false" in flat and "cue.classlist.remove('show')" in flat,
+    require("setattribute('role','status')" in flat and "setattribute('aria-live','polite')" in flat and "setattribute('aria-atomic','true')" in flat,
+            'finish approach cue must expose an atomic polite status announcement')
+    require("setattribute('aria-hidden','true')" in flat and "setattribute('aria-hidden','false')" in flat and 'functionhidecue()' in flat,
+            'finish approach cue assistive visibility must follow its visual lifecycle')
+    require('prefers-reduced-motion:reduce' in flat and 'finishapproachreduced' in flat,
+            'finish approach cue must avoid transform motion for reduced-motion users')
+    require("announced=false" in flat and "cleartimeout(hidetimer)" in flat and "hidecue();reset();" in flat,
             'finish approach cue must reset cleanly for a new run')
 
 if errors:
@@ -27,4 +33,4 @@ if errors:
     sys.exit(1)
 
 print('FINISH APPROACH AFTER BOSS GATE: PASSED')
-print('boss_resolved_gate=yes final_stretch_threshold=yes reset=yes')
+print('boss_resolved_gate=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes reduced_motion=yes reset=yes')
