@@ -9,14 +9,15 @@
  function victoryGuidanceClear(){const el=document.getElementById('bossDefeatFollowthrough');return !el||el.getAttribute('aria-hidden')==='true';}
  function hideCue(){cue.classList.remove('show');cue.setAttribute('aria-hidden','true');}
  function clearCue(){clearTimeout(hideTimer);hideTimer=0;pendingAfterPause=false;hideCue();}
- function showCue(){clearTimeout(hideTimer);hideCue();void cue.offsetWidth;cue.setAttribute('aria-hidden','false');cue.classList.add('show');hideTimer=setTimeout(()=>{hideTimer=0;hideCue();},760);}
+ function playArrivalFeedback(){if(typeof chord==='function')chord([659,784],.075,.018,'sine');if(typeof haptic==='function')haptic(12);}
+ function showCue(withFeedback=true){clearTimeout(hideTimer);hideCue();void cue.offsetWidth;cue.setAttribute('aria-hidden','false');cue.classList.add('show');if(withFeedback)playArrivalFeedback();hideTimer=setTimeout(()=>{hideTimer=0;hideCue();},760);}
  function check(){
    if(state!=='play'||announced||!sentinelResolved()||!victoryGuidanceClear())return;
    const pct=player.x/LEVEL_END;
    if(pct>=.88){announced=true;showCue();}
  }
  addEventListener('jumprunnerpause',()=>{if(cue.classList.contains('show')){pendingAfterPause=true;clearTimeout(hideTimer);hideTimer=0;hideCue();}});
- addEventListener('jumprunnerresume',()=>{if(pendingAfterPause&&state==='play'){pendingAfterPause=false;showCue();}});
+ addEventListener('jumprunnerresume',()=>{if(pendingAfterPause&&state==='play'){pendingAfterPause=false;showCue(false);}});
  addEventListener('jumprunnerresult',clearCue);
  const hud=updateHud;updateHud=function(){hud();check();};
  const reset=resetRun;resetRun=function(){announced=false;clearCue();reset();};

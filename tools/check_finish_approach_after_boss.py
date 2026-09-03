@@ -33,10 +33,14 @@ if PATH.is_file():
             'finish approach cue must use a high-contrast focused status treatment')
     require('prefers-reduced-motion:reduce' in flat and 'finishapproachreduced' in flat,
             'finish approach cue must avoid transform motion for reduced-motion users')
+    require("functionplayarrivalfeedback(){if(typeofchord==='function')chord([659,784],.075,.018,'sine');if(typeofhaptic==='function')haptic(12);}" in flat,
+            'finish approach cue must provide restrained optional audio and haptic acknowledgement')
+    require('functionshowcue(withfeedback=true)' in flat and 'if(withfeedback)playarrivalfeedback();' in flat,
+            'finish approach sensory feedback must fire only through the visible cue path')
     require("addeventlistener('jumprunnerpause'" in flat and 'pendingafterpause=true' in flat and "addeventlistener('jumprunnerresume'" in flat,
             'finish approach cue must preserve a visible cue across app pause/resume')
-    require("pendingafterpause&&state==='play'" in flat and 'pendingafterpause=false;showcue();' in flat,
-            'finish approach cue must replay only after gameplay resumes')
+    require("pendingafterpause&&state==='play'" in flat and 'pendingafterpause=false;showcue(false);' in flat,
+            'finish approach cue must replay visually after resume without duplicating audio or haptics')
     require('functionclearcue(){cleartimeout(hidetimer);hidetimer=0;pendingafterpause=false;hidecue();}' in flat,
             'finish approach cue must centralize timer, replay, and assistive cleanup')
     require("addeventlistener('jumprunnerresult',clearcue)" in flat,
@@ -51,4 +55,4 @@ if errors:
     sys.exit(1)
 
 print('FINISH APPROACH AFTER BOSS GATE: PASSED')
-print('boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes pause_resume_preserved=yes result_cleanup=yes reset=yes')
+print('boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes sensory_ack=yes pause_resume_preserved=yes resume_no_duplicate_sensory=yes result_cleanup=yes reset=yes')
