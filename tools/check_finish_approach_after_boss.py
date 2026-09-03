@@ -21,6 +21,14 @@ if PATH.is_file():
             'finish approach cue must expose an atomic polite status announcement')
     require("setattribute('aria-hidden','true')" in flat and "setattribute('aria-hidden','false')" in flat and 'functionhidecue()' in flat,
             'finish approach cue assistive visibility must follow its visual lifecycle')
+    require('font-size:clamp(10px,1.35vw,13px)' in flat and 'max-width:min(82vw,360px)' in flat,
+            'finish approach cue must stay legible without overrunning mobile landscape')
+    require('env(safe-area-inset-top,0px)' in flat and 'top:max(15%,' in flat,
+            'finish approach cue must avoid top display cutouts and system insets')
+    require('@media(max-width:520px)' in flat and 'max-width:88vw' in flat and 'letter-spacing:.14em' in flat,
+            'finish approach cue must retain a compact narrow-screen presentation')
+    require('border-radius:999px' in flat and 'background:#07101ecc' in flat and 'text-align:center' in flat,
+            'finish approach cue must use a high-contrast focused status treatment')
     require('prefers-reduced-motion:reduce' in flat and 'finishapproachreduced' in flat,
             'finish approach cue must avoid transform motion for reduced-motion users')
     require("addeventlistener('jumprunnerpause'" in flat and 'pendingafterpause=true' in flat and "addeventlistener('jumprunnerresume'" in flat,
@@ -37,4 +45,4 @@ if errors:
     sys.exit(1)
 
 print('FINISH APPROACH AFTER BOSS GATE: PASSED')
-print('boss_resolved_gate=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes reduced_motion=yes pause_resume_preserved=yes reset=yes')
+print('boss_resolved_gate=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes pause_resume_preserved=yes reset=yes')
