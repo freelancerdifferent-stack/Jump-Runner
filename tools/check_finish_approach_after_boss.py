@@ -23,7 +23,11 @@ if PATH.is_file():
             'finish approach cue assistive visibility must follow its visual lifecycle')
     require('prefers-reduced-motion:reduce' in flat and 'finishapproachreduced' in flat,
             'finish approach cue must avoid transform motion for reduced-motion users')
-    require("announced=false" in flat and "cleartimeout(hidetimer)" in flat and "hidecue();reset();" in flat,
+    require("addeventlistener('jumprunnerpause'" in flat and 'pendingafterpause=true' in flat and "addeventlistener('jumprunnerresume'" in flat,
+            'finish approach cue must preserve a visible cue across app pause/resume')
+    require("pendingafterpause&&state==='play'" in flat and 'pendingafterpause=false;showcue();' in flat,
+            'finish approach cue must replay only after gameplay resumes')
+    require("announced=false" in flat and "pendingafterpause=false" in flat and "cleartimeout(hidetimer)" in flat and "hidecue();reset();" in flat,
             'finish approach cue must reset cleanly for a new run')
 
 if errors:
@@ -33,4 +37,4 @@ if errors:
     sys.exit(1)
 
 print('FINISH APPROACH AFTER BOSS GATE: PASSED')
-print('boss_resolved_gate=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes reduced_motion=yes reset=yes')
+print('boss_resolved_gate=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes reduced_motion=yes pause_resume_preserved=yes reset=yes')
