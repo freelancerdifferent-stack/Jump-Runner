@@ -1,7 +1,7 @@
 'use strict';
 (()=>{
   const hud=document.querySelector('.hud');
-  if(!hud||typeof window.boss==='undefined')return;
+  if(!hud)return;
   const el=document.createElement('div');
   el.id='bossObjectiveHud';
   el.setAttribute('role','status');
@@ -11,10 +11,10 @@
   hud.appendChild(el);
   let last='';
   function tick(){
-    if(!window.boss||!window.state){requestAnimationFrame(tick);return;}
-    const active=window.boss.active&&!window.boss.dead&&window.state==='play';
+    const b=window.__jrBoss,s=window.__jrGetState?.();
+    const active=Boolean(b&&b.active&&!b.dead&&s==='play');
     if(active){
-      const next=window.boss.coreOpen?'CORE OPEN · DASH OR STOMP NOW':'DEFEAT SKY SENTINEL · WAIT FOR CORE';
+      const next=b.coreOpen?'CORE OPEN · DASH OR STOMP NOW':'DEFEAT SKY SENTINEL · WAIT FOR CORE';
       if(next!==last){el.textContent=next;el.setAttribute('aria-label',next);last=next;}
       el.style.opacity='1';
     }else{el.style.opacity='0';last='';}
