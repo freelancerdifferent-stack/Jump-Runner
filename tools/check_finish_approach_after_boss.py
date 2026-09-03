@@ -37,7 +37,11 @@ if PATH.is_file():
             'finish approach cue must preserve a visible cue across app pause/resume')
     require("pendingafterpause&&state==='play'" in flat and 'pendingafterpause=false;showcue();' in flat,
             'finish approach cue must replay only after gameplay resumes')
-    require("announced=false" in flat and "pendingafterpause=false" in flat and "cleartimeout(hidetimer)" in flat and "hidecue();reset();" in flat,
+    require('functionclearcue(){cleartimeout(hidetimer);hidetimer=0;pendingafterpause=false;hidecue();}' in flat,
+            'finish approach cue must centralize timer, replay, and assistive cleanup')
+    require("addeventlistener('jumprunnerresult',clearcue)" in flat,
+            'finish approach cue must clear immediately when a win/death result transition begins')
+    require("announced=false;clearcue();reset();" in flat,
             'finish approach cue must reset cleanly for a new run')
 
 if errors:
@@ -47,4 +51,4 @@ if errors:
     sys.exit(1)
 
 print('FINISH APPROACH AFTER BOSS GATE: PASSED')
-print('boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes pause_resume_preserved=yes reset=yes')
+print('boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes pause_resume_preserved=yes result_cleanup=yes reset=yes')
