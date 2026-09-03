@@ -59,3 +59,5 @@ resetRun=function(){resetBoss();baseBossReset();};
 update=function(dt){baseBossUpdate(dt);updateBoss(dt);};
 drawWorld=function(){baseBossDraw();drawBoss();};
 showResult=function(win){if(win&&!boss.dead){state='play';overlay.classList.add('hidden');deathReason='';player.x=Math.min(player.x,BOSS_ARENA_LIMIT);player.inv=Math.max(player.inv,.6);last=performance.now();return;}baseBossShowResult(win);};
+window.__jrBoss=boss;
+window.__jrGetState=()=>state;
