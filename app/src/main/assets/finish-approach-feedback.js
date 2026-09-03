@@ -8,6 +8,7 @@
  function sentinelResolved(){return typeof boss==='undefined'||boss.dead;}
  function victoryGuidanceClear(){const el=document.getElementById('bossDefeatFollowthrough');return !el||el.getAttribute('aria-hidden')==='true';}
  function hideCue(){cue.classList.remove('show');cue.setAttribute('aria-hidden','true');}
+ function clearCue(){clearTimeout(hideTimer);hideTimer=0;pendingAfterPause=false;hideCue();}
  function showCue(){clearTimeout(hideTimer);hideCue();void cue.offsetWidth;cue.setAttribute('aria-hidden','false');cue.classList.add('show');hideTimer=setTimeout(()=>{hideTimer=0;hideCue();},760);}
  function check(){
    if(state!=='play'||announced||!sentinelResolved()||!victoryGuidanceClear())return;
@@ -16,6 +17,7 @@
  }
  addEventListener('jumprunnerpause',()=>{if(cue.classList.contains('show')){pendingAfterPause=true;clearTimeout(hideTimer);hideTimer=0;hideCue();}});
  addEventListener('jumprunnerresume',()=>{if(pendingAfterPause&&state==='play'){pendingAfterPause=false;showCue();}});
+ addEventListener('jumprunnerresult',clearCue);
  const hud=updateHud;updateHud=function(){hud();check();};
- const reset=resetRun;resetRun=function(){announced=false;pendingAfterPause=false;clearTimeout(hideTimer);hideTimer=0;hideCue();reset();};
+ const reset=resetRun;resetRun=function(){announced=false;clearCue();reset();};
 })();
