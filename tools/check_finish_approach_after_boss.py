@@ -41,8 +41,15 @@ if PATH.is_file():
             'finish approach cue must preserve a visible cue across app pause/resume')
     require("pendingafterpause&&state==='play'" in flat and 'pendingafterpause=false;showcue(false);' in flat,
             'finish approach cue must replay visually after resume without duplicating audio or haptics')
-    require('functionclearcue(){cleartimeout(hidetimer);hidetimer=0;pendingafterpause=false;hidecue();}' in flat,
-            'finish approach cue must centralize timer, replay, and assistive cleanup')
+    require("constprogresstrack=document.queryselector('.progress')" in flat and
+            "functionsetprogressemphasis(active){if(progresstrack)progresstrack.classlist.toggle('finish-near',boolean(active));}" in flat,
+            'final stretch must expose a persistent progress-track emphasis through a null-safe helper')
+    require(".progress.finish-near{" in flat and ".progress.finish-neari{" in flat and '.high-contrast.progress.finish-near' not in flat,
+            'final stretch progress emphasis must style the existing track without replacing its structure')
+    require('setprogressemphasis(true);' in flat and 'hidetimer=settimeout(()=>{hidetimer=0;hidecue();},760);' in flat,
+            'progress emphasis must persist after the brief arrival cue fades')
+    require('functionclearcue(){cleartimeout(hidetimer);hidetimer=0;pendingafterpause=false;hidecue();setprogressemphasis(false);}' in flat,
+            'finish approach cleanup must centralize timer, replay, assistive, and progress-emphasis cleanup')
     require("addeventlistener('jumprunnerresult',clearcue)" in flat,
             'finish approach cue must clear immediately when a win/death result transition begins')
     require("announced=false;clearcue();reset();" in flat,
@@ -55,4 +62,4 @@ if errors:
     sys.exit(1)
 
 print('FINISH APPROACH AFTER BOSS GATE: PASSED')
-print('boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes sensory_ack=yes pause_resume_preserved=yes resume_no_duplicate_sensory=yes result_cleanup=yes reset=yes')
+print('boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes sensory_ack=yes pause_resume_preserved=yes resume_no_duplicate_sensory=yes persistent_progress_emphasis=yes result_cleanup=yes reset=yes')
