@@ -40,7 +40,6 @@ if HTML.is_file():
         ('touch-action:none', 'touch-action:none is required for reliable mobile controls'),
         ('jumprunnerpause', 'pause lifecycle bridge is required'),
         ('jumprunnerresume', 'resume lifecycle bridge is required'),
-        ('finishlocked', 'finish gate regression guard is required'),
         ('finishlineunlocked', 'boss victory feedback is required'),
         ('control-feedback.js', 'touch control feedback is required'),
         ('danger-telegraphs.js', 'hazard telegraphs are required'),
@@ -55,6 +54,7 @@ if HTML.is_file():
         ('boss-shot-telegraph.js', 'boss shot telegraph is required'),
     ):
         require(token in flat or token in [s.lower() for s in scripts], message)
+    require(("finishlocked" in flat and "level_end-520" in flat) or ("boss_arena_limit" in flat and "player.x=Math.min(player.x,boss_arena_limit)" in flat), "finish gate regression guard is required")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource', 'admob', 'billingclient', 'play billing', 'rewarded ad'):
         require(token not in flat, f"forbidden token present: {token}")
 
