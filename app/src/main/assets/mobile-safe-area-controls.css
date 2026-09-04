@@ -1,0 +1,6 @@
+/* Keep touch controls clear of gesture areas without changing gameplay geometry. */
+.controls{padding-bottom:max(12px,env(safe-area-inset-bottom));padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right))}
+.control{min-width:64px;min-height:64px}
+@media(max-width:620px){.controls{gap:max(12px,2vw)}.control{min-width:72px;min-height:72px}}
+@media(max-height:390px){.controls{padding-bottom:max(8px,env(safe-area-inset-bottom));gap:8px}.control{min-width:58px;min-height:58px}}
+@media(prefers-reduced-motion:reduce){.control{transition:none}}
