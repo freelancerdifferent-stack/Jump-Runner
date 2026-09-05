@@ -3,7 +3,7 @@
   const AudioCtx=window.AudioContext||window.webkitAudioContext;
   const STORAGE_KEY='jr_audio_muted';
   let muted=localStorage.getItem(STORAGE_KEY)==='1';
-  let ctx=null,master=null,unlocked=false,lastCrystals=0,lastState='',lastBossHp=null;
+  let ctx=null,master=null,unlocked=false,lastCrystals=0,lastState='',lastBossHp=null,lastBossCoreOpen=false,lastBossShots=0;
 
   function renderToggle(button){
     if(!button)return;
@@ -67,6 +67,8 @@
   function dash(){tone(165,.07,'sawtooth',.08,260);setTimeout(()=>tone(520,.055,'square',.055,140),36)}
   function crystal(){chord(760,1040,.09)}
   function bossHit(){tone(120,.11,'square',.10,-35);setTimeout(()=>tone(680,.07,'triangle',.08,120),24)}
+  function bossCoreOpen(){tone(560,.10,'triangle',.07,180);setTimeout(()=>tone(920,.10,'sine',.07,180),58)}
+  function bossShot(){tone(280,.07,'square',.05,170)}
   function fail(){tone(210,.16,'sawtooth',.08,-90)}
   function win(){chord(520,780,.16);setTimeout(()=>tone(1040,.18,'triangle',.10,220),95)}
 
@@ -90,12 +92,24 @@
       if(typeof crystals!=='undefined')lastCrystals=crystals;
       if(typeof boss!=='undefined'){
         if(lastBossHp!==null&&boss.hp<lastBossHp)bossHit();
+        const coreOpen=Boolean(boss.active&&!boss.dead&&boss.coreOpen);
+        if(coreOpen&&!lastBossCoreOpen)bossCoreOpen();
+        lastBossCoreOpen=coreOpen;
         lastBossHp=boss.hp;
+      }
+      if(typeof bossShots!=='undefined'){
+        if(lastBossShots>0&&bossShots.length>lastBossShots)bossShot();
+        else if(lastBossShots===0&&bossShots.length>0)bossShot();
+        lastBossShots=bossShots.length;
       }
       if(typeof state!=='undefined'){
         if(lastState==='play'&&(state==='dying'||state==='dead'))fail();
         if(lastState!=='win'&&state==='win')win();
-        if((state==='menu'||state==='play')&&lastState==='win')lastBossHp=null;
+        if((state==='menu'||state==='play')&&lastState==='win'){
+          lastBossHp=null;
+          lastBossCoreOpen=false;
+          lastBossShots=0;
+        }
         lastState=state;
       }
     }catch(_){/* optional audio monitor remains fail-safe */}
