@@ -1,15 +1,47 @@
 'use strict';
 (()=>{
   const AudioCtx=window.AudioContext||window.webkitAudioContext;
-  if(!AudioCtx)return;
+  const STORAGE_KEY='jr_audio_muted';
+  let muted=localStorage.getItem(STORAGE_KEY)==='1';
   let ctx=null,master=null,unlocked=false,lastCrystals=0,lastState='',lastBossHp=null;
 
+  function renderToggle(button){
+    if(!button)return;
+    button.textContent=muted?'SOUND OFF':'SOUND ON';
+    button.setAttribute('aria-pressed',String(muted));
+    button.setAttribute('aria-label',muted?'Enable sound effects':'Disable sound effects');
+    button.classList.toggle('is-muted',muted);
+  }
+
+  function setMuted(next){
+    muted=Boolean(next);
+    try{localStorage.setItem(STORAGE_KEY,muted?'1':'0')}catch(_){/* preference persistence is optional */}
+    if(master)master.gain.value=muted?0:.16;
+    renderToggle(document.getElementById('audioToggle'));
+  }
+
+  function installToggle(){
+    if(document.getElementById('audioToggle'))return;
+    const button=document.createElement('button');
+    button.id='audioToggle';
+    button.className='audio-toggle';
+    button.type='button';
+    renderToggle(button);
+    button.addEventListener('pointerdown',e=>e.stopPropagation(),{passive:true});
+    button.addEventListener('click',()=>{
+      ensureAudio();
+      setMuted(!muted);
+    });
+    document.body.appendChild(button);
+  }
+
   function ensureAudio(){
+    if(!AudioCtx)return;
     try{
       if(!ctx){
         ctx=new AudioCtx();
         master=ctx.createGain();
-        master.gain.value=.16;
+        master.gain.value=muted?0:.16;
         master.connect(ctx.destination);
       }
       if(ctx.state==='suspended')ctx.resume().catch(()=>{});
@@ -18,7 +50,7 @@
   }
 
   function tone(freq,duration=.08,type='sine',gain=.16,slide=0){
-    if(!unlocked||!ctx||!master)return;
+    if(muted||!unlocked||!ctx||!master)return;
     try{
       const now=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();
       o.type=type;o.frequency.setValueAtTime(freq,now);
@@ -38,6 +70,7 @@
   function fail(){tone(210,.16,'sawtooth',.08,-90)}
   function win(){chord(520,780,.16);setTimeout(()=>tone(1040,.18,'triangle',.10,220),95)}
 
+  installToggle();
   addEventListener('pointerdown',ensureAudio,{passive:true});
   addEventListener('keydown',ensureAudio,{passive:true});
 
@@ -46,6 +79,7 @@
   dashBtn?.addEventListener('pointerdown',dash,{passive:true});
   addEventListener('keydown',e=>{
     if(e.repeat)return;
+    if(e.code==='KeyM')setMuted(!muted);
     if(e.code==='Space'||e.code==='ArrowUp')jump();
     if(e.code==='KeyX'||e.code==='ShiftLeft')dash();
   });
