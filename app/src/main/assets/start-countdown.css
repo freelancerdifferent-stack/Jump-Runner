@@ -1,0 +1,30 @@
+.start-countdown{
+  position:fixed;
+  inset:0;
+  z-index:45;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  color:#fff;
+  font:900 clamp(54px,11vw,112px)/1 system-ui,sans-serif;
+  letter-spacing:.05em;
+  text-shadow:0 4px 18px #000c,0 0 28px #69edff80;
+}
+.start-countdown[hidden]{display:none}
+.start-countdown::before{
+  content:'';
+  position:absolute;
+  width:min(34vw,220px);
+  aspect-ratio:1;
+  border-radius:50%;
+  background:#07101eb8;
+  border:2px solid #69edff80;
+  box-shadow:0 0 32px #69edff35,inset 0 0 28px #08111ecc;
+  z-index:-1;
+}
+.start-countdown.is-go{
+  color:#74f7c5;
+  text-shadow:0 4px 18px #000c,0 0 34px #74f7c590;
+}
+.start-countdown.is-go::before{border-color:#74f7c5aa}
+@media (prefers-reduced-motion:reduce){.start-countdown{transition:none;animation:none}}
