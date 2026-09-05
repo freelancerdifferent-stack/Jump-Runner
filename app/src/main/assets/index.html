@@ -1,71 +1,64 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Jump Runner</title>
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="premium-shell.css">
-<link rel="stylesheet" href="premium-hud.css">
-<link rel="stylesheet" href="premium-results.css">
-<link rel="stylesheet" href="premium-mobile.css">
-<link rel="stylesheet" href="mobile-safe-area-controls.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Jump Runner · Skyline Trial</title>
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="control-feedback.css" />
+<link rel="stylesheet" href="dash-ready-feedback.css" />
+<link rel="stylesheet" href="buffered-jump-feedback.css" />
+<link rel="stylesheet" href="coyote-grace-feedback.css" />
+<link rel="stylesheet" href="danger-telegraphs.css" />
+<link rel="stylesheet" href="checkpoint-feedback.css" />
+<link rel="stylesheet" href="impact-feedback.css" />
+<link rel="stylesheet" href="flow-feedback.css" />
+<link rel="stylesheet" href="health-feedback.css" />
+<link rel="stylesheet" href="personal-best-feedback.css" />
+<link rel="stylesheet" href="crystal-feedback.css" />
+<link rel="stylesheet" href="near-miss-feedback.css" />
+<link rel="stylesheet" href="landing-feedback.css" />
+<link rel="stylesheet" href="apex-feedback.css" />
+<link rel="stylesheet" href="pause-feedback.css" />
+<link rel="stylesheet" href="resume-countdown.css" />
+<link rel="stylesheet" href="boss-intro-feedback.css" />
+<link rel="stylesheet" href="boss-phase-feedback.css" />
+<link rel="stylesheet" href="boss-shot-telegraph.css" />
+<link rel="stylesheet" href="boss-core-charge-feedback.css" />
+<link rel="stylesheet" href="boss-core-window-feedback.css" />
+<link rel="stylesheet" href="boss-missed-window-feedback.css" />
+<link rel="stylesheet" href="boss-dash-button-cue.css" />
+<link rel="stylesheet" href="boss-hit-confirmation.css" />
+<link rel="stylesheet" href="boss-defeat-followthrough.css" />
+<link rel="stylesheet" href="boss-arena-lock-feedback.css" />
+<link rel="stylesheet" href="boss-objective-pulse.css" />
+<link rel="stylesheet" href="mobile-safe-area-controls.css" />
+<link rel="stylesheet" href="run-phase-milestones.css" />
 </head>
 <body>
-<canvas id="game" aria-label="Jump Runner game canvas"></canvas>
-<div class="hud"><div><div class="brand">JUMP RUNNER · SKYLINE TRIAL</div><div class="score" id="score">000000</div></div><div class="stats"><div class="pill">INTEGRITY<b id="health">◆◆◆</b></div><div class="pill">CRYSTALS<b id="crystals">0 / 0</b></div><div class="pill">FLOW<b id="flow">x1</b></div></div></div>
-<div class="progress"><i id="progressBar"></i></div>
-<div class="controls"><button class="control" id="jumpBtn" aria-label="Jump">JUMP</button><button class="control dash" id="dashBtn" aria-label="Dash">DASH</button></div>
-<div id="overlay" class="overlay"><div class="panel" id="panel"></div></div>
-<div id="pause" class="pause">PAUSED</div><div id="flash" class="flash"></div>
+<canvas id="game"></canvas>
+<div class="hud">
+  <div class="score-block"><div class="eyebrow">JUMP RUNNER · SKYLINE TRIAL</div><div id="score">000000</div></div>
+  <div class="stats"><div class="pill"><b>INTEGRITY</b><span id="health">◇◇◇</span></div><div class="pill"><b>CRYSTALS</b><span id="crystals">0 / 30</span></div><div class="pill"><b>FLOW</b><span id="flow">x1</span></div></div>
+</div>
+<div id="progress"><div id="progressBar"></div></div>
+<div id="pause">PAUSED</div>
+<div id="flash"></div>
+<div class="controls"><button id="jumpBtn">JUMP</button><button id="dashBtn">DASH</button></div>
+<div id="overlay"><div id="panel"></div></div>
 <script src="game.js"></script>
-<script src="dash-input-buffer.js"></script>
-<script src="mobile-input-resilience.js"></script>
-<script src="touch-release-safety.js"></script>
-<script src="checkpoints.js"></script>
-<script src="health.js"></script>
-<script src="biomes.js"></script>
 <script src="boss.js"></script>
-<script src="boss-checkpoint-recovery.js"></script>
-<script src="boss-camera-anchor.js"></script>
-<script src="audio.js"></script>
-<script src="mastery.js"></script>
-<script src="contracts.js"></script>
-<script src="accessibility.js"></script>
-<script src="reduced-motion.js"></script>
-<script src="onboarding.js"></script>
-<script src="guide-progress-hud.js"></script>
-<script src="native.js"></script>
-<script src="telemetry.js"></script>
-<script src="run-history.js"></script>
-<script src="performance.js"></script>
-<script src="gamepad.js"></script>
-<script src="input-hints.js"></script>
 <script src="control-feedback.js"></script>
-<script src="touch-control-polish.js"></script>
-<script src="near-miss-recovery-polish.js"></script>
+<script src="dash-ready-feedback.js"></script>
+<script src="buffered-jump-feedback.js"></script>
 <script src="coyote-grace-feedback.js"></script>
 <script src="danger-telegraphs.js"></script>
-<script src="speed-fx.js"></script>
-<script src="sentinel-arena-speed-readout.js"></script>
-<script src="sentinel-arena-progress-lock.js"></script>
 <script src="checkpoint-feedback.js"></script>
-<script src="checkpoint-approach-feedback.js"></script>
 <script src="impact-feedback.js"></script>
-<script src="health-feedback.js"></script>
-<script src="low-integrity-warning.js"></script>
 <script src="flow-feedback.js"></script>
-<script src="flow-decay-feedback.js"></script>
+<script src="health-feedback.js"></script>
 <script src="personal-best-feedback.js"></script>
-<script src="rank-next-goal.js"></script>
-<script src="best-rank-progress.js"></script>
-<script src="lifetime-clears.js"></script>
-<script src="clear-streak-progress.js"></script>
-<script src="flawless-clear-progress.js"></script>
-<script src="clean-sweep-progress.js"></script>
-<script src="perfect-trial-progress.js"></script>
-<script src="perfect-trial-streak.js"></script>
-<script src="perfect-streak-milestones.js"></script>
+<script src="crystal-feedback.js"></script>
 <script src="near-miss-feedback.js"></script>
 <script src="landing-feedback.js"></script>
 <script src="apex-feedback.js"></script>
@@ -91,5 +84,6 @@
 <script src="boss-distance-readout.js"></script>
 <script src="run-phase-milestones.js"></script>
 <script src="retry-coaching.js"></script>
+<script src="audio-feedback.js"></script>
 </body>
 </html>
