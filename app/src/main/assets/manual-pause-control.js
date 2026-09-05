@@ -46,6 +46,12 @@
    e.preventDefault();setManualPause(!(typeof paused!=='undefined'&&paused));
   }
  });
+ // MainActivity converts Android system Back into this event. During a run it behaves
+ // like a familiar pause/back gesture instead of silently doing nothing or exiting.
+ addEventListener('jumprunnerback',()=>{
+  if(typeof state==='undefined'||state!=='play')return;
+  setManualPause(!(typeof paused!=='undefined'&&paused));
+ });
  addEventListener('jumprunnerpause',()=>queueMicrotask(sync));
  addEventListener('jumprunnerresume',()=>queueMicrotask(sync));
  const observer=new MutationObserver(sync);observer.observe(document.getElementById('overlay'),{attributes:true,attributeFilter:['class']});
