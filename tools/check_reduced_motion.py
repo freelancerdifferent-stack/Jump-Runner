@@ -24,7 +24,7 @@ require('accessibility.js' in html, 'accessibility runtime must be packaged')
 if script:
     require("matchmedia?.('(prefers-reduced-motion:reduce)')" in script, 'must honor the platform reduced-motion preference')
     require(
-        "addeventlistener('change',onSystemChange)" in script or "addlistener(onSystemChange)" in script or
+        "addeventlistener('change',onsystemchange)" in script or "addlistener(onsystemchange)" in script or
         "addeventlistener('change',applypreference)" in script or "addlistener(applypreference)" in script,
         'reduced-motion preference changes must be observed')
     require('onsystemchange=()=>{if(override===null)applypreference()}' in script,
