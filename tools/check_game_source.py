@@ -52,8 +52,12 @@ if HTML.is_file():
         ('boss-phase-feedback.js', 'boss phase feedback is required'),
         ('boss-health-feedback.js', 'boss health feedback is required'),
         ('boss-shot-telegraph.js', 'boss shot telegraph is required'),
+        ('start-countdown.js', 'run start countdown is required'),
     ):
         require(token in flat or token in [s.lower() for s in scripts], message)
+    require("state='countdown'" in flat and "state='play'" in flat and "['3','2','1','go']" in flat, "run countdown must hold gameplay until a 3-2-1-GO sequence completes")
+    require("setattribute('role','status')" in flat and "setattribute('aria-live','polite')" in flat and "setattribute('aria-atomic','true')" in flat, "run countdown must remain accessible")
+    require("if(paused)" in flat and "jumprunnercountdowncomplete" in flat, "run countdown must tolerate app pause/resume and expose completion")
     require(("finishlocked" in flat and "level_end-520" in flat) or ("boss_arena_limit" in flat and "player.x=Math.min(player.x,boss_arena_limit)" in flat), "finish gate regression guard is required")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource', 'admob', 'billingclient', 'play billing', 'rewarded ad'):
         require(token not in flat, f"forbidden token present: {token}")
@@ -92,4 +96,4 @@ if errors:
     sys.exit(1)
 
 print('GAME SOURCE QUALITY GATE: PASSED')
-print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes monetization=absent')
+print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes start_countdown=yes monetization=absent')
