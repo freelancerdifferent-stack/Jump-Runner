@@ -1,0 +1,6 @@
+.motion-toggle{position:fixed;left:calc(50% + 64px);bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:30;min-width:112px;padding:9px 14px;border:1px solid rgba(158,239,255,.35);border-radius:999px;background:rgba(7,16,30,.78);color:#dffaff;font:800 10px/1 system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 8px 24px rgba(0,0,0,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.motion-toggle:active{transform:translateX(-50%) scale(.97)}
+.motion-toggle.is-calm{opacity:.72;border-color:rgba(116,247,197,.34);color:#bfffe7}
+@media (max-height:520px){.motion-toggle{left:calc(50% + 58px);bottom:max(10px,env(safe-area-inset-bottom));padding:7px 11px;font-size:9px;min-width:102px}}
+@media (prefers-reduced-motion:reduce){.motion-toggle{transition:none}}
+html[data-reduced-motion] .motion-toggle{transition:none}

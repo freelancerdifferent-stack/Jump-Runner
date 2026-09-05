@@ -23,7 +23,14 @@ require('reduced-motion.js' in html, 'reduced-motion runtime must be packaged')
 require('accessibility.js' in html, 'accessibility runtime must be packaged')
 if script:
     require("matchmedia?.('(prefers-reduced-motion:reduce)')" in script, 'must honor the platform reduced-motion preference')
-    require("addeventlistener('change',applypreference)" in script or "addlistener(applypreference)" in script, 'reduced-motion preference changes must be observed')
+    require(
+        "addeventlistener('change',onsystemchange)" in script or "addlistener(onsystemchange)" in script or
+        "addeventlistener('change',applypreference)" in script or "addlistener(applypreference)" in script,
+        'reduced-motion preference changes must be observed')
+    require('onsystemchange=()=>{if(override===null)applypreference()}' in script,
+            'system preference changes must apply only while no explicit player override exists')
+    require("localstorage.getitem(storage_key)" in script and "localstorage.setitem(storage_key" in script,
+            'explicit motion preference must persist locally')
     require("toggleattribute('data-reduced-motion',reduced)" in script, 'document state must reflect reduced-motion preference')
     require('shake=0' in script, 'decorative screen shake must be suppressed')
     require('player.trail.length=0' in script, 'long player motion trails must be suppressed')
@@ -48,4 +55,4 @@ if errors:
     sys.exit(1)
 
 print('REDUCED MOTION QUALITY GATE: PASSED')
-print('platform_preference=yes live_updates=yes screen_shake=off trails=off particles=reduced gameplay_timing=unchanged accessibility_storage_fallback=yes accessibility_toggle_state=yes')
+print('platform_preference=yes live_updates=yes persisted_override=yes screen_shake=off trails=off particles=reduced gameplay_timing=unchanged accessibility_storage_fallback=yes accessibility_toggle_state=yes')
