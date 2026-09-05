@@ -40,6 +40,7 @@ if HTML.is_file():
         ('touch-action:none', 'touch-action:none is required for reliable mobile controls'),
         ('jumprunnerpause', 'pause lifecycle bridge is required'),
         ('jumprunnerresume', 'resume lifecycle bridge is required'),
+        ('jumprunnerback', 'Android Back lifecycle bridge is required'),
         ('finishlineunlocked', 'boss victory feedback is required'),
         ('control-feedback.js', 'touch control feedback is required'),
         ('danger-telegraphs.js', 'hazard telegraphs are required'),
@@ -55,6 +56,7 @@ if HTML.is_file():
         ('start-countdown.js', 'run start countdown is required'),
     ):
         require(token in flat or token in [s.lower() for s in scripts], message)
+    require("addeventlistener('jumprunnerback'" in flat and "setmanualpause(!(typeofpaused!=='undefined'&&paused))" in flat, "Android Back must toggle the active run through the shared pause path")
     require("state='countdown'" in flat and "state='play'" in flat and "['3','2','1','go']" in flat, "run countdown must hold gameplay until a 3-2-1-GO sequence completes")
     require("setattribute('role','status')" in flat and "setattribute('aria-live','polite')" in flat and "setattribute('aria-atomic','true')" in flat, "run countdown must remain accessible")
     require("if(paused)" in flat and "jumprunnercountdowncomplete" in flat, "run countdown must tolerate app pause/resume and expose completion")
@@ -96,4 +98,4 @@ if errors:
     sys.exit(1)
 
 print('GAME SOURCE QUALITY GATE: PASSED')
-print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes start_countdown=yes monetization=absent')
+print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes start_countdown=yes android_back_pause=yes monetization=absent')
