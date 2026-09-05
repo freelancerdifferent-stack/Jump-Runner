@@ -36,7 +36,10 @@
  }
  button.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();});
  button.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();setManualPause(!(typeof paused!=='undefined'&&paused));});
- pauseCard.addEventListener('pointerdown',e=>{if(typeof paused!=='undefined'&&paused){e.preventDefault();setManualPause(false);}});
+ pauseCard.addEventListener('pointerdown',e=>{
+  if(e.target!==pauseCard)return;
+  if(typeof paused!=='undefined'&&paused){e.preventDefault();setManualPause(false);}
+ });
  addEventListener('keydown',e=>{
   if(e.repeat)return;
   if((e.code==='KeyP'||e.code==='Escape')&&typeof state!=='undefined'&&state==='play'){
