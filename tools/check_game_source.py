@@ -55,6 +55,7 @@ if HTML.is_file():
         ('boss-phase-feedback.js', 'boss phase feedback is required'),
         ('boss-health-feedback.js', 'boss health feedback is required'),
         ('boss-shot-telegraph.js', 'boss shot telegraph is required'),
+        ('trial-objective-ribbon.js', 'trial objective ribbon is required'),
         ('start-countdown.js', 'run start countdown is required'),
     ):
         require(token in flat or token in [s.lower() for s in scripts], message)
@@ -67,6 +68,7 @@ if HTML.is_file():
     require(("finishlocked" in flat and "level_end-520" in flat) or ("boss_arena_limit" in flat and "player.x=Math.min(player.x,boss_arena_limit)" in flat), "finish gate regression guard is required")
     require("functionbosscoreopen()" in flat and "coreopen&&!lastbosscoreopen" in flat, "Sentinel core-open transition must keep a distinct audio cue")
     require("functionbossshot()" in flat and "bossshots.length>lastbossshots" in flat, "Sentinel projectile launch must keep a distinct audio cue")
+    require("'sentinelengaged','waitforcoreglow·dashorstomp'" in flat and "'finishunlocked','sentineldown·crossthefinishline'" in flat and "phase!==lastphase" in flat, "trial objective ribbon must progress from run to boss to finish guidance")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource', 'admob', 'billingclient', 'play billing', 'rewarded ad'):
         require(token not in flat, f"forbidden token present: {token}")
 
@@ -104,4 +106,4 @@ if errors:
     sys.exit(1)
 
 print('GAME SOURCE QUALITY GATE: PASSED')
-print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes crystal_feedback=yes crystal_milestones=yes start_countdown=yes android_back_pause=yes sentinel_audio_cues=yes monetization=absent')
+print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes crystal_feedback=yes crystal_milestones=yes dynamic_objective_ribbon=yes start_countdown=yes android_back_pause=yes sentinel_audio_cues=yes monetization=absent')
