@@ -2,6 +2,7 @@ from pathlib import Path
 import sys
 
 PATH = Path('app/src/main/assets/finish-approach-feedback.js')
+INDEX = Path('app/src/main/assets/index.html')
 errors = []
 
 def require(condition, message):
@@ -9,6 +10,11 @@ def require(condition, message):
         errors.append(message)
 
 require(PATH.is_file(), 'finish-approach-feedback.js is missing')
+require(INDEX.is_file(), 'index.html is missing')
+if INDEX.is_file():
+    html = ''.join(INDEX.read_text(encoding='utf-8').lower().split())
+    require('<scriptsrc="finish-approach-feedback.js"></script>' in html or "<scriptsrc='finish-approach-feedback.js'></script>" in html,
+            'finish approach feedback must be loaded by index.html')
 if PATH.is_file():
     flat = ''.join(PATH.read_text(encoding='utf-8').lower().split())
     require("functionsentinelresolved(){returntypeofboss==='undefined'||boss.dead;}" in flat,
@@ -62,4 +68,4 @@ if errors:
     sys.exit(1)
 
 print('FINISH APPROACH AFTER BOSS GATE: PASSED')
-print('boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes sensory_ack=yes pause_resume_preserved=yes resume_no_duplicate_sensory=yes persistent_progress_emphasis=yes result_cleanup=yes reset=yes')
+print('loaded=yes boss_resolved_gate=yes victory_guidance_sequence=yes final_stretch_threshold=yes accessible_status=yes assistive_visibility=yes mobile_readability=yes safe_area=yes narrow_screen=yes reduced_motion=yes sensory_ack=yes pause_resume_preserved=yes resume_no_duplicate_sensory=yes persistent_progress_emphasis=yes result_cleanup=yes reset=yes')
