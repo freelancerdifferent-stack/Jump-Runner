@@ -3,7 +3,7 @@
 (()=>{
   const dashButton=document.getElementById('dashBtn');
   if(!dashButton)return;
-  let previousReady=false;
+  let previousOpen=false,previousReady=false;
   const style=document.createElement('style');
   style.textContent=`
     #dashBtn.sentinel-core-open{box-shadow:0 0 0 2px #ffd86b88,0 0 20px #ffd86b55}
@@ -29,6 +29,8 @@
     dashButton.classList.toggle('sentinel-strike-window',dashReady);
     if(coreOpen){
       dashButton.setAttribute('aria-label',dashReady?'Dash now, Sentinel core open':'Dash recharging, Sentinel core open');
+    }else if(previousOpen){
+      dashButton.setAttribute('aria-label',player.dashCd<=0.001?'Dash ready':'Dash recharging');
     }
     if(dashReady&&!previousReady){
       dashButton.classList.remove('sentinel-strike-pop');
@@ -36,11 +38,14 @@
       dashButton.classList.add('sentinel-strike-pop');
     }
     if(!dashReady)dashButton.classList.remove('sentinel-strike-pop');
+    previousOpen=coreOpen;
     previousReady=dashReady;
   };
   const clearCue=()=>{
+    previousOpen=false;
     previousReady=false;
-    dashButton.classList.remove('sentinel-core-open','sentinel-strike-window','sentinel-strike-pop');
+    dashButton.classList.remove('sentinel-strike-window','sentinel-strike-pop');
+    dashButton.classList.remove('sentinel-core-open');
     if(state!=='play'||typeof boss==='undefined'||!boss.coreOpen)dashButton.setAttribute('aria-label','Dash');
   };
   const baseReset=window.resetRun;
