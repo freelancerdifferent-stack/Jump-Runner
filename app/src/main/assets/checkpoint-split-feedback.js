@@ -22,6 +22,7 @@ function showSplit(index){
  splitToast.classList.toggle('best',isBest);
  splitToast.setAttribute('aria-label',isBest?`${checkpointDefs[index].label}. ${current.toFixed(1)} seconds. New best split.`:`${checkpointDefs[index].label}. ${current.toFixed(1)} seconds. ${Math.abs(delta).toFixed(1)} seconds ${delta>=0?'behind':'ahead of'} best split.`);
  splitToast.classList.remove('show');void splitToast.offsetWidth;splitToast.classList.add('show');splitTimer=1.85;
+ dispatchEvent(new CustomEvent('jumprunnercheckpointsplit',{detail:{index,label:checkpointDefs[index].label,current,previous,delta,isBest}}));
 }
 const splitUpdate=update;
 update=function(dt){
