@@ -47,6 +47,7 @@ if HTML.is_file():
         ('checkpoint-feedback.js', 'checkpoint feedback is required'),
         ('checkpoint-split-feedback.js', 'checkpoint split feedback is required'),
         ('checkpoint-pace-chip.js', 'checkpoint pace chip is required'),
+        ('run-split-recap.js', 'run split recap is required'),
         ('impact-feedback.js', 'impact feedback is required'),
         ('health-feedback.js', 'health feedback is required'),
         ('crystal-feedback.js', 'crystal pickup feedback is required'),
@@ -69,6 +70,7 @@ if HTML.is_file():
     require("allcrystalssecured" in flat and "20crystals·finalstretch" in flat and "10crystals·routelocked" in flat and "seen.has(m.key)" in flat, "crystal collection milestones must remain one-shot, visible, and progressive")
     require("jr_checkpoint_split_" in flat and "newbestsplit" in flat and "aheadof" in flat and "behind" in flat, "checkpoint splits must persist best times and report replay delta feedback")
     require("jumprunnercheckpointsplit" in flat and "pace·" in flat and "aheadof" in flat and "behindbestsplit" in flat, "checkpoint pace chip must consume split deltas and preserve ahead/behind guidance")
+    require("checkpointsplitrecap" in flat and "run-split-recap-row" in flat and "jumprunnerresult" in flat and "requestanimationframe(renderrunsplitrecap)" in flat, "result screen must preserve the run checkpoint split recap")
     require(("finishlocked" in flat and "level_end-520" in flat) or ("boss_arena_limit" in flat and "player.x=Math.min(player.x,boss_arena_limit)" in flat), "finish gate regression guard is required")
     require("functionbosscoreopen()" in flat and "coreopen&&!lastbosscoreopen" in flat, "Sentinel core-open transition must keep a distinct audio cue")
     require("functionbossshot()" in flat and "bossshots.length>lastbossshots" in flat, "Sentinel projectile launch must keep a distinct audio cue")
@@ -110,4 +112,4 @@ if errors:
     sys.exit(1)
 
 print('GAME SOURCE QUALITY GATE: PASSED')
-print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes crystal_feedback=yes crystal_milestones=yes checkpoint_splits=yes checkpoint_pace=yes dynamic_objective_ribbon=yes start_countdown=yes android_back_pause=yes sentinel_audio_cues=yes monetization=absent')
+print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes crystal_feedback=yes crystal_milestones=yes checkpoint_splits=yes checkpoint_pace=yes split_recap=yes dynamic_objective_ribbon=yes start_countdown=yes android_back_pause=yes sentinel_audio_cues=yes monetization=absent')
