@@ -15,7 +15,7 @@ function clearPace(){latestPace=null;paceChip.hidden=true;paceChip.classList.rem
 function renderPace(detail){
  latestPace=detail;
  const delta=Number(detail.delta)||0,isBest=Boolean(detail.isBest),label=detail.label||'CHECKPOINT';
- const stateText=isBest?'BEST SPLIT':(delta<0?`${Math.abs(delta).toFixed(1)}s AHEAD`:`${delta.toFixed(1)}s BEHIND`);
+ const stateText=isBest?'BEST SPLIT':(delta<0?`${Math.abs(delta).toFixed(1)}s AHEAD OF BEST SPLIT`:`${delta.toFixed(1)}s BEHIND BEST SPLIT`);
  paceChip.textContent=`PACE · ${stateText}`;
  paceChip.hidden=false;
  paceChip.classList.toggle('ahead',!isBest&&delta<0);
