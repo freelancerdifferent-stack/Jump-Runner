@@ -35,9 +35,15 @@ require("focus_storage_key='jr_retry_focus'" in approach,'checkpoint approach mu
 require('localstorage.getitem(focus_storage_key)' in approach and 'value.delta)>.15' in approach,'checkpoint focus approach must restore only meaningful pace targets')
 require('focustarget&&focustarget.index===i' in approach,'checkpoint approach must match coaching to the intended gate only')
 require(token('FOCUS GATE · ${gate.label} · RECOVER ${delta.toFixed(1)}s') in approach,'focus checkpoint approach must show a concrete recovery target')
-require(token("cue.classList.toggle('focus',Boolean(isFocus))") in approach,'focus checkpoint must receive distinct restrained visual emphasis')
-require(token("cue.setAttribute('aria-label',`${gate.label}. Focus gate ahead. Recover ${delta.toFixed(1)} seconds.`)") in approach,'focus checkpoint approach must expose equivalent accessible coaching')
+require(token("presentCue(`FOCUS GATE · ${gate.label} · RECOVER ${delta.toFixed(1)}s`") in approach,'focus checkpoint must use the shared timed cue path')
 require(token('focusTarget=readFocusTarget()') in approach,'focus checkpoint target must refresh on every new run')
+require(token("addEventListener('jumprunnercheckpointsplit',resolveFocus)") in approach,'focus checkpoint must resolve coaching from the canonical split event')
+require('detail.index!==focustarget.index' in approach and 'focusresolved=true' in approach,'focus resolution must be one-shot and scoped to the intended gate')
+require('boolean(detail.isbest)||delta<=.15' in approach,'focus resolution must treat a best split or noise-floor match as cleared')
+require(token('FOCUS CLEARED · ${detail.label}') in approach and token('FOCUS GAP · ${detail.label} · +${Math.max(0,delta).toFixed(1)}s') in approach,'focus resolution must report success or remaining pace gap')
+require(token("cue.setAttribute('aria-label',label)") in approach,'focus approach and resolution cues must expose equivalent accessible text')
+require('settimeout(hidecue,duration)' in approach and token("addEventListener('jumprunnerpause',hideCue)") in approach,'focus cues must auto-hide even with reduced motion and clear on pause')
+require("cue.classlist.remove('show','focus','cleared')" in approach,'focus cue visual states must reset cleanly between runs')
 
 if errors:
     print('RETRY FOCUS REMINDER QUALITY GATE: FAILED')
@@ -45,4 +51,4 @@ if errors:
         print(f'{i}. {error}')
     sys.exit(1)
 print('RETRY FOCUS REMINDER QUALITY GATE: PASSED')
-print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_gate_approach=yes')
+print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_gate_approach=yes focus_gate_resolution=yes')
