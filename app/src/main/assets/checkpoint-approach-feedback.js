@@ -74,6 +74,7 @@
     }else{
       presentCue(`FOCUS GAP · ${detail.label} · +${Math.max(0,delta).toFixed(1)}s`,`${detail.label}. Focus gate reached. ${Math.max(0,delta).toFixed(1)} seconds behind best pace.`,{focus:true,duration:1150});
     }
+    window.dispatchEvent(new CustomEvent('jumprunnerfocusresolved',{detail:{index:detail.index,label:String(detail.label||focusTarget.label||`GATE ${detail.index+1}`),cleared,delta}}));
   }
 
   const baseUpdateHud=updateHud;
