@@ -65,6 +65,10 @@ require(token("addEventListener('jumprunnerresult',()=>requestAnimationFrame(ren
 require(token("card.setAttribute('role','status')") in streak and token("card.setAttribute('aria-live','polite')") in streak and token("card.setAttribute('aria-atomic','true')") in streak,'focus streak result must remain an accessible polite atomic status')
 require('if(!attempted||!panel)return' in streak,'focus streak result must stay hidden when no coached gate was attempted')
 require('newbest=false;basereset()' in streak,'focus personal-best celebration state must reset cleanly between runs')
+require('focus-best-menu' in streak and token('COACHING BEST ×${best}') in streak,'saved focus personal best must surface as a restrained menu accolade')
+require(token("badge.setAttribute('aria-label',`Best focus recovery streak ${best}`)") in streak,'menu focus personal best must expose equivalent accessible text')
+require('best=readnumber(best_storage_key);if(best<=0)return' in streak,'menu accolade must refresh persisted best and remain hidden before a best exists')
+require(token('const baseShowMenu=showMenu;showMenu=function(){baseShowMenu();requestAnimationFrame(renderMenuBest);};') in streak,'menu accolade must render after the canonical menu surface')
 
 if errors:
     print('RETRY FOCUS REMINDER QUALITY GATE: FAILED')
@@ -72,4 +76,4 @@ if errors:
         print(f'{i}. {error}')
     sys.exit(1)
 print('RETRY FOCUS REMINDER QUALITY GATE: PASSED')
-print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_chip=yes focus_chip_split_clear=yes focus_gate_approach=yes focus_gate_resolution=yes focus_outcome_event=yes focus_recovery_streak=yes focus_recovery_personal_best=yes')
+print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_chip=yes focus_chip_split_clear=yes focus_gate_approach=yes focus_gate_resolution=yes focus_outcome_event=yes focus_recovery_streak=yes focus_recovery_personal_best=yes focus_best_menu=yes')

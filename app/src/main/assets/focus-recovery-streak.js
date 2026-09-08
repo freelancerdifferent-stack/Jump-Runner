@@ -4,7 +4,7 @@
  const STORAGE_KEY='jr_focus_recovery_streak',BEST_STORAGE_KEY='jr_focus_recovery_best';
  let streak=readNumber(STORAGE_KEY),best=readNumber(BEST_STORAGE_KEY),attempted=false,lastCleared=false,lastLabel='',newBest=false;
  const style=document.createElement('style');
- style.textContent='.focus-recovery-streak{margin:8px 0 2px;padding:9px 12px;border:1px solid #74f7c530;border-radius:14px;background:#08150f99;text-align:left}.focus-recovery-streak.is-reset{border-color:#ff8b9a30;background:#17090d88}.focus-recovery-streak.is-best{box-shadow:0 0 0 1px #ffd86b30 inset}.focus-recovery-streak .kicker{color:#74f7c5;font:900 9px/1.2 system-ui;letter-spacing:.14em}.focus-recovery-streak.is-reset .kicker{color:#ff9aab}.focus-recovery-streak.is-best .kicker{color:#ffd86b}.focus-recovery-streak .target{margin-top:4px;color:#fff;font:900 12px/1.3 system-ui}.focus-recovery-streak .detail{margin-top:3px;color:#bcd7df;font:700 9px/1.35 system-ui}@media(max-height:390px){.focus-recovery-streak{margin-top:6px;padding:7px 10px}.focus-recovery-streak .target{font-size:10px}.focus-recovery-streak .detail{font-size:8px}}';
+ style.textContent='.focus-recovery-streak{margin:8px 0 2px;padding:9px 12px;border:1px solid #74f7c530;border-radius:14px;background:#08150f99;text-align:left}.focus-recovery-streak.is-reset{border-color:#ff8b9a30;background:#17090d88}.focus-recovery-streak.is-best{box-shadow:0 0 0 1px #ffd86b30 inset}.focus-recovery-streak .kicker{color:#74f7c5;font:900 9px/1.2 system-ui;letter-spacing:.14em}.focus-recovery-streak.is-reset .kicker{color:#ff9aab}.focus-recovery-streak.is-best .kicker{color:#ffd86b}.focus-recovery-streak .target{margin-top:4px;color:#fff;font:900 12px/1.3 system-ui}.focus-recovery-streak .detail{margin-top:3px;color:#bcd7df;font:700 9px/1.35 system-ui}.focus-best-menu{margin:8px auto 2px;width:max-content;max-width:100%;padding:6px 11px;border:1px solid #ffd86b2c;border-radius:999px;background:#17140899;color:#ffe9a6;font:900 9px/1.2 system-ui;letter-spacing:.11em;text-transform:uppercase}@media(max-height:390px){.focus-recovery-streak{margin-top:6px;padding:7px 10px}.focus-recovery-streak .target{font-size:10px}.focus-recovery-streak .detail{font-size:8px}.focus-best-menu{margin-top:5px;padding:5px 9px;font-size:8px}}';
  document.head.appendChild(style);
  function readNumber(key){try{return Math.max(0,Math.floor(Number(localStorage.getItem(key))||0))}catch{return 0}}
  function writeNumber(key,value){try{localStorage.setItem(key,String(Math.max(0,value)))}catch{}}
@@ -24,7 +24,15 @@
   detail.textContent=lastCleared?(newBest?`Personal best focus streak. ${lastLabel} converted cleanly.`:(streak>1?`${streak} coached gates cleared in a row · best ×${best}. Keep converting the next-run target.`:`${lastLabel} recovered · best ×${best}. Clear the next coached gate to build a streak.`)):`${lastLabel} stayed outside the pace target · best ×${best}. Recover it next run to start a new streak.`;
   card.append(kicker,title,detail);const actions=panel.querySelector('.actions');if(actions)panel.insertBefore(card,actions);else panel.appendChild(card);
  }
+ function renderMenuBest(){
+  if(!panel)return;
+  panel.querySelector('.focus-best-menu')?.remove();
+  best=readNumber(BEST_STORAGE_KEY);if(best<=0)return;
+  const badge=document.createElement('div');badge.className='focus-best-menu';badge.textContent=`COACHING BEST ×${best}`;badge.setAttribute('aria-label',`Best focus recovery streak ${best}`);
+  const actions=panel.querySelector('.actions');if(actions)panel.insertBefore(badge,actions);else panel.appendChild(badge);
+ }
  addEventListener('jumprunnerfocusresolved',onFocusResolved);
  addEventListener('jumprunnerresult',()=>requestAnimationFrame(renderResult));
+ const baseShowMenu=showMenu;showMenu=function(){baseShowMenu();requestAnimationFrame(renderMenuBest);};
  const baseReset=resetRun;resetRun=function(){attempted=false;lastCleared=false;lastLabel='';newBest=false;baseReset();};
 })();
