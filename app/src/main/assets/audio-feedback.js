@@ -3,7 +3,7 @@
   const AudioCtx=window.AudioContext||window.webkitAudioContext;
   const STORAGE_KEY='jr_audio_muted';
   let muted=localStorage.getItem(STORAGE_KEY)==='1';
-  let ctx=null,master=null,unlocked=false,lastCrystals=0,lastState='',lastBossHp=null,lastBossCoreOpen=false,lastBossShots=0;
+  let ctx=null,master=null,unlocked=false,lastCrystals=0,lastState='',lastBossHp=null,lastBossCoreOpen=false,lastBossShots=0,lastFocusMilestone='';
 
   function renderToggle(button){
     if(!button)return;
@@ -69,6 +69,13 @@
   function bossHit(){tone(120,.11,'square',.10,-35);setTimeout(()=>tone(680,.07,'triangle',.08,120),24)}
   function bossCoreOpen(){tone(560,.10,'triangle',.07,180);setTimeout(()=>tone(920,.10,'sine',.07,180),58)}
   function bossShot(){tone(280,.07,'square',.05,170)}
+  function focusMilestone(label){
+    const apex=label.includes('APEX FOCUS'),fire=label.includes('ON FIRE');
+    const root=apex?660:(fire?590:520);
+    tone(root,.10,'triangle',.075,120);
+    setTimeout(()=>tone(root*1.25,.11,'sine',.065,140),46);
+    setTimeout(()=>tone(root*1.5,.13,'triangle',.07,170),96);
+  }
   function fail(){tone(210,.16,'sawtooth',.08,-90)}
   function win(){chord(520,780,.16);setTimeout(()=>tone(1040,.18,'triangle',.10,220),95)}
 
@@ -102,6 +109,10 @@
         else if(lastBossShots===0&&bossShots.length>0)bossShot();
         lastBossShots=bossShots.length;
       }
+      const milestone=document.querySelector('.focus-live-milestone.show');
+      const milestoneLabel=milestone?String(milestone.textContent||'').trim():'';
+      if(milestoneLabel&&milestoneLabel!==lastFocusMilestone)focusMilestone(milestoneLabel);
+      lastFocusMilestone=milestoneLabel;
       if(typeof state!=='undefined'){
         if(lastState==='play'&&(state==='dying'||state==='dead'))fail();
         if(lastState!=='win'&&state==='win')win();
@@ -109,6 +120,7 @@
           lastBossHp=null;
           lastBossCoreOpen=false;
           lastBossShots=0;
+          lastFocusMilestone='';
         }
         lastState=state;
       }
