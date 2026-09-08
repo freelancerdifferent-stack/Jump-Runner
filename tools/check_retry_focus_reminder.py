@@ -55,12 +55,16 @@ require('settimeout(hidecue,duration)' in approach and token("addEventListener('
 require("cue.classlist.remove('show','focus','cleared')" in approach,'focus cue visual states must reset cleanly between runs')
 require("newcustomevent('jumprunnerfocusresolved'" in approach and 'cleared,delta' in approach,'focus resolution must publish a canonical coached-gate outcome event')
 require("storage_key='jr_focus_recovery_streak'" in streak,'focus recovery streak must persist independently from the retry target')
+require("best_storage_key='jr_focus_recovery_best'" in streak,'focus recovery best must persist independently from the current streak')
 require(token("addEventListener('jumprunnerfocusresolved',onFocusResolved)") in streak,'focus recovery streak must consume the canonical coached-gate outcome')
 require('streak=lastcleared?streak+1:0' in streak,'focus recovery streak must increment only on a clear and reset on a miss')
-require('localstorage.setitem(storage_key' in streak,'focus recovery streak must persist locally')
+require('writenumber(storage_key,streak)' in streak,'focus recovery streak must persist locally')
+require('if(lastcleared&&streak>best)' in streak and 'writenumber(best_storage_key,best)' in streak,'focus recovery personal best must update only when a cleared streak exceeds the saved best')
+require("newbest?'newbestmomentum'" in streak and 'personalbestfocusstreak' in streak,'focus recovery result must celebrate a new personal best without changing gameplay')
 require(token("addEventListener('jumprunnerresult',()=>requestAnimationFrame(renderResult))") in streak,'focus recovery streak must render only on the result surface')
 require(token("card.setAttribute('role','status')") in streak and token("card.setAttribute('aria-live','polite')") in streak and token("card.setAttribute('aria-atomic','true')") in streak,'focus streak result must remain an accessible polite atomic status')
 require('if(!attempted||!panel)return' in streak,'focus streak result must stay hidden when no coached gate was attempted')
+require('newbest=false;baseReset()' in streak,'focus personal-best celebration state must reset cleanly between runs')
 
 if errors:
     print('RETRY FOCUS REMINDER QUALITY GATE: FAILED')
@@ -68,4 +72,4 @@ if errors:
         print(f'{i}. {error}')
     sys.exit(1)
 print('RETRY FOCUS REMINDER QUALITY GATE: PASSED')
-print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_chip=yes focus_chip_split_clear=yes focus_gate_approach=yes focus_gate_resolution=yes focus_outcome_event=yes focus_recovery_streak=yes')
+print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_chip=yes focus_chip_split_clear=yes focus_gate_approach=yes focus_gate_resolution=yes focus_outcome_event=yes focus_recovery_streak=yes focus_recovery_personal_best=yes')
