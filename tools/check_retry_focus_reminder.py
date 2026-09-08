@@ -69,7 +69,7 @@ require('focus-best-menu' in streak and token('COACHING BEST ×${best}') in stre
 require(token('FOCUS MOMENTUM ×${streak} · BEST ×${best}') in streak,'active focus recovery streak must surface on the home menu')
 require(token("badge.setAttribute('aria-label',`Current focus recovery streak ${streak}. Best ${best}.`)") in streak,'active menu momentum must expose equivalent accessible text')
 require('streak=readnumber(storage_key);best=readnumber(best_storage_key);if(best<=0&&streak<=0)return' in streak,'menu momentum must refresh persisted current and best streaks and remain hidden before progress exists')
-require("badge.classname='focus-best-menu'+(streak>0?' is-active':'')" in streak,'active menu momentum must use a distinct restrained visual state')
+require(token("badge.className='focus-best-menu'+(streak>0?' is-active':'')") in streak,'active menu momentum must use a distinct restrained visual state')
 require(token('const baseShowMenu=showMenu;showMenu=function(){baseShowMenu();requestAnimationFrame(renderMenuBest);};') in streak,'menu accolade must render after the canonical menu surface')
 
 if errors:
