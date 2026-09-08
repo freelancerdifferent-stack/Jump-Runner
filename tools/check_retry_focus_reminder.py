@@ -5,6 +5,7 @@ ASSETS=Path('app/src/main/assets')
 HTML=ASSETS/'index.html'
 SCRIPT=ASSETS/'retry-focus-reminder.js'
 APPROACH=ASSETS/'checkpoint-approach-feedback.js'
+STREAK=ASSETS/'focus-recovery-streak.js'
 errors=[]
 
 def require(condition,message):
@@ -17,11 +18,14 @@ def token(value):
 require(HTML.is_file(),'index.html is missing')
 require(SCRIPT.is_file(),'retry-focus-reminder.js is missing')
 require(APPROACH.is_file(),'checkpoint-approach-feedback.js is missing')
+require(STREAK.is_file(),'focus-recovery-streak.js is missing')
 html=HTML.read_text(encoding='utf-8').lower() if HTML.is_file() else ''
 script=token(SCRIPT.read_text(encoding='utf-8')) if SCRIPT.is_file() else ''
 approach=token(APPROACH.read_text(encoding='utf-8')) if APPROACH.is_file() else ''
+streak=token(STREAK.read_text(encoding='utf-8')) if STREAK.is_file() else ''
 require('retry-focus-reminder.js' in html,'retry focus reminder must be packaged in index.html')
 require('checkpoint-approach-feedback.js' in html,'checkpoint approach feedback must be packaged in index.html')
+require('focus-recovery-streak.js' in html,'focus recovery streak must be packaged in index.html')
 require(token("addEventListener('jumprunnercheckpointsplit'") in script,'retry focus reminder must consume checkpoint split events')
 require(token("addEventListener('jumprunnerresult'") in script,'retry focus reminder must commit a target on result')
 require('localstorage.setitem(storage_key' in script and 'localstorage.removeitem(storage_key' in script,'retry focus reminder must persist and clear the next-run target')
@@ -49,6 +53,14 @@ require(token('FOCUS CLEARED · ${detail.label}') in approach and token('FOCUS G
 require(token("cue.setAttribute('aria-label',label)") in approach,'focus approach and resolution cues must expose equivalent accessible text')
 require('settimeout(hidecue,duration)' in approach and token("addEventListener('jumprunnerpause',hideCue)") in approach,'focus cues must auto-hide even with reduced motion and clear on pause')
 require("cue.classlist.remove('show','focus','cleared')" in approach,'focus cue visual states must reset cleanly between runs')
+require("newcustomevent('jumprunnerfocusresolved'" in approach and 'cleared,delta' in approach,'focus resolution must publish a canonical coached-gate outcome event')
+require("storage_key='jr_focus_recovery_streak'" in streak,'focus recovery streak must persist independently from the retry target')
+require(token("addEventListener('jumprunnerfocusresolved',onFocusResolved)") in streak,'focus recovery streak must consume the canonical coached-gate outcome')
+require('streak=lastcleared?streak+1:0' in streak,'focus recovery streak must increment only on a clear and reset on a miss')
+require('localstorage.setitem(storage_key' in streak,'focus recovery streak must persist locally')
+require(token("addEventListener('jumprunnerresult',()=>requestAnimationFrame(renderResult))") in streak,'focus recovery streak must render only on the result surface')
+require(token("card.setAttribute('role','status')") in streak and token("card.setAttribute('aria-live','polite')") in streak and token("card.setAttribute('aria-atomic','true')") in streak,'focus streak result must remain an accessible polite atomic status')
+require('if(!attempted||!panel)return' in streak,'focus streak result must stay hidden when no coached gate was attempted')
 
 if errors:
     print('RETRY FOCUS REMINDER QUALITY GATE: FAILED')
@@ -56,4 +68,4 @@ if errors:
         print(f'{i}. {error}')
     sys.exit(1)
 print('RETRY FOCUS REMINDER QUALITY GATE: PASSED')
-print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_chip=yes focus_chip_split_clear=yes focus_gate_approach=yes focus_gate_resolution=yes')
+print('packaged=yes split_driven=yes result_driven=yes persistent=yes noise_floor=yes accessible=yes reduced_motion=yes pause_safe=yes focus_chip=yes focus_chip_split_clear=yes focus_gate_approach=yes focus_gate_resolution=yes focus_outcome_event=yes focus_recovery_streak=yes')
