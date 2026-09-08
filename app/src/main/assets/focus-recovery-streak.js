@@ -15,6 +15,7 @@
  function clearRunMomentum(){
   if(introTimer){clearTimeout(introTimer);introTimer=0;}
   const card=document.querySelector('.focus-run-momentum');if(card)card.remove();
+  clearLiveMilestone();
  }
  function clearLiveMilestone(){
   if(liveTimer){clearTimeout(liveTimer);liveTimer=0;}
@@ -72,8 +73,8 @@
   const actions=panel.querySelector('.actions');if(actions)panel.insertBefore(badge,actions);else panel.appendChild(badge);
  }
  addEventListener('jumprunnerfocusresolved',onFocusResolved);
- addEventListener('jumprunnerresult',()=>{clearRunMomentum();clearLiveMilestone();requestAnimationFrame(renderResult);});
- addEventListener('jumprunnerpause',()=>{clearRunMomentum();clearLiveMilestone();});
- const baseShowMenu=showMenu;showMenu=function(){clearRunMomentum();clearLiveMilestone();baseShowMenu();requestAnimationFrame(renderMenuBest);};
- const baseReset=resetRun;resetRun=function(){clearRunMomentum();clearLiveMilestone();attempted=false;lastCleared=false;lastLabel='';newBest=false;streak=readNumber(STORAGE_KEY);best=readNumber(BEST_STORAGE_KEY);baseReset();setTimeout(showRunMomentum,260);};
+ addEventListener('jumprunnerresult',()=>{clearRunMomentum();requestAnimationFrame(renderResult);});
+ addEventListener('jumprunnerpause',clearRunMomentum);
+ const baseShowMenu=showMenu;showMenu=function(){clearRunMomentum();baseShowMenu();requestAnimationFrame(renderMenuBest);};
+ const baseReset=resetRun;resetRun=function(){clearRunMomentum();attempted=false;lastCleared=false;lastLabel='';newBest=false;streak=readNumber(STORAGE_KEY);best=readNumber(BEST_STORAGE_KEY);baseReset();setTimeout(showRunMomentum,260);};
 })();
