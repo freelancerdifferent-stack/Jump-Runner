@@ -64,7 +64,7 @@ require("newbest?'newbestmomentum'" in streak and 'personalbestfocusstreak' in s
 require(token("addEventListener('jumprunnerresult',()=>requestAnimationFrame(renderResult))") in streak,'focus recovery streak must render only on the result surface')
 require(token("card.setAttribute('role','status')") in streak and token("card.setAttribute('aria-live','polite')") in streak and token("card.setAttribute('aria-atomic','true')") in streak,'focus streak result must remain an accessible polite atomic status')
 require('if(!attempted||!panel)return' in streak,'focus streak result must stay hidden when no coached gate was attempted')
-require('newbest=false;baseReset()' in streak,'focus personal-best celebration state must reset cleanly between runs')
+require('newbest=false;basereset()' in streak,'focus personal-best celebration state must reset cleanly between runs')
 
 if errors:
     print('RETRY FOCUS REMINDER QUALITY GATE: FAILED')
