@@ -1,7 +1,7 @@
 'use strict';
 // Final chase boss: designed for the two-button auto-run control scheme.
 // DASH OR STOMP TO BREAK ITS CORE remains the encounter contract; the core now opens on reachable passes.
-const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false,passSpent:false,recoil:0,arenaPinned:false};
+const boss={active:false,dead:false,hp:5,maxHp:5,x:7040,y:238,t:0,shot:0,hitCd:0,intro:0,flash:0,victory:0,coreOpen:false,passSpent:false,recoil:0,arenaPinned:false,missCue:0};
 let bossShots=[];
 const BOSS_ARENA_LIMIT=7680;
 const BOSS_VICTORY_GRACE=1.4;
@@ -9,12 +9,12 @@ const BOSS_HIT_GRACE=.42;
 const BOSS_HIT_RECOIL=96;
 const baseBossReset=resetRun,baseBossUpdate=update,baseBossDraw=drawWorld,baseBossShowResult=showResult;
 function bossRect(){return{x:boss.x-34,y:boss.y-28,w:68,h:56};}
-function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;boss.passSpent=false;boss.recoil=0;boss.arenaPinned=false;bossShots=[];}
-function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;boss.t=0;boss.passSpent=false;boss.recoil=0;boss.arenaPinned=false;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
-function hitBoss(stomp){if(boss.dead||boss.hitCd>0||boss.passSpent)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;boss.passSpent=true;boss.recoil=BOSS_HIT_RECOIL;player.inv=Math.max(player.inv,BOSS_HIT_GRACE);score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;player.inv=Math.max(player.inv,BOSS_VICTORY_GRACE);score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
+function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;boss.passSpent=false;boss.recoil=0;boss.arenaPinned=false;boss.missCue=0;bossShots=[];}
+function activateBoss(){boss.active=true;boss.intro=1.75;boss.shot=1.25;boss.t=0;boss.passSpent=false;boss.recoil=0;boss.arenaPinned=false;boss.missCue=0;shake=Math.max(shake,5);burst(player.x+260,220,'#ff6d88',14,120);}
+function hitBoss(stomp){if(boss.dead||boss.hitCd>0||boss.passSpent)return;boss.hp--;boss.hitCd=.48;boss.flash=.24;boss.coreOpen=false;boss.passSpent=true;boss.recoil=BOSS_HIT_RECOIL;boss.missCue=0;player.inv=Math.max(player.inv,BOSS_HIT_GRACE);score+=stomp?1250:1000;flow=Math.min(8,flow+2);flowTimer=3.2;shake=Math.max(shake,12);burst(boss.x,boss.y,'#ffd86b',28,260);if(stomp){player.vy=-610;player.onGround=false;}if(boss.hp<=0){boss.dead=true;boss.active=false;bossShots=[];boss.victory=1.6;player.inv=Math.max(player.inv,BOSS_VICTORY_GRACE);score+=5000;flow=8;flowTimer=4;shake=18;burst(boss.x,boss.y,'#74f7c5',54,320);}}
 function updateBoss(dt){
  if(state!=='play')return;
- boss.flash=Math.max(0,boss.flash-dt);boss.victory=Math.max(0,boss.victory-dt);
+ boss.flash=Math.max(0,boss.flash-dt);boss.victory=Math.max(0,boss.victory-dt);boss.missCue=Math.max(0,boss.missCue-dt);
  if(boss.dead)return;
  if(!boss.active&&player.x>=6350)activateBoss();
  if(!boss.active)return;
@@ -31,7 +31,9 @@ function updateBoss(dt){
  const laneMix=Math.max(0,Math.min(1,(175-baseLead)/25));
  boss.y=patrolY+(attackLaneY-patrolY)*laneMix;
  if(baseLead>=165)boss.passSpent=false;
+ const wasCoreOpen=boss.coreOpen;
  boss.coreOpen=boss.intro<=0&&boss.hitCd<=0&&!boss.passSpent&&baseLead<150&&boss.recoil<=0;
+ if(wasCoreOpen&&!boss.coreOpen&&!boss.passSpent&&boss.hitCd<=0){boss.missCue=.8;}
  if(boss.intro<=0&&!boss.coreOpen){boss.shot-=dt;if(boss.shot<=0){boss.shot=Math.max(.62,1.35-(boss.maxHp-boss.hp)*.11);const sx=boss.x-30,sy=boss.y,dx=player.x+player.w/2-sx,dy=player.y+player.h/2-sy,l=Math.hypot(dx,dy)||1;bossShots.push({x:sx,y:sy,vx:dx/l*390,vy:dy/l*390,life:3.2,maxLife:3.2});}}
  else if(boss.coreOpen){boss.shot=Math.max(boss.shot,.42);}
  for(const s of bossShots){s.x+=s.vx*dt;s.y+=s.vy*dt;s.life-=dt;const pr={x:player.x+6,y:player.y+5,w:player.w-12,h:player.h-7};if(s.life>0&&overlap(pr,{x:s.x-7,y:s.y-7,w:14,h:14})){s.life=0;kill('The Sky Sentinel pulse hit your Integrity.');}}
@@ -61,7 +63,7 @@ function drawBossHealthSegments(bx,bw){
 function drawBoss(){
  if(!boss.active&&!boss.dead&&boss.victory<=0)return;
  ctx.save();
- if(!boss.dead){const x=boss.x-cam,y=boss.y,approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5,readiness=Math.max(0,Math.min(1,(1-approach)*1.35)),charging=boss.active&&boss.intro<=0&&!boss.coreOpen&&!boss.passSpent&&boss.hitCd<=0&&boss.recoil<=0&&readiness>.58;ctx.translate(x,y);ctx.rotate(Math.sin(boss.t*3)*.08);if(charging){ctx.globalAlpha=.18+.25*readiness;ctx.strokeStyle='#ffd86b';ctx.lineWidth=2.5+readiness*1.5;ctx.beginPath();ctx.arc(0,0,38+readiness*12,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}ctx.shadowBlur=boss.coreOpen?38:(charging?28+readiness*9:(boss.flash>0?34:24));ctx.shadowColor=boss.coreOpen?'#74f7c5':(charging?'#ffd86b':(boss.flash>0?'#ffffff':'#ff6d88'));ctx.fillStyle=boss.flash>0?'#fff3d4':'#1a2036';ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.fill();ctx.strokeStyle=boss.coreOpen?'#74f7c5':'#ffd86b';ctx.lineWidth=boss.coreOpen?7:(charging?6:5);ctx.beginPath();ctx.arc(0,0,25,boss.t,boss.t+Math.PI*1.45);ctx.stroke();ctx.fillStyle=boss.coreOpen?'#74f7c5':(charging?'#ffd86b':'#ff6d88');ctx.beginPath();ctx.arc(0,0,boss.coreOpen?12:(charging?9+readiness*2:9),0,Math.PI*2);ctx.fill();ctx.setTransform(1,0,0,1,0,0);const bw=240,bx=VW/2-bw/2;ctx.globalAlpha=.95;ctx.fillStyle='#09111ecc';ctx.fillRect(bx,54,bw,24);drawBossHealthSegments(bx,bw);ctx.fillStyle='#fff';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText('SKY SENTINEL · '+boss.hp+'/'+boss.maxHp,VW/2,74);if(boss.coreOpen){ctx.fillStyle='#74f7c5';ctx.font='900 13px system-ui';ctx.fillText('CORE OPEN · DASH NOW',VW/2,96);}else if(boss.active&&boss.intro<=0&&!boss.passSpent){ctx.fillStyle='#0b1724dd';ctx.fillRect(VW/2-90,88,180,18);ctx.fillStyle='#ffd86b';ctx.fillRect(VW/2-86,92,172*readiness,5);ctx.fillStyle='#d9e5f2';ctx.font='800 9px system-ui';ctx.fillText(readiness>.58?'CORE CHARGING · GET READY':'CORE SHIELDED',VW/2,104);}}
+ if(!boss.dead){const x=boss.x-cam,y=boss.y,approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5,readiness=Math.max(0,Math.min(1,(1-approach)*1.35)),charging=boss.active&&boss.intro<=0&&!boss.coreOpen&&!boss.passSpent&&boss.hitCd<=0&&boss.recoil<=0&&readiness>.58;ctx.translate(x,y);ctx.rotate(Math.sin(boss.t*3)*.08);if(charging){ctx.globalAlpha=.18+.25*readiness;ctx.strokeStyle='#ffd86b';ctx.lineWidth=2.5+readiness*1.5;ctx.beginPath();ctx.arc(0,0,38+readiness*12,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}ctx.shadowBlur=boss.coreOpen?38:(charging?28+readiness*9:(boss.flash>0?34:24));ctx.shadowColor=boss.coreOpen?'#74f7c5':(charging?'#ffd86b':(boss.flash>0?'#ffffff':'#ff6d88'));ctx.fillStyle=boss.flash>0?'#fff3d4':'#1a2036';ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.fill();ctx.strokeStyle=boss.coreOpen?'#74f7c5':'#ffd86b';ctx.lineWidth=boss.coreOpen?7:(charging?6:5);ctx.beginPath();ctx.arc(0,0,25,boss.t,boss.t+Math.PI*1.45);ctx.stroke();ctx.fillStyle=boss.coreOpen?'#74f7c5':(charging?'#ffd86b':'#ff6d88');ctx.beginPath();ctx.arc(0,0,boss.coreOpen?12:(charging?9+readiness*2:9),0,Math.PI*2);ctx.fill();ctx.setTransform(1,0,0,1,0,0);const bw=240,bx=VW/2-bw/2;ctx.globalAlpha=.95;ctx.fillStyle='#09111ecc';ctx.fillRect(bx,54,bw,24);drawBossHealthSegments(bx,bw);ctx.fillStyle='#fff';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText('SKY SENTINEL · '+boss.hp+'/'+boss.maxHp,VW/2,74);if(boss.coreOpen){ctx.fillStyle='#74f7c5';ctx.font='900 13px system-ui';ctx.fillText('CORE OPEN · DASH NOW',VW/2,96);}else if(boss.missCue>0){ctx.globalAlpha=Math.min(1,boss.missCue/.18);ctx.fillStyle='#0b1724e8';ctx.fillRect(VW/2-112,87,224,22);ctx.fillStyle='#ffd86b';ctx.font='900 10px system-ui';ctx.fillText('WINDOW MISSED · NEXT OPENING',VW/2,102);ctx.globalAlpha=.95;}else if(boss.active&&boss.intro<=0&&!boss.passSpent){ctx.fillStyle='#0b1724dd';ctx.fillRect(VW/2-90,88,180,18);ctx.fillStyle='#ffd86b';ctx.fillRect(VW/2-86,92,172*readiness,5);ctx.fillStyle='#d9e5f2';ctx.font='800 9px system-ui';ctx.fillText(readiness>.58?'CORE CHARGING · GET READY':'CORE SHIELDED',VW/2,104);}}
  ctx.restore();ctx.save();ctx.fillStyle='#ffd86b';for(const s of bossShots){const px=s.x-cam,py=s.y;ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(px-s.vx*.035,py-s.vy*.035,11,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fill();}ctx.restore();drawBossBanner();
 }
 resetRun=function(){resetBoss();baseBossReset();};
