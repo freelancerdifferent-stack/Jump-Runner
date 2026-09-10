@@ -7,12 +7,13 @@
   const base=drawWorld;
   drawWorld=function(){
     base();
-    if(state!=='play'||!boss.active||boss.dead)return;
+    if(state!=='play')return;
+    const vulnerable=boss.active&&!boss.dead&&boss.coreOpen;
+    const charging=boss.active&&!boss.dead&&!boss.coreOpen&&boss.intro<=0&&!boss.passSpent&&boss.hitCd<=0&&boss.recoil<=0;
+    if(!vulnerable&&!charging)return;
     const sx=boss.x-cam,feet=GROUND;
     if(sx<-120||sx>VW+120)return;
-    const open=Boolean(boss.coreOpen);
-    const charging=!open&&boss.intro<=0&&!boss.passSpent&&boss.hitCd<=0&&boss.recoil<=0;
-    if(!open&&!charging)return;
+    const open=vulnerable;
     ctx.save();
     const pulse=reduced.matches?1:(.78+.22*Math.sin(boss.t*8));
     const alpha=open?.34:.12;
