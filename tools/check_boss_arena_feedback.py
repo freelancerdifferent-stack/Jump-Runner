@@ -4,6 +4,7 @@ import sys
 ASSETS = Path('app/src/main/assets')
 HTML = ASSETS / 'index.html'
 SCRIPT = ASSETS / 'boss-arena-lock-feedback.js'
+STRIKE = ASSETS / 'boss-strike-lane-feedback.js'
 errors = []
 
 def require(condition, message):
@@ -11,11 +12,13 @@ def require(condition, message):
         errors.append(message)
 
 require(SCRIPT.is_file(), 'boss-arena-lock-feedback.js is missing')
+require(STRIKE.is_file(), 'boss-strike-lane-feedback.js is missing')
 require(HTML.is_file(), 'index.html is missing')
 
 if HTML.is_file():
     html = ''.join(HTML.read_text(encoding='utf-8').lower().split())
     require('boss-arena-lock-feedback.js' in html, 'arena-lock feedback must be loaded by index.html')
+    require('boss-strike-lane-feedback.js' in html, 'strike-lane feedback must be loaded by index.html')
 
 if SCRIPT.is_file():
     flat = ''.join(SCRIPT.read_text(encoding='utf-8').lower().split())
@@ -29,6 +32,14 @@ if SCRIPT.is_file():
     require("pointerevents:'none'" in flat, 'arena hold cue must never block Jump/Dash input')
     require('env(safe-area-inset-top)' in flat, 'arena hold cue must respect Android display cutouts')
 
+if STRIKE.is_file():
+    flat = ''.join(STRIKE.read_text(encoding='utf-8').lower().split())
+    require("boss.coreopen" in flat and "boss.active" in flat and "!boss.dead" in flat, 'strike lane must only track the active Sentinel vulnerability state')
+    require("prefers-reduced-motion:reduce" in flat, 'strike lane animation must respect reduced-motion preference')
+    require("createlineargradient" in flat and "setlinedash" in flat, 'strike lane must provide a readable visual corridor and charging state')
+    require("draworld=function" in flat or "drawworld=function" in flat, 'strike lane must layer onto world rendering without changing combat update logic')
+    require("boss.x-cam" in flat and "ground" in flat, 'strike lane must stay anchored to the Sentinel world position and ground plane')
+
 if errors:
     print('BOSS ARENA FEEDBACK QUALITY GATE: FAILED')
     for i, error in enumerate(errors, 1):
@@ -36,4 +47,4 @@ if errors:
     sys.exit(1)
 
 print('BOSS ARENA FEEDBACK QUALITY GATE: PASSED')
-print('arena_control_mode_cue=yes accessible=yes touch_through=yes safe_area=yes')
+print('arena_control_mode_cue=yes accessible=yes touch_through=yes safe_area=yes strike_lane=yes reduced_motion=yes')
