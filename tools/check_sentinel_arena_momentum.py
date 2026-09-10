@@ -34,8 +34,12 @@ if READOUT.is_file():
     require('constsentinelarenaspeedbasedraw=draw' in readout, 'arena speed readout must preserve the existing draw pipeline')
     require("state==='play'" in readout and 'boss.active&&!boss.dead' in readout, 'arena speed readout must only replace the HUD during a live playable boss encounter')
     require('player.x>=boss_arena_limit-1' in readout, 'arena speed readout must use the same physical pin boundary')
-    require("ctx.filltext('arenalock',16,vh-10)" in readout, 'pinned runner must show ARENA LOCK instead of a misleading forward-speed value')
-    require("ctx.fillrect(0,vh-28,154,28)" in readout, 'arena readout must cover the original SPEED label before drawing its replacement')
+    require('functionsentinelarenacombatlabel()' in readout, 'pinned runner must expose a dedicated combat-state label')
+    require("return'arenalock·core'+boss.hp+'/'+boss.maxhp" in readout, 'closed core state must still explain that the runner is arena-locked and show boss HP')
+    require("'coreopen·dash'" in readout and "'coreopen·stomp'" in readout, 'open core state must provide an actionable Dash/Stomp cue')
+    require("'hitconfirmed·reset'" in readout, 'spent pass must provide a brief hit-confirm/reset state')
+    require('ctx.filltext(sentinelarenacombatlabel(),16,vh-11)' in readout, 'arena readout must render the dynamic combat-state label')
+    require('ctx.fillrect(0,vh-30,220,30)' in readout, 'arena readout must fully cover the original SPEED label before drawing its replacement')
 
 if PROGRESS_LOCK.is_file():
     progress = ''.join(PROGRESS_LOCK.read_text(encoding='utf-8').lower().split())
@@ -70,4 +74,4 @@ if errors:
     sys.exit(1)
 
 print('SENTINEL ARENA MOMENTUM QUALITY GATE: PASSED')
-print('arena_speed_streaks_suppressed=yes arena_speed_readout=locked arena_progress=stable arena_position=stable arena_camera=stable arena_ghost_trail=clean dash_bloom_preserved=yes landing_feedback_preserved=yes')
+print('arena_speed_streaks_suppressed=yes arena_combat_readout=dynamic arena_progress=stable arena_position=stable arena_camera=stable arena_ghost_trail=clean dash_bloom_preserved=yes landing_feedback_preserved=yes')
