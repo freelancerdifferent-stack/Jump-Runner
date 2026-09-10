@@ -33,6 +33,10 @@ if SCRIPT.is_file():
     require("setattribute('aria-atomic','true')" in flat, 'arena hold cue must be atomic')
     require("pointerevents:'none'" in flat, 'arena hold cue must never block Jump/Dash input')
     require('env(safe-area-inset-top)' in flat, 'arena hold cue must respect Android display cutouts')
+    require('constexplain_ms=2400' in flat, 'full arena-mode explanation must use a restrained finite dwell time')
+    require("'arenamode·jump/dash'" in flat and 'functionsetcompact()' in flat, 'arena cue must compact after the initial explanation instead of obscuring the fight')
+    require('(now||performance.now())-lockedsince>=explain_ms' in flat, 'arena cue compaction must be time-based while the lock remains active')
+    require("if(locked){lockedsince=now||performance.now();setexpanded();}" in flat, 'each new arena lock must restart with the full control explanation')
 
 if STRIKE.is_file():
     flat = ''.join(STRIKE.read_text(encoding='utf-8').lower().split())
@@ -58,4 +62,4 @@ if errors:
     sys.exit(1)
 
 print('BOSS ARENA FEEDBACK QUALITY GATE: PASSED')
-print('arena_control_mode_cue=yes accessible=yes touch_through=yes safe_area=yes strike_lane=yes reduced_motion=yes flow_hold=yes')
+print('arena_control_mode_cue=yes compact_lifecycle=yes accessible=yes touch_through=yes safe_area=yes strike_lane=yes reduced_motion=yes flow_hold=yes')
