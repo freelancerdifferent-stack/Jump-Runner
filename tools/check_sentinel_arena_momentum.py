@@ -49,7 +49,8 @@ if BOSS.is_file():
     boss = ''.join(BOSS.read_text(encoding='utf-8').lower().split())
     require('arenapinned:false' in boss, 'Sentinel must track whether the final arena pin has latched')
     require('if(player.x>=boss_arena_limit-1)boss.arenapinned=true' in boss, 'arena pin must latch when the runner reaches the final boundary')
-    require('if(boss.arenapinned){player.x=boss_arena_limit;cam=boss_arena_limit-210;}' in boss, 'pinned encounter must hold both runner and camera at deterministic coordinates')
+    require('if(boss.arenapinned){' in boss and 'player.x=boss_arena_limit;' in boss and 'cam=boss_arena_limit-210;' in boss, 'pinned encounter must hold both runner and camera at deterministic coordinates')
+    require('player.trail=player.trail.filter(t=>t.x<=boss_arena_limit+1)' in boss, 'pinned encounter must discard misleading forward ghost-trail samples')
     require('boss.arenapinned=false' in boss, 'arena pin state must reset for each run and encounter')
 
 if INDEX.is_file():
@@ -69,4 +70,4 @@ if errors:
     sys.exit(1)
 
 print('SENTINEL ARENA MOMENTUM QUALITY GATE: PASSED')
-print('arena_speed_streaks_suppressed=yes arena_speed_readout=locked arena_progress=stable arena_position=stable arena_camera=stable dash_bloom_preserved=yes landing_feedback_preserved=yes')
+print('arena_speed_streaks_suppressed=yes arena_speed_readout=locked arena_progress=stable arena_position=stable arena_camera=stable arena_ghost_trail=clean dash_bloom_preserved=yes landing_feedback_preserved=yes')
