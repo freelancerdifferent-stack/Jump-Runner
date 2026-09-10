@@ -5,6 +5,7 @@ ASSETS = Path('app/src/main/assets')
 HTML = ASSETS / 'index.html'
 SCRIPT = ASSETS / 'boss-arena-lock-feedback.js'
 STRIKE = ASSETS / 'boss-strike-lane-feedback.js'
+BOSS = ASSETS / 'boss.js'
 errors = []
 
 def require(condition, message):
@@ -13,6 +14,7 @@ def require(condition, message):
 
 require(SCRIPT.is_file(), 'boss-arena-lock-feedback.js is missing')
 require(STRIKE.is_file(), 'boss-strike-lane-feedback.js is missing')
+require(BOSS.is_file(), 'boss.js is missing')
 require(HTML.is_file(), 'index.html is missing')
 
 if HTML.is_file():
@@ -40,6 +42,15 @@ if STRIKE.is_file():
     require("draworld=function" in flat or "drawworld=function" in flat, 'strike lane must layer onto world rendering without changing combat update logic')
     require("boss.x-cam" in flat and "ground" in flat, 'strike lane must stay anchored to the Sentinel world position and ground plane')
 
+if BOSS.is_file():
+    flat = ''.join(BOSS.read_text(encoding='utf-8').lower().split())
+    require('constboss_flow_hold=.22' in flat, 'Sentinel arena must define a restrained Flow hold floor')
+    require('functionholdbossflowbeforebaseupdate(dt)' in flat, 'Sentinel arena must preserve Flow before the base timer can expire')
+    require("state==='play'&&boss.active&&!boss.dead&&flow>1" in flat, 'Flow preservation must only apply to a live active Sentinel fight with an earned streak')
+    require("boss.arenapinned||player.x>=boss_arena_limit-1" in flat, 'Flow preservation must only apply while entering or held inside the forced arena stop')
+    require('flowtimer=math.max(flowtimer,dt+boss_flow_hold)' in flat, 'forced boss waiting must not erase an earned Flow streak')
+    require('update=function(dt){holdbossflowbeforebaseupdate(dt);basebossupdate(dt);updateboss(dt);}' in flat, 'Flow hold must run before the base update decrements the timer')
+
 if errors:
     print('BOSS ARENA FEEDBACK QUALITY GATE: FAILED')
     for i, error in enumerate(errors, 1):
@@ -47,4 +58,4 @@ if errors:
     sys.exit(1)
 
 print('BOSS ARENA FEEDBACK QUALITY GATE: PASSED')
-print('arena_control_mode_cue=yes accessible=yes touch_through=yes safe_area=yes strike_lane=yes reduced_motion=yes')
+print('arena_control_mode_cue=yes accessible=yes touch_through=yes safe_area=yes strike_lane=yes reduced_motion=yes flow_hold=yes')
