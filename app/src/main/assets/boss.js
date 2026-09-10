@@ -19,7 +19,12 @@ function updateBoss(dt){
  if(!boss.active&&player.x>=6350)activateBoss();
  if(!boss.active)return;
  if(player.x>=BOSS_ARENA_LIMIT-1)boss.arenaPinned=true;
- if(boss.arenaPinned){player.x=BOSS_ARENA_LIMIT;cam=BOSS_ARENA_LIMIT-210;}
+ if(boss.arenaPinned){
+  player.x=BOSS_ARENA_LIMIT;cam=BOSS_ARENA_LIMIT-210;
+  // Base auto-run updates just before the arena clamp. Drop only those forward ghost samples
+  // so the stationary combat phase never looks like the runner is still sliding ahead.
+  player.trail=player.trail.filter(t=>t.x<=BOSS_ARENA_LIMIT+1);
+ }
  else player.x=Math.min(player.x,BOSS_ARENA_LIMIT);
  boss.t+=dt;boss.hitCd=Math.max(0,boss.hitCd-dt);boss.intro=Math.max(0,boss.intro-dt);boss.recoil=Math.max(0,boss.recoil-dt*220);
  const approach=(Math.sin(boss.t*1.45-Math.PI/2)+1)*.5;
