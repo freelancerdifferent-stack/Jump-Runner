@@ -7,6 +7,7 @@ const BOSS_ARENA_LIMIT=7680;
 const BOSS_VICTORY_GRACE=1.4;
 const BOSS_HIT_GRACE=.42;
 const BOSS_HIT_RECOIL=96;
+const BOSS_FLOW_HOLD=.22;
 const baseBossReset=resetRun,baseBossUpdate=update,baseBossDraw=drawWorld,baseBossShowResult=showResult;
 function bossRect(){return{x:boss.x-34,y:boss.y-28,w:68,h:56};}
 function resetBoss(){boss.active=false;boss.dead=false;boss.hp=boss.maxHp;boss.t=0;boss.shot=.7;boss.hitCd=0;boss.intro=0;boss.flash=0;boss.victory=0;boss.coreOpen=false;boss.passSpent=false;boss.recoil=0;boss.arenaPinned=false;boss.missCue=0;bossShots=[];}
@@ -71,8 +72,15 @@ function drawBoss(){
  if(!boss.dead){const x=boss.x-cam,y=boss.y,phase=boss.t*1.45-Math.PI/2,approach=(Math.sin(phase)+1)*.5,readiness=Math.max(0,Math.min(1,(1-approach)*1.35)),charging=boss.active&&boss.intro<=0&&!boss.coreOpen&&!boss.passSpent&&boss.hitCd<=0&&boss.recoil<=0&&readiness>.58,dashReady=player.dashCd<=.001,windowClosing=boss.coreOpen&&Math.cos(phase)>0&&approach>.12;ctx.translate(x,y);ctx.rotate(Math.sin(boss.t*3)*.08);if(charging){ctx.globalAlpha=.18+.25*readiness;ctx.strokeStyle='#ffd86b';ctx.lineWidth=2.5+readiness*1.5;ctx.beginPath();ctx.arc(0,0,38+readiness*12,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}ctx.shadowBlur=boss.coreOpen?38:(charging?28+readiness*9:(boss.flash>0?34:24));ctx.shadowColor=boss.coreOpen?'#74f7c5':(charging?'#ffd86b':(boss.flash>0?'#ffffff':'#ff6d88'));ctx.fillStyle=boss.flash>0?'#fff3d4':'#1a2036';ctx.beginPath();ctx.arc(0,0,34,0,Math.PI*2);ctx.fill();ctx.strokeStyle=boss.coreOpen?'#74f7c5':'#ffd86b';ctx.lineWidth=boss.coreOpen?7:(charging?6:5);ctx.beginPath();ctx.arc(0,0,25,boss.t,boss.t+Math.PI*1.45);ctx.stroke();ctx.fillStyle=boss.coreOpen?'#74f7c5':(charging?'#ffd86b':'#ff6d88');ctx.beginPath();ctx.arc(0,0,boss.coreOpen?12:(charging?9+readiness*2:9),0,Math.PI*2);ctx.fill();ctx.setTransform(1,0,0,1,0,0);const bw=240,bx=VW/2-bw/2;ctx.globalAlpha=.95;ctx.fillStyle='#09111ecc';ctx.fillRect(bx,54,bw,24);drawBossHealthSegments(bx,bw);ctx.fillStyle='#fff';ctx.font='800 10px system-ui';ctx.textAlign='center';ctx.fillText('SKY SENTINEL · '+boss.hp+'/'+boss.maxHp,VW/2,74);if(boss.coreOpen){ctx.fillStyle=windowClosing?'#ffd86b':'#74f7c5';ctx.font=dashReady?'900 13px system-ui':'900 10px system-ui';ctx.fillText(windowClosing?(dashReady?'CORE CLOSING · DASH NOW':'CORE CLOSING · STOMP NOW'):(dashReady?'CORE OPEN · DASH NOW':'CORE OPEN · STOMP · DASH RECHARGING'),VW/2,96);}else if(boss.missCue>0){ctx.globalAlpha=Math.min(1,boss.missCue/.18);ctx.fillStyle='#0b1724e8';ctx.fillRect(VW/2-112,87,224,22);ctx.fillStyle='#ffd86b';ctx.font='900 10px system-ui';ctx.fillText('WINDOW MISSED · NEXT OPENING',VW/2,102);ctx.globalAlpha=.95;}else if(boss.active&&boss.intro<=0&&!boss.passSpent){ctx.fillStyle='#0b1724dd';ctx.fillRect(VW/2-90,88,180,18);ctx.fillStyle='#ffd86b';ctx.fillRect(VW/2-86,92,172*readiness,5);ctx.fillStyle='#d9e5f2';ctx.font='800 9px system-ui';ctx.fillText(readiness>.58?'CORE CHARGING · GET READY':'CORE SHIELDED',VW/2,104);}}
  ctx.restore();ctx.save();ctx.fillStyle='#ffd86b';for(const s of bossShots){const px=s.x-cam,py=s.y;ctx.globalAlpha=.22;ctx.beginPath();ctx.arc(px-s.vx*.035,py-s.vy*.035,11,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;ctx.beginPath();ctx.arc(px,py,7,0,Math.PI*2);ctx.fill();}ctx.restore();drawBossBanner();
 }
+function holdBossFlowBeforeBaseUpdate(dt){
+ if(state==='play'&&boss.active&&!boss.dead&&flow>1&&(boss.arenaPinned||player.x>=BOSS_ARENA_LIMIT-1)){
+  // The player cannot advance while the arena is intentionally pinned, so forced waiting
+  // for the next vulnerable pass must not erase a Flow streak they earned on the run-in.
+  flowTimer=Math.max(flowTimer,dt+BOSS_FLOW_HOLD);
+ }
+}
 resetRun=function(){resetBoss();baseBossReset();};
-update=function(dt){baseBossUpdate(dt);updateBoss(dt);};
+update=function(dt){holdBossFlowBeforeBaseUpdate(dt);baseBossUpdate(dt);updateBoss(dt);};
 drawWorld=function(){baseBossDraw();drawBoss();};
 showResult=function(win){if(win&&!boss.dead){state='play';overlay.classList.add('hidden');deathReason='';player.x=Math.min(player.x,BOSS_ARENA_LIMIT);player.inv=Math.max(player.inv,.6);last=performance.now();return;}baseBossShowResult(win);};
 window.__jrBoss=boss;
