@@ -41,6 +41,12 @@
     return cue;
   }
 
+  function pulseCue(el){
+    el.classList.remove('countdown-tick-pop');
+    void el.offsetWidth;
+    el.classList.add('countdown-tick-pop');
+  }
+
   function announceTick(label){
     window.dispatchEvent(new CustomEvent('jumprunnercountdowntick',{detail:{label:String(label),source:'resume'}}));
   }
@@ -48,7 +54,7 @@
   function clearCountdown(){
     if(intervalId){clearInterval(intervalId);intervalId=0;}
     if(releaseId){clearTimeout(releaseId);releaseId=0;}
-    if(cue){cue.style.opacity='0';cue.textContent='';}
+    if(cue){cue.style.opacity='0';cue.textContent='';cue.classList.remove('countdown-tick-pop');}
     setControlsLocked(false);
   }
 
@@ -56,6 +62,7 @@
     const el=ensureCue();
     el.textContent=text;
     el.style.opacity='1';
+    pulseCue(el);
     announceTick(text);
   }
 
