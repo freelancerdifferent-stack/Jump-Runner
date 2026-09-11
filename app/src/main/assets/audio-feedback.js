@@ -69,6 +69,13 @@
   function bossHit(){tone(120,.11,'square',.10,-35);setTimeout(()=>tone(680,.07,'triangle',.08,120),24)}
   function bossCoreOpen(){tone(560,.10,'triangle',.07,180);setTimeout(()=>tone(920,.10,'sine',.07,180),58)}
   function bossShot(){tone(280,.07,'square',.05,170)}
+  function countdownTick(label){
+    const value=String(label||'').toUpperCase();
+    if(value==='READY'){tone(360,.07,'triangle',.055,45);return;}
+    if(value==='GO'){tone(740,.11,'triangle',.08,260);setTimeout(()=>tone(1040,.08,'sine',.055,120),45);return;}
+    const step=Number(value);
+    if(step>=1&&step<=3)tone(430+(3-step)*55,.065,'square',.045,35);
+  }
   function focusMilestone(label){
     const apex=label.includes('APEX FOCUS'),fire=label.includes('ON FIRE');
     const root=apex?660:(fire?590:520);
@@ -82,6 +89,8 @@
   installToggle();
   addEventListener('pointerdown',ensureAudio,{passive:true});
   addEventListener('keydown',ensureAudio,{passive:true});
+  addEventListener('jumprunnerresume',ensureAudio,{passive:true});
+  addEventListener('jumprunnercountdowntick',event=>countdownTick(event.detail?.label));
 
   const jumpBtn=document.getElementById('jumpBtn'),dashBtn=document.getElementById('dashBtn');
   jumpBtn?.addEventListener('pointerdown',jump,{passive:true});
