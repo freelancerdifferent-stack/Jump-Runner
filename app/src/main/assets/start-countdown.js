@@ -30,6 +30,7 @@
   function hideCue(){
     cue.hidden=true;
     cue.textContent='';
+    cue.dataset.note='';
     cue.classList.remove('is-go','countdown-tick-pop');
   }
 
@@ -51,6 +52,7 @@
     const labels=['3','2','1','GO'];
     cue.hidden=false;
     cue.textContent=labels[step];
+    cue.dataset.note=step===3?'JUMP + DASH':'AUTO-RUN STARTS ON GO';
     cue.classList.toggle('is-go',step===3);
     announceTick(labels[step]);
 
@@ -79,6 +81,7 @@
     last=performance.now();
     cue.hidden=false;
     cue.textContent='READY';
+    cue.dataset.note='AUTO-RUN STARTS ON GO';
     cue.classList.remove('is-go');
     announceTick('READY');
     timer=setTimeout(()=>schedule(id,0),260);
