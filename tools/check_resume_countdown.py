@@ -3,7 +3,9 @@ import sys
 
 ASSETS = Path("app/src/main/assets")
 HTML = ASSETS / "index.html"
+START = ASSETS / "start-countdown.js"
 RESUME = ASSETS / "resume-countdown.js"
+AUDIO = ASSETS / "audio-feedback.js"
 CUE = ASSETS / "auto-run-control-clarity.js"
 errors = []
 
@@ -12,18 +14,27 @@ def require(condition, message):
         errors.append(message)
 
 require(HTML.is_file(), "index.html is missing")
+require(START.is_file(), "start-countdown.js is missing")
 require(RESUME.is_file(), "resume-countdown.js is missing")
+require(AUDIO.is_file(), "audio-feedback.js is missing")
 require(CUE.is_file(), "auto-run-control-clarity.js is missing")
 
 html = HTML.read_text(encoding="utf-8").lower() if HTML.is_file() else ""
+start = "".join(START.read_text(encoding="utf-8").lower().split()) if START.is_file() else ""
 resume = "".join(RESUME.read_text(encoding="utf-8").lower().split()) if RESUME.is_file() else ""
+audio = "".join(AUDIO.read_text(encoding="utf-8").lower().split()) if AUDIO.is_file() else ""
 cue = "".join(CUE.read_text(encoding="utf-8").lower().split()) if CUE.is_file() else ""
 
 if html:
     require('<script src="resume-countdown.js"></script>' in html, "resume countdown must be packaged")
     require('<script src="auto-run-control-clarity.js"></script>' in html, "auto-run control cue must be packaged")
     require('<script src="start-countdown.js"></script>' in html, "start countdown must be packaged")
+    require('<script src="audio-feedback.js"></script>' in html, "audio feedback must be packaged")
     require(html.index('pause-feedback.js') < html.index('resume-countdown.js'), "resume countdown must load after pause feedback")
+
+if start:
+    require("jumprunnercountdowntick" in start and "source:'start'" in start, "start countdown must emit shared audio tick events")
+    require("announcetick('ready')" in start and "announcetick(labels[step])" in start, "start countdown must announce READY through GO")
 
 if resume:
     require("addeventlistener('jumprunnerresume',startresumecountdown)" in resume, "resume event must start the fairness countdown")
@@ -43,6 +54,15 @@ if resume:
     require("classlist.toggle('countdown-locked',locked)" in resume, "resume countdown must reuse the countdown control de-emphasis")
     require("setattribute('aria-disabled',locked?'true':'false')" in resume, "resume control readiness must be exposed accessibly")
     require("addeventlistener('jumprunnerresult',clearcountdown)" in resume, "results must clear any pending resume input lock")
+    require("jumprunnercountdowntick" in resume and "source:'resume'" in resume, "resume countdown must emit shared audio tick events")
+    require("announcetick(text)" in resume, "every visible resume countdown step must emit one audio tick event")
+
+if audio:
+    require("addeventlistener('jumprunnercountdowntick'" in audio, "audio layer must listen for countdown tick events")
+    require("functioncountdowntick(label)" in audio, "audio layer must define restrained countdown cues")
+    require("value==='ready'" in audio and "value==='go'" in audio, "READY and GO must use distinct audio cues")
+    require("step>=1&&step<=3" in audio, "numeric countdown steps must use tick cues")
+    require("addeventlistener('jumprunnerresume',ensureaudio" in audio, "audio context should be re-awakened on Android resume")
 
 if cue:
     require("addeventlistener('jumprunnercountdowncomplete',show)" in cue, "initial control cue must wait for start controls to become live")
@@ -61,4 +81,4 @@ if errors:
     sys.exit(1)
 
 print("RESUME COUNTDOWN QUALITY GATE: PASSED")
-print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes cue_after_start_ready=yes cue_after_resume_ready=yes")
+print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes cue_after_start_ready=yes cue_after_resume_ready=yes countdown_audio=yes resume_audio_wake=yes")
