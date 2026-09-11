@@ -3,6 +3,8 @@
   const baseResetRun=resetRun;
   let sequence=0;
   let timer=0;
+  const jumpControl=document.getElementById('jumpBtn');
+  const dashControl=document.getElementById('dashBtn');
 
   const cue=document.createElement('div');
   cue.id='startCountdown';
@@ -12,6 +14,14 @@
   cue.setAttribute('aria-atomic','true');
   cue.hidden=true;
   document.body.appendChild(cue);
+
+  function setControlsLocked(locked){
+    for(const control of [jumpControl,dashControl]){
+      if(!control)continue;
+      control.classList.toggle('countdown-locked',locked);
+      control.setAttribute('aria-disabled',locked?'true':'false');
+    }
+  }
 
   function clearTimer(){
     if(timer){clearTimeout(timer);timer=0;}
@@ -41,6 +51,7 @@
       if(id!==sequence)return;
       hideCue();
       state='play';
+      setControlsLocked(false);
       last=performance.now();
       window.dispatchEvent(new CustomEvent('jumprunnercountdowncomplete'));
     },360);
@@ -52,6 +63,7 @@
     const id=sequence;
     baseResetRun();
     state='countdown';
+    setControlsLocked(true);
     last=performance.now();
     cue.hidden=false;
     cue.textContent='READY';
@@ -68,5 +80,5 @@
 
   addEventListener('jumprunnerpause',()=>{last=performance.now();});
   addEventListener('jumprunnerresume',()=>{last=performance.now();});
-  addEventListener('jumprunnerresult',()=>{sequence++;clearTimer();hideCue();});
+  addEventListener('jumprunnerresult',()=>{sequence++;clearTimer();hideCue();setControlsLocked(false);});
 })();
