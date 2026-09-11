@@ -41,6 +41,10 @@
     return cue;
   }
 
+  function announceTick(label){
+    window.dispatchEvent(new CustomEvent('jumprunnercountdowntick',{detail:{label:String(label),source:'resume'}}));
+  }
+
   function clearCountdown(){
     if(intervalId){clearInterval(intervalId);intervalId=0;}
     if(releaseId){clearTimeout(releaseId);releaseId=0;}
@@ -52,6 +56,7 @@
     const el=ensureCue();
     el.textContent=text;
     el.style.opacity='1';
+    announceTick(text);
   }
 
   function startResumeCountdown(){
