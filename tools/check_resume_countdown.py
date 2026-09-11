@@ -5,6 +5,7 @@ ASSETS = Path("app/src/main/assets")
 HTML = ASSETS / "index.html"
 START = ASSETS / "start-countdown.js"
 RESUME = ASSETS / "resume-countdown.js"
+RELEASE = ASSETS / "countdown-control-release.js"
 AUDIO = ASSETS / "audio-feedback.js"
 CUE = ASSETS / "auto-run-control-clarity.js"
 COUNTDOWN_CSS = ASSETS / "start-countdown.css"
@@ -17,6 +18,7 @@ def require(condition, message):
 require(HTML.is_file(), "index.html is missing")
 require(START.is_file(), "start-countdown.js is missing")
 require(RESUME.is_file(), "resume-countdown.js is missing")
+require(RELEASE.is_file(), "countdown-control-release.js is missing")
 require(AUDIO.is_file(), "audio-feedback.js is missing")
 require(CUE.is_file(), "auto-run-control-clarity.js is missing")
 require(COUNTDOWN_CSS.is_file(), "start-countdown.css is missing")
@@ -24,6 +26,7 @@ require(COUNTDOWN_CSS.is_file(), "start-countdown.css is missing")
 html = HTML.read_text(encoding="utf-8").lower() if HTML.is_file() else ""
 start = "".join(START.read_text(encoding="utf-8").lower().split()) if START.is_file() else ""
 resume = "".join(RESUME.read_text(encoding="utf-8").lower().split()) if RESUME.is_file() else ""
+release = "".join(RELEASE.read_text(encoding="utf-8").lower().split()) if RELEASE.is_file() else ""
 audio = "".join(AUDIO.read_text(encoding="utf-8").lower().split()) if AUDIO.is_file() else ""
 cue = "".join(CUE.read_text(encoding="utf-8").lower().split()) if CUE.is_file() else ""
 countdown_css = "".join(COUNTDOWN_CSS.read_text(encoding="utf-8").lower().split()) if COUNTDOWN_CSS.is_file() else ""
@@ -32,8 +35,10 @@ if html:
     require('<script src="resume-countdown.js"></script>' in html, "resume countdown must be packaged")
     require('<script src="auto-run-control-clarity.js"></script>' in html, "auto-run control cue must be packaged")
     require('<script src="start-countdown.js"></script>' in html, "start countdown must be packaged")
+    require('<script src="countdown-control-release.js"></script>' in html, "countdown control release feedback must be packaged")
     require('<script src="audio-feedback.js"></script>' in html, "audio feedback must be packaged")
     require(html.index('pause-feedback.js') < html.index('resume-countdown.js'), "resume countdown must load after pause feedback")
+    require(html.index('start-countdown.js') < html.index('countdown-control-release.js'), "control release feedback must load after countdown event producers")
 
 if start:
     require("jumprunnercountdowntick" in start and "source:'start'" in start, "start countdown must emit shared audio tick events")
@@ -63,6 +68,14 @@ if resume:
     require("announcetick(text)" in resume, "every visible resume countdown step must emit one audio tick event")
     require("functionpulsecue(el)" in resume and "pulsecue(el);announcetick(text)" in resume, "resume countdown must visually acknowledge the same tick it announces")
 
+if release:
+    require("addeventlistener('jumprunnercountdowncomplete',pulsereleasedcontrols)" in release, "start release must pulse controls only when input becomes live")
+    require("addeventlistener('jumprunnerresumeready',pulsereleasedcontrols)" in release, "resume release must pulse controls only when input becomes live")
+    require("classlist.add('countdown-ready-pulse')" in release and "classlist.remove('countdown-ready-pulse')" in release, "control release pulse must retrigger and clean itself up")
+    require("state!=='play'" in release, "control release pulse must refuse to fire outside live gameplay")
+    require("settimeout" in release and "520" in release, "control release pulse must remain brief")
+    require("addeventlistener('jumprunnerpause',clearreleasepulse)" in release and "addeventlistener('jumprunnerresult',clearreleasepulse)" in release, "pause/results must clear stale release feedback")
+
 if audio:
     require("addeventlistener('jumprunnercountdowntick'" in audio, "audio layer must listen for countdown tick events")
     require("functioncountdowntick(label)" in audio, "audio layer must define restrained countdown cues")
@@ -84,7 +97,9 @@ if countdown_css:
     require(".start-countdown.countdown-tick-pop" in countdown_css, "start countdown tick pulse styling must remain present")
     require("#resumecountdown.countdown-tick-pop" in countdown_css, "resume countdown tick pulse styling must remain present")
     require("@keyframescountdowntickpop" in countdown_css and "@keyframesresumecountdowntickpop" in countdown_css, "countdown tick pulse keyframes must remain present")
+    require(".control.countdown-ready-pulse" in countdown_css and "@keyframescountdowncontrolready" in countdown_css, "released controls must receive a restrained ready pulse")
     require("@media(prefers-reduced-motion:reduce)" in countdown_css and "#resumecountdown.countdown-tick-pop{transition:none;animation:none}" in countdown_css, "countdown tick pulse must respect reduced motion")
+    require(".control.countdown-ready-pulse{animation:none}" in countdown_css, "control release pulse must respect reduced motion")
 
 if errors:
     print("RESUME COUNTDOWN QUALITY GATE: FAILED")
@@ -93,4 +108,4 @@ if errors:
     sys.exit(1)
 
 print("RESUME COUNTDOWN QUALITY GATE: PASSED")
-print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes cue_after_start_ready=yes cue_after_resume_ready=yes countdown_audio=yes countdown_visual_sync=yes reduced_motion=yes resume_audio_wake=yes")
+print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes cue_after_start_ready=yes cue_after_resume_ready=yes countdown_audio=yes countdown_visual_sync=yes control_release_pulse=yes reduced_motion=yes resume_audio_wake=yes")

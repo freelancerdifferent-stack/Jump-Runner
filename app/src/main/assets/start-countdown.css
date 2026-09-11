@@ -45,7 +45,14 @@
   transform:scale(.97);
 }
 .control.countdown-locked::after{opacity:.18}
+.control.countdown-ready-pulse{animation:countdownControlReady .52s ease-out}
+@keyframes countdownControlReady{
+  0%{transform:scale(.97);filter:brightness(1)}
+  38%{transform:scale(1.055);filter:brightness(1.45) saturate(1.25);box-shadow:0 0 30px #74f7c580}
+  100%{transform:scale(1);filter:brightness(1);box-shadow:none}
+}
 @media (prefers-reduced-motion:reduce){
   .start-countdown,.start-countdown.countdown-tick-pop,#resumeCountdown.countdown-tick-pop{transition:none;animation:none}
   .control.countdown-locked{transform:none}
+  .control.countdown-ready-pulse{animation:none}
 }
