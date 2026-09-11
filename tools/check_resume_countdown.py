@@ -32,6 +32,12 @@ if resume:
     require("last=performance.now()" in resume, "frame timing must reset when gameplay is released")
     require("jumprunnerresumeready" in resume, "resume completion event must be exposed for later polish layers")
     require("addeventlistener('jumprunnerpause'" in resume and "clearcountdown()" in resume, "re-pausing must cancel a pending countdown safely")
+    require("constbaseinputjump=inputjump" in resume and "constbaseinputdash=inputdash" in resume, "resume layer must preserve the original input handlers")
+    require("if(resumeinputlocked)return" in resume, "resume countdown must reject buffered Jump/Dash input while gameplay is frozen")
+    require("setcontrolslocked(true)" in resume and "setcontrolslocked(false)" in resume, "resume countdown must visibly lock then restore controls")
+    require("classlist.toggle('countdown-locked',locked)" in resume, "resume countdown must reuse the countdown control de-emphasis")
+    require("setattribute('aria-disabled',locked?'true':'false')" in resume, "resume control readiness must be exposed accessibly")
+    require("addeventlistener('jumprunnerresult',clearcountdown)" in resume, "results must clear any pending resume input lock")
 
 if errors:
     print("RESUME COUNTDOWN QUALITY GATE: FAILED")
@@ -40,4 +46,4 @@ if errors:
     sys.exit(1)
 
 print("RESUME COUNTDOWN QUALITY GATE: PASSED")
-print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes")
+print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes")
