@@ -33,6 +33,10 @@
     cue.classList.remove('is-go');
   }
 
+  function announceTick(label){
+    window.dispatchEvent(new CustomEvent('jumprunnercountdowntick',{detail:{label:String(label),source:'start'}}));
+  }
+
   function schedule(id,step){
     if(id!==sequence)return;
     if(paused){timer=setTimeout(()=>schedule(id,step),120);return;}
@@ -41,6 +45,7 @@
     cue.hidden=false;
     cue.textContent=labels[step];
     cue.classList.toggle('is-go',step===3);
+    announceTick(labels[step]);
 
     if(step<3){
       timer=setTimeout(()=>schedule(id,step+1),520);
@@ -68,6 +73,7 @@
     cue.hidden=false;
     cue.textContent='READY';
     cue.classList.remove('is-go');
+    announceTick('READY');
     timer=setTimeout(()=>schedule(id,0),260);
   }
 
