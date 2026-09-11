@@ -4,6 +4,30 @@
   let intervalId=0;
   let releaseId=0;
   let cue=null;
+  let resumeInputLocked=false;
+  const jumpControl=document.getElementById('jumpBtn');
+  const dashControl=document.getElementById('dashBtn');
+  const baseInputJump=inputJump;
+  const baseInputDash=inputDash;
+
+  // Keep touch/keyboard input from being buffered while gameplay is intentionally frozen.
+  inputJump=function(down){
+    if(resumeInputLocked)return;
+    baseInputJump(down);
+  };
+  inputDash=function(){
+    if(resumeInputLocked)return;
+    baseInputDash();
+  };
+
+  function setControlsLocked(locked){
+    resumeInputLocked=locked;
+    for(const control of [jumpControl,dashControl]){
+      if(!control)continue;
+      control.classList.toggle('countdown-locked',locked);
+      control.setAttribute('aria-disabled',locked?'true':'false');
+    }
+  }
 
   function ensureCue(){
     if(cue)return cue;
@@ -21,6 +45,7 @@
     if(intervalId){clearInterval(intervalId);intervalId=0;}
     if(releaseId){clearTimeout(releaseId);releaseId=0;}
     if(cue){cue.style.opacity='0';cue.textContent='';}
+    setControlsLocked(false);
   }
 
   function showStep(text){
@@ -33,6 +58,7 @@
     if(typeof state==='undefined'||state!=='play')return;
     clearCountdown();
     paused=true;
+    setControlsLocked(true);
     if(typeof pauseEl!=='undefined'&&pauseEl)pauseEl.classList.remove('show');
     let step=3;
     showStep(String(step));
@@ -45,6 +71,7 @@
       releaseId=0;
       if(typeof state!=='undefined'&&state==='play'){
         paused=false;
+        setControlsLocked(false);
         if(typeof last!=='undefined')last=performance.now();
         window.dispatchEvent(new Event('jumprunnerresumeready'));
       }
@@ -57,4 +84,5 @@
     clearCountdown();
     if(typeof paused!=='undefined')paused=true;
   });
+  addEventListener('jumprunnerresult',clearCountdown);
 })();
