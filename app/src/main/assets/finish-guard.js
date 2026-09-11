@@ -6,9 +6,11 @@
   window.showResult=function(win){
     if(finishing)return;
     finishing=true;
+    const didWin=Boolean(win);
+    const resultReason=!didWin&&typeof deathReason==='string'?deathReason:'';
     try{
-      original(Boolean(win));
-      window.dispatchEvent(new CustomEvent('jumprunnerresult',{detail:{win:Boolean(win)}}));
+      original(didWin);
+      window.dispatchEvent(new CustomEvent('jumprunnerresult',{detail:{win:didWin,reason:resultReason}}));
     }catch(err){
       console.error('JumpRunner finish transition failed',err);
       try{
