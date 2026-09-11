@@ -45,6 +45,9 @@ if start:
     require("announcetick('ready')" in start and "announcetick(labels[step])" in start, "start countdown must announce READY through GO")
     require("functionpulsecue()" in start and "classlist.add('countdown-tick-pop')" in start, "start countdown must visually acknowledge every tick")
     require("pulsecue();window.dispatchevent(newcustomevent('jumprunnercountdowntick'" in start, "start visual pulse must stay synchronized with countdown tick events")
+    require("dataset.note='auto-runstartsongo'" in start, "READY must explain that forward movement begins automatically on GO")
+    require("dataset.note=step===3?'jump+dash':'auto-runstartsongo'" in start, "GO must switch the helper text from movement context to the live controls")
+    require("cue.dataset.note=''" in start, "hidden countdowns must clear stale helper text")
 
 if resume:
     require("addeventlistener('jumprunnerresume',startresumecountdown)" in resume, "resume event must start the fairness countdown")
@@ -97,6 +100,9 @@ if countdown_css:
     require(".start-countdown.countdown-tick-pop" in countdown_css, "start countdown tick pulse styling must remain present")
     require("#resumecountdown.countdown-tick-pop" in countdown_css, "resume countdown tick pulse styling must remain present")
     require("@keyframescountdowntickpop" in countdown_css and "@keyframesresumecountdowntickpop" in countdown_css, "countdown tick pulse keyframes must remain present")
+    require(".start-countdown::after" in countdown_css and "content:attr(data-note)" in countdown_css, "start countdown must render its movement/control context note")
+    require(".start-countdown.is-go::after" in countdown_css, "GO helper styling must visibly acknowledge control release")
+    require("@media(max-width:520px)" in countdown_css, "countdown helper must remain constrained on small landscape surfaces")
     require(".control.countdown-ready-pulse" in countdown_css and "@keyframescountdowncontrolready" in countdown_css, "released controls must receive a restrained ready pulse")
     require("@media(prefers-reduced-motion:reduce)" in countdown_css and "#resumecountdown.countdown-tick-pop{transition:none;animation:none}" in countdown_css, "countdown tick pulse must respect reduced motion")
     require(".control.countdown-ready-pulse{animation:none}" in countdown_css, "control release pulse must respect reduced motion")
@@ -108,4 +114,4 @@ if errors:
     sys.exit(1)
 
 print("RESUME COUNTDOWN QUALITY GATE: PASSED")
-print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes cue_after_start_ready=yes cue_after_resume_ready=yes countdown_audio=yes countdown_visual_sync=yes control_release_pulse=yes reduced_motion=yes resume_audio_wake=yes")
+print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes start_auto_run_context=yes cue_after_start_ready=yes cue_after_resume_ready=yes countdown_audio=yes countdown_visual_sync=yes control_release_pulse=yes reduced_motion=yes resume_audio_wake=yes")
