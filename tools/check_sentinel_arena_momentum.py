@@ -35,11 +35,13 @@ if READOUT.is_file():
     require("state==='play'" in readout and 'boss.active&&!boss.dead' in readout, 'arena speed readout must only replace the HUD during a live playable boss encounter')
     require('player.x>=boss_arena_limit-1' in readout, 'arena speed readout must use the same physical pin boundary')
     require('functionsentinelarenacombatlabel()' in readout, 'pinned runner must expose a dedicated combat-state label')
-    require("return'arenalock·core'+boss.hp+'/'+boss.maxhp" in readout, 'closed core state must still explain that the runner is arena-locked and show boss HP')
+    require("return'sentinelengaged'" in readout, 'intro state must identify the Sentinel encounter instead of showing forward speed')
+    require("return'trackcore·'+boss.hp+'/'+boss.maxhp" in readout, 'closed core state must direct attention to the boss and keep HP visible')
     require("'coreopen·dash'" in readout and "'coreopen·stomp'" in readout, 'open core state must provide an actionable Dash/Stomp cue')
-    require("'hitconfirmed·reset'" in readout, 'spent pass must provide a brief hit-confirm/reset state')
+    require("'hitconfirmed·reset'" in readout, 'confirmed hits must provide a brief reset state')
+    require('functionsentinelarenacombatcolor()' in readout and "boss.coreopen?'#ffd86b':'#74f7c5'" in readout, 'arena combat states must keep distinct readable emphasis')
     require('ctx.filltext(sentinelarenacombatlabel(),16,vh-11)' in readout, 'arena readout must render the dynamic combat-state label')
-    require('ctx.fillrect(0,vh-30,220,30)' in readout, 'arena readout must fully cover the original SPEED label before drawing its replacement')
+    require('ctx.fillrect(0,vh-30,248,30)' in readout, 'arena readout must fully cover the original SPEED label and the wider combat replacement')
 
 if PROGRESS_LOCK.is_file():
     progress = ''.join(PROGRESS_LOCK.read_text(encoding='utf-8').lower().split())
