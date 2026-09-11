@@ -30,10 +30,17 @@
   function hideCue(){
     cue.hidden=true;
     cue.textContent='';
-    cue.classList.remove('is-go');
+    cue.classList.remove('is-go','countdown-tick-pop');
+  }
+
+  function pulseCue(){
+    cue.classList.remove('countdown-tick-pop');
+    void cue.offsetWidth;
+    cue.classList.add('countdown-tick-pop');
   }
 
   function announceTick(label){
+    pulseCue();
     window.dispatchEvent(new CustomEvent('jumprunnercountdowntick',{detail:{label:String(label),source:'start'}}));
   }
 
