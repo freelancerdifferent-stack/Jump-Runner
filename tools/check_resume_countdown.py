@@ -4,6 +4,7 @@ import sys
 ASSETS = Path("app/src/main/assets")
 HTML = ASSETS / "index.html"
 RESUME = ASSETS / "resume-countdown.js"
+CUE = ASSETS / "auto-run-control-clarity.js"
 errors = []
 
 def require(condition, message):
@@ -12,12 +13,16 @@ def require(condition, message):
 
 require(HTML.is_file(), "index.html is missing")
 require(RESUME.is_file(), "resume-countdown.js is missing")
+require(CUE.is_file(), "auto-run-control-clarity.js is missing")
 
 html = HTML.read_text(encoding="utf-8").lower() if HTML.is_file() else ""
 resume = "".join(RESUME.read_text(encoding="utf-8").lower().split()) if RESUME.is_file() else ""
+cue = "".join(CUE.read_text(encoding="utf-8").lower().split()) if CUE.is_file() else ""
 
 if html:
     require('<script src="resume-countdown.js"></script>' in html, "resume countdown must be packaged")
+    require('<script src="auto-run-control-clarity.js"></script>' in html, "auto-run control cue must be packaged")
+    require('<script src="start-countdown.js"></script>' in html, "start countdown must be packaged")
     require(html.index('pause-feedback.js') < html.index('resume-countdown.js'), "resume countdown must load after pause feedback")
 
 if resume:
@@ -39,6 +44,16 @@ if resume:
     require("setattribute('aria-disabled',locked?'true':'false')" in resume, "resume control readiness must be exposed accessibly")
     require("addeventlistener('jumprunnerresult',clearcountdown)" in resume, "results must clear any pending resume input lock")
 
+if cue:
+    require("addeventlistener('jumprunnercountdowncomplete',show)" in cue, "initial control cue must wait for start controls to become live")
+    require("addeventlistener('jumprunnerresumeready',show)" in cue, "resume control cue must wait for resume controls to become live")
+    require("addeventlistener('jumprunnerpause',hide)" in cue, "pausing must hide stale control guidance")
+    require("addeventlistener('jumprunnerresult',reset)" in cue, "result transitions must reset one-shot control guidance")
+    require("state!=='play'" in cue, "control cue must refuse to show outside live gameplay")
+    require("setattribute('aria-hidden','true')" in cue and "setattribute('aria-hidden','false')" in cue, "control cue accessibility visibility must track visual visibility")
+    require("addeventlistener('jumprunnerresume'" not in cue, "control cue must not fire before resume controls are released")
+    require("settimeout(show,180)" not in cue, "control cue must not fire during the initial READY countdown")
+
 if errors:
     print("RESUME COUNTDOWN QUALITY GATE: FAILED")
     for i, error in enumerate(errors, 1):
@@ -46,4 +61,4 @@ if errors:
     sys.exit(1)
 
 print("RESUME COUNTDOWN QUALITY GATE: PASSED")
-print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes")
+print("freeze=yes countdown=3-2-1-go timing_reset=yes nonblocking=yes accessible=yes repause_safe=yes input_buffer_blocked=yes control_readiness=yes cue_after_start_ready=yes cue_after_resume_ready=yes")
