@@ -18,7 +18,7 @@
     return 'Reset your timing, keep your eyes ahead, and use one clean input at a time.';
   }
 
-  function showTip(){
+  function showTip(reason){
     const previous=panel.querySelector('.retry-coach');
     if(previous)previous.remove();
     const tip=document.createElement('div');
@@ -26,7 +26,7 @@
     tip.setAttribute('role','status');
     tip.setAttribute('aria-live','polite');
     tip.setAttribute('aria-atomic','true');
-    tip.textContent='NEXT TRY · '+chooseTip(window.deathReason);
+    tip.textContent='NEXT TRY · '+chooseTip(reason);
     Object.assign(tip.style,{
       marginTop:'14px',
       padding:'10px 12px',
@@ -44,6 +44,7 @@
 
   window.addEventListener('jumprunnerresult',event=>{
     if(event?.detail?.win)return;
-    requestAnimationFrame(showTip);
+    const reason=event?.detail?.reason||'';
+    requestAnimationFrame(()=>showTip(reason));
   });
 })();
