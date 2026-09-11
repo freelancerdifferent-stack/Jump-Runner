@@ -27,4 +27,13 @@
   text-shadow:0 4px 18px #000c,0 0 34px #74f7c590;
 }
 .start-countdown.is-go::before{border-color:#74f7c5aa}
-@media (prefers-reduced-motion:reduce){.start-countdown{transition:none;animation:none}}
+.control.countdown-locked{
+  opacity:.46;
+  filter:saturate(.45);
+  transform:scale(.97);
+}
+.control.countdown-locked::after{opacity:.18}
+@media (prefers-reduced-motion:reduce){
+  .start-countdown{transition:none;animation:none}
+  .control.countdown-locked{transform:none}
+}
