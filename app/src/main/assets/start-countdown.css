@@ -22,11 +22,29 @@
   box-shadow:0 0 32px #69edff35,inset 0 0 28px #08111ecc;
   z-index:-1;
 }
+.start-countdown::after{
+  content:attr(data-note);
+  position:absolute;
+  top:calc(50% + min(20vw,126px));
+  left:50%;
+  transform:translateX(-50%);
+  padding:7px 12px;
+  border:1px solid #69edff55;
+  border-radius:999px;
+  background:#07101ed6;
+  color:#dffaff;
+  font:900 clamp(10px,1.35vw,13px)/1 system-ui,sans-serif;
+  letter-spacing:.14em;
+  white-space:nowrap;
+  text-shadow:0 2px 10px #000;
+  box-shadow:0 8px 24px #0006;
+}
 .start-countdown.is-go{
   color:#74f7c5;
   text-shadow:0 4px 18px #000c,0 0 34px #74f7c590;
 }
 .start-countdown.is-go::before{border-color:#74f7c5aa}
+.start-countdown.is-go::after{border-color:#74f7c57a;color:#74f7c5}
 .start-countdown.countdown-tick-pop{animation:countdownTickPop .22s ease-out}
 #resumeCountdown.countdown-tick-pop{animation:resumeCountdownTickPop .2s ease-out}
 @keyframes countdownTickPop{
@@ -50,6 +68,9 @@
   0%{transform:scale(.97);filter:brightness(1)}
   38%{transform:scale(1.055);filter:brightness(1.45) saturate(1.25);box-shadow:0 0 30px #74f7c580}
   100%{transform:scale(1);filter:brightness(1);box-shadow:none}
+}
+@media(max-width:520px){
+  .start-countdown::after{top:calc(50% + 92px);max-width:82vw;letter-spacing:.09em}
 }
 @media (prefers-reduced-motion:reduce){
   .start-countdown,.start-countdown.countdown-tick-pop,#resumeCountdown.countdown-tick-pop{transition:none;animation:none}
