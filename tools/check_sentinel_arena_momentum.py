@@ -40,7 +40,7 @@ if READOUT.is_file():
     require("'coreopen·dash'" in readout and "'coreopen·stomp'" in readout, 'open core state must provide an actionable Dash/Stomp cue')
     require("'hitconfirmed·reset'" in readout, 'confirmed hits must provide a brief reset state')
     require('functionsentinelarenacombatcolor()' in readout and "boss.coreopen?'#ffd86b':'#74f7c5'" in readout, 'arena combat states must keep distinct readable emphasis')
-    require('ctx.filltext(sentinelarenacombatlabel(),16,vh-11)' in readout, 'arena readout must render the dynamic combat-state label')
+    require('constlabel=sentinelarenacombatlabel()' in readout and 'ctx.filltext(label,16,vh-11)' in readout, 'arena readout must compute and render the dynamic combat-state label')
     require('ctx.fillrect(0,vh-30,248,30)' in readout, 'arena readout must fully cover the original SPEED label and the wider combat replacement')
 
 if PROGRESS_LOCK.is_file():
