@@ -27,6 +27,18 @@
   text-shadow:0 4px 18px #000c,0 0 34px #74f7c590;
 }
 .start-countdown.is-go::before{border-color:#74f7c5aa}
+.start-countdown.countdown-tick-pop{animation:countdownTickPop .22s ease-out}
+#resumeCountdown.countdown-tick-pop{animation:resumeCountdownTickPop .2s ease-out}
+@keyframes countdownTickPop{
+  0%{transform:scale(.9);filter:brightness(1.35)}
+  58%{transform:scale(1.035)}
+  100%{transform:scale(1);filter:brightness(1)}
+}
+@keyframes resumeCountdownTickPop{
+  0%{transform:translate(-50%,-50%) scale(.9);filter:brightness(1.35)}
+  60%{transform:translate(-50%,-50%) scale(1.06)}
+  100%{transform:translate(-50%,-50%) scale(1);filter:brightness(1)}
+}
 .control.countdown-locked{
   opacity:.46;
   filter:saturate(.45);
@@ -34,6 +46,6 @@
 }
 .control.countdown-locked::after{opacity:.18}
 @media (prefers-reduced-motion:reduce){
-  .start-countdown{transition:none;animation:none}
+  .start-countdown,.start-countdown.countdown-tick-pop,#resumeCountdown.countdown-tick-pop{transition:none;animation:none}
   .control.countdown-locked{transform:none}
 }
