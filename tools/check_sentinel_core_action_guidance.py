@@ -19,6 +19,11 @@ if PATH.is_file():
     require("role','status'" in text and "aria-live','polite'" in text and "aria-atomic','true'" in text, 'dynamic core guidance must remain accessible')
     require("@media(prefers-reduced-motion:reduce)" in text, 'core guidance must preserve reduced-motion handling')
     require("windowmissed" in text and "nextpass" in text, 'missed-window recovery cue must remain present')
+    require('boss-core-window-meter' in text, 'core-open guidance must include a visual remaining-window meter')
+    require('constcore_open_approach=45/185' in text and 'boss.t*1.45-math.pi/2' in text, 'timing meter must derive from the existing Sentinel vulnerability phase rather than a separate timer')
+    require("cue.style.setproperty('--core-window-progress',progress.tofixed(3))" in text, 'timing meter must publish normalized remaining window progress')
+    require("cue.classlist.toggle('closing',progress<.34)" in text, 'timing meter must expose a restrained closing state')
+    require('aria-hidden="true"' in text and 'boss-core-window-meterb{transition:none}' in text, 'timing meter must stay visual-only and reduced-motion safe')
 
 if errors:
     print('SENTINEL CORE ACTION GUIDANCE QUALITY GATE: FAILED')
@@ -27,4 +32,4 @@ if errors:
     sys.exit(1)
 
 print('SENTINEL CORE ACTION GUIDANCE QUALITY GATE: PASSED')
-print('dash_preferred=yes grounded_jump_stomp=yes airborne_setup=yes descending_stomp=yes accessible=yes reduced_motion=yes')
+print('dash_preferred=yes grounded_jump_stomp=yes airborne_setup=yes descending_stomp=yes window_meter=yes phase_synced=yes accessible=yes reduced_motion=yes')
