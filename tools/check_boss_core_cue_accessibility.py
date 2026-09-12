@@ -21,6 +21,11 @@ if PATH.is_file():
     require("transition:opacity.12sease,border-color.14sease" in flat, "reduced-motion cue must remove transform animation")
     require(".boss-core-window-cue.show{transform:translate(-50%,0)}" in flat, "reduced-motion visible state must remain position-stable")
     require("cue.setattribute('aria-hidden','true');renderopen()" in flat, "reset must clear stale assistive status")
+    require("constlabel=closinglabel?'coreclosing':'coreopen'" in flat, "closing phase must expose an explicit CORE CLOSING label")
+    require("constclosing=progress<.34" in flat, "closing label must mirror the existing visual closing threshold")
+    require("if(closinglabel!==closing){closinglabel=closing;renderopen()}" in flat, "closing label must update only on the phase transition")
+    require("cue.classlist.toggle('closing',closing)" in flat, "closing visual state must stay synchronized with the closing label")
+    require("closinglabel=false;cue.dataset.corelabel='';renderopen()" in flat, "each new core window must reset to CORE OPEN before it starts closing")
 
 require(AUDIO.is_file(), "audio.js is missing")
 if AUDIO.is_file():
@@ -38,4 +43,4 @@ if errors:
     sys.exit(1)
 
 print("BOSS CORE CUE ACCESSIBILITY GATE: PASSED")
-print("live_status=yes hidden_when_inactive=yes reduced_motion=yes transform_motion_removed=yes closing_audio_once=yes")
+print("live_status=yes hidden_when_inactive=yes reduced_motion=yes transform_motion_removed=yes closing_label=yes closing_audio_once=yes")
