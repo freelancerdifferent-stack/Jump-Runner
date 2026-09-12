@@ -24,7 +24,7 @@
   const CORE_PHASE_SPAN=CORE_CLOSE_PHASE-CORE_OPEN_PHASE;
   const TAU=Math.PI*2;
 
-  let wasOpen=false,hpAtOpen=0,missedTimer=0,lastAction='';
+  let wasOpen=false,hpAtOpen=0,missedTimer=0,lastAction='',closingLabel=false;
   function currentAction(){
     if(player.dashCd<=.001)return'DASH NOW';
     if(player.onGround)return'JUMP → STOMP';
@@ -51,31 +51,37 @@
   function renderOpen(){
     cue.classList.remove('missed');
     const action=currentAction();
-    if(lastAction!==action){
-      cue.innerHTML='<strong>CORE OPEN</strong><span>'+action+'</span><i class="boss-core-window-meter" aria-hidden="true"><b></b></i>';
+    const label=closingLabel?'CORE CLOSING':'CORE OPEN';
+    if(lastAction!==action||cue.dataset.coreLabel!==label){
+      cue.innerHTML='<strong>'+label+'</strong><span>'+action+'</span><i class="boss-core-window-meter" aria-hidden="true"><b></b></i>';
+      cue.dataset.coreLabel=label;
       lastAction=action;
     }
     ensureMeter();
   }
   function updateMeter(){
     const progress=coreWindowProgress();
+    const closing=progress<.34;
     cue.style.setProperty('--core-window-progress',progress.toFixed(3));
-    cue.classList.toggle('closing',progress<.34);
+    if(closingLabel!==closing){closingLabel=closing;renderOpen();}
+    cue.classList.toggle('closing',closing);
   }
   function renderMissed(){
     cue.classList.remove('closing');
     cue.classList.add('missed');
     cue.style.setProperty('--core-window-progress','0');
     cue.innerHTML='<strong>WINDOW MISSED</strong><span>NEXT PASS</span><i class="boss-core-window-meter" aria-hidden="true"><b></b></i>';
+    cue.dataset.coreLabel='';
+    closingLabel=false;
     lastAction='';
   }
   function refresh(dt){
     const open=state==='play'&&boss.active&&!boss.dead&&boss.coreOpen;
     missedTimer=Math.max(0,missedTimer-dt);
-    if(open&&!wasOpen){hpAtOpen=boss.hp;missedTimer=0;renderOpen();}
+    if(open&&!wasOpen){hpAtOpen=boss.hp;missedTimer=0;closingLabel=false;cue.dataset.coreLabel='';renderOpen();}
     if(!open&&wasOpen&&state==='play'&&boss.active&&!boss.dead&&boss.hp===hpAtOpen){missedTimer=.62;renderMissed();}
     if(open){renderOpen();updateMeter();}
-    else if(missedTimer<=0){cue.classList.remove('closing');cue.style.setProperty('--core-window-progress','1');}
+    else if(missedTimer<=0){closingLabel=false;cue.dataset.coreLabel='';cue.classList.remove('closing');cue.style.setProperty('--core-window-progress','1');}
     const visible=open||missedTimer>0;
     cue.classList.toggle('show',visible);
     cue.setAttribute('aria-hidden',String(!visible));
@@ -85,5 +91,5 @@
   const base=updateBoss;
   updateBoss=function(dt){base(dt);refresh(dt);};
   const reset=resetBoss;
-  resetBoss=function(){reset();wasOpen=false;hpAtOpen=0;missedTimer=0;lastAction='';cue.classList.remove('show','missed','closing');cue.style.setProperty('--core-window-progress','1');cue.setAttribute('aria-hidden','true');renderOpen();};
+  resetBoss=function(){reset();wasOpen=false;hpAtOpen=0;missedTimer=0;lastAction='';closingLabel=false;cue.dataset.coreLabel='';cue.classList.remove('show','missed','closing');cue.style.setProperty('--core-window-progress','1');cue.setAttribute('aria-hidden','true');renderOpen();};
 })();
