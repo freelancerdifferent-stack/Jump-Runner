@@ -19,8 +19,10 @@
     @keyframes sentinelDashStrikePop{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1.06)}}
     @keyframes sentinelStompSetupPop{0%{transform:scale(1)}45%{transform:scale(1.11)}100%{transform:scale(1.05)}}
     @media (prefers-reduced-motion:reduce){
-      #dashBtn.sentinel-strike-window,#jumpBtn.sentinel-stomp-setup{transform:none}
-      #dashBtn.sentinel-strike-pop,#jumpBtn.sentinel-stomp-pop{animation:none}
+      #dashBtn.sentinel-strike-window{transform:none}
+      #jumpBtn.sentinel-stomp-setup{transform:none}
+      #dashBtn.sentinel-strike-pop{animation:none}
+      #jumpBtn.sentinel-stomp-pop{animation:none}
     }
   `;
   document.head.appendChild(style);
@@ -64,7 +66,8 @@
     previousOpen=false;
     previousReady=false;
     previousStompSetup=false;
-    dashButton.classList.remove('sentinel-strike-window','sentinel-strike-pop','sentinel-core-open');
+    dashButton.classList.remove('sentinel-strike-window','sentinel-strike-pop');
+    dashButton.classList.remove('sentinel-core-open');
     jumpButton.classList.remove('sentinel-stomp-setup','sentinel-stomp-pop');
     if(state!=='play'||typeof boss==='undefined'||!boss.coreOpen)dashButton.setAttribute('aria-label','Dash');
     jumpButton.setAttribute('aria-label','Jump');
