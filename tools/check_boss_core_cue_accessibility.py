@@ -35,6 +35,11 @@ if AUDIO.is_file():
     require("coreclosing=math.cos(phase)>0&&approach>.12" in audio, "closing cue must mirror the visual closing threshold")
     require("if(coreclosing&&!lastbosscoreclosing)sfxbosscoreclosing()" in audio, "closing SFX must fire only on the closing transition")
     require("lastbosscoreclosing=coreclosing" in audio, "closing transition state must update each frame")
+    require("functionsfxbosscoremissed()" in audio, "Sentinel missed-window SFX is missing")
+    require("bosshpatcoreopen=null" in audio, "Sentinel missed-window cue must track HP at window open")
+    require("if(coreopen&&!lastbosscoreopen){bosshpatcoreopen=boss.hp;sfxbosscoreopen();}" in audio, "core-open transition must snapshot Sentinel HP before the cue")
+    require("if(!coreopen&&lastbosscoreopen&&state==='play'&&boss.active&&!boss.dead&&bosshpatcoreopen!==null&&boss.hp===bosshpatcoreopen)sfxbosscoremissed();" in audio, "missed-window SFX must fire only when a core window closes without damage")
+    require("if(!boss.active||boss.dead)bosshpatcoreopen=null;" in audio, "missed-window HP latch must clear outside the active encounter")
 
 if errors:
     print("BOSS CORE CUE ACCESSIBILITY GATE: FAILED")
@@ -43,4 +48,4 @@ if errors:
     sys.exit(1)
 
 print("BOSS CORE CUE ACCESSIBILITY GATE: PASSED")
-print("live_status=yes hidden_when_inactive=yes reduced_motion=yes transform_motion_removed=yes closing_label=yes closing_audio_once=yes")
+print("live_status=yes hidden_when_inactive=yes reduced_motion=yes transform_motion_removed=yes closing_label=yes closing_audio_once=yes missed_audio_once=yes")

@@ -20,6 +20,7 @@ function sfxGate(){chord([440,554,659],.16,.026,'sine');haptic([12,25,18]);}
 function sfxBossHit(){chord([220,330,494],.1,.035,'sawtooth');haptic(28);}
 function sfxBossCoreOpen(){chord([523,659,784],.075,.022,'sine');haptic([10,28,16]);}
 function sfxBossCoreClosing(){tone(392,.08,.018,'triangle',-95);haptic(9);}
+function sfxBossCoreMissed(){tone(294,.09,.018,'triangle',-70);haptic([7,22,7]);}
 function sfxWin(){chord([392,523,659,784],.2,.035,'triangle');haptic([20,30,20,30,45]);}
 const baseAudioJump=inputJump,baseAudioDash=inputDash,baseAudioDrone=defeatDrone,baseAudioShow=showResult;
 inputJump=function(down){if(down&&state==='play'&&player.jumpBuffer<=0)sfxJump();baseAudioJump(down);};
@@ -29,15 +30,17 @@ showResult=function(win){baseAudioShow(win);if(win)sfxWin();};
 if(typeof activateCheckpoint==='function'){const b=activateCheckpoint;activateCheckpoint=function(i){const prev=activeCheckpoint;b(i);if(activeCheckpoint>prev)sfxGate();};}
 if(typeof applyDamage==='function'){const b=applyDamage;applyDamage=function(reason){const before=health;b(reason);if(health<before)sfxHit();};}
 if(typeof hitBoss==='function'){const b=hitBoss;hitBoss=function(stomp){const before=boss.hp;b(stomp);if(boss.hp<before){sfxBossHit();if(boss.dead)chord([262,330,392,523,659],.22,.04,'triangle');}};}
-// Crystal pickup feedback plus one open cue and one restrained closing warning per Sentinel core window.
-const baseAudioUpdate=update;let lastAudioCrystals=crystals,lastBossCoreOpen=false,lastBossCoreClosing=false;
+// Crystal pickup feedback plus one open cue, one closing warning, and one missed-window cue per Sentinel pass.
+const baseAudioUpdate=update;let lastAudioCrystals=crystals,lastBossCoreOpen=false,lastBossCoreClosing=false,bossHpAtCoreOpen=null;
 update=function(dt){
  const before=crystals;baseAudioUpdate(dt);if(crystals>before)sfxCrystal();lastAudioCrystals=crystals;
  const coreOpen=state==='play'&&typeof boss!=='undefined'&&boss.active&&!boss.dead&&boss.coreOpen;
- if(coreOpen&&!lastBossCoreOpen)sfxBossCoreOpen();
+ if(coreOpen&&!lastBossCoreOpen){bossHpAtCoreOpen=boss.hp;sfxBossCoreOpen();}
  let coreClosing=false;
  if(coreOpen){const phase=boss.t*1.45-Math.PI/2,approach=(Math.sin(phase)+1)*.5;coreClosing=Math.cos(phase)>0&&approach>.12;}
  if(coreClosing&&!lastBossCoreClosing)sfxBossCoreClosing();
+ if(!coreOpen&&lastBossCoreOpen&&state==='play'&&boss.active&&!boss.dead&&bossHpAtCoreOpen!==null&&boss.hp===bossHpAtCoreOpen)sfxBossCoreMissed();
+ if(!boss.active||boss.dead)bossHpAtCoreOpen=null;
  lastBossCoreOpen=coreOpen;
  lastBossCoreClosing=coreClosing;
 };

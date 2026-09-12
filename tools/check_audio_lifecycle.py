@@ -28,7 +28,7 @@ if AUDIO.is_file():
             'audio and haptics toggles must expose their current pressed state')
     require('functionsfxbosscoreopen()' in flat and 'chord([523,659,784]' in flat,
             'Sentinel core-open window must expose a restrained procedural audio cue')
-    require('lastbosscoreopen=false' in flat and 'if(coreopen&&!lastbosscoreopen)sfxbosscoreopen();' in flat and 'lastbosscoreopen=coreopen;' in flat,
+    require('lastbosscoreopen=false' in flat and 'if(coreopen&&!lastbosscoreopen){' in flat and 'sfxbosscoreopen();' in flat and 'lastbosscoreopen=coreopen;' in flat,
             'Sentinel core-open audio cue must fire once per open-window transition')
     require("state==='play'&&typeofboss!=='undefined'&&boss.active&&!boss.dead&&boss.coreopen" in flat,
             'Sentinel core-open cue must only run for a live active encounter')
