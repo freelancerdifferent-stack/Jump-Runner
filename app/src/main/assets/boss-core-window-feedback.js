@@ -63,7 +63,7 @@
     const progress=coreWindowProgress();
     const closing=progress<.34;
     cue.style.setProperty('--core-window-progress',progress.toFixed(3));
-    if(closingLabel!==closing){closingLabel=closing;renderOpen();}
+    if(closingLabel!==closing){closingLabel=closing;renderOpen()}
     cue.classList.toggle('closing',closing);
   }
   function renderMissed(){
