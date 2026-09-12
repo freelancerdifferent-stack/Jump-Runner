@@ -1,6 +1,6 @@
 'use strict';
 // Makes the Sentinel damage window unmistakable on touch-only devices without altering combat physics.
-// A brief missed-window acknowledgement teaches the pass rhythm without punishing or interrupting play.
+// When Dash is unavailable, the cue follows the actual stomp setup state instead of giving a generic instruction.
 (()=>{
   const cue=document.createElement('div');
   cue.className='boss-core-window-cue';
@@ -16,10 +16,15 @@
   document.head.appendChild(style);
 
   let wasOpen=false,hpAtOpen=0,missedTimer=0,lastAction='';
+  function currentAction(){
+    if(player.dashCd<=.001)return'DASH NOW';
+    if(player.onGround)return'JUMP → STOMP';
+    if(player.vy<-80)return'RISE ABOVE CORE';
+    return'LAND ON CORE';
+  }
   function renderOpen(){
     cue.classList.remove('missed');
-    const dashReady=player.dashCd<=.001;
-    const action=dashReady?'DASH NOW':'STOMP · DASH RECHARGING';
+    const action=currentAction();
     if(lastAction!==action){
       cue.innerHTML='<strong>CORE OPEN</strong><span>'+action+'</span>';
       lastAction=action;
