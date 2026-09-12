@@ -25,7 +25,7 @@ if PATH.is_file():
 require(AUDIO.is_file(), "audio.js is missing")
 if AUDIO.is_file():
     audio = "".join(AUDIO.read_text(encoding="utf-8").lower().split())
-    require("function sfxbosscoreclosing()" in audio, "Sentinel core closing warning SFX is missing")
+    require("functionsfxbosscoreclosing()" in audio, "Sentinel core closing warning SFX is missing")
     require("lastbosscoreclosing=false" in audio, "Sentinel closing cue must latch once per window")
     require("coreclosing=math.cos(phase)>0&&approach>.12" in audio, "closing cue must mirror the visual closing threshold")
     require("if(coreclosing&&!lastbosscoreclosing)sfxbosscoreclosing()" in audio, "closing SFX must fire only on the closing transition")
