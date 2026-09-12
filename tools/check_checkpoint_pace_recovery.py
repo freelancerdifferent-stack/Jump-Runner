@@ -14,11 +14,11 @@ if PACE.is_file():
     require("previouspacestate==='behind'" in flat, "pace recovery must only trigger after a behind split")
     require("currentpacestate==='ahead'||currentpacestate==='best'" in flat, "pace recovery must require regaining ahead/best pace")
     require('pacerecovered' in flat, "pace recovery text cue is missing")
-    require("classlist.add('recovered')" in flat and "classlist.remove('recovered')" in flat, "pace recovery visual cue must be latched and cleared")
+    require("classlist.add(recovered?'recovered':'slipped')" in flat and "classlist.remove('recovered','slipped')" in flat, "pace recovery visual cue must be latched and cleared")
     require('pace-recovered' in flat and '@keyframes' in flat, "pace recovery visual acknowledgement is missing")
-    require('prefers-reduced-motion:reduce' in flat and '.checkpoint-pace-chip.recovered{animation:none}' in flat, "pace recovery animation must respect reduced motion")
+    require('prefers-reduced-motion:reduce' in flat and '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped{animation:none}' in flat, "pace recovery animation must respect reduced motion")
     require('pacerecoveredwithanewbestsplit' in flat and 'pacerecovered.' in flat, "pace recovery must remain explicit for assistive technology")
-    require('previouspacestate=null' in flat and 'clearrecovery()' in flat, "pace recovery state must reset cleanly between runs")
+    require('previouspacestate=null' in flat and 'cleartransitioncue()' in flat, "pace recovery state must reset cleanly between runs")
 
 if errors:
     print("CHECKPOINT PACE RECOVERY QUALITY GATE: FAILED")
