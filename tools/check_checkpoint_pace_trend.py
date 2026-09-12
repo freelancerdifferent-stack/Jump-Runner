@@ -16,7 +16,7 @@ if PACE.is_file():
     require("classlist.toggle('ahead',!isbest&&delta<-.05)" in flat, "ahead pace state must remain distinct")
     require("classlist.toggle('behind',!isbest&&delta>.05)" in flat, "behind pace state must remain distinct")
     require("classlist.toggle('neutral',!isbest&&math.abs(delta)<=.05)" in flat, "near-zero pace deltas must use a neutral state")
-    require("setattribute('aria-hidden','true')" in flat, "continuous pace meter must stay visual-only for assistive technology")
+    require('aria-hidden="true"' in flat or "setattribute('aria-hidden','true')" in flat, "continuous pace meter must stay visual-only for assistive technology")
     require('prefers-reduced-motion:reduce' in flat and 'transition:none' in flat, "pace trend meter must respect reduced motion")
     require("setattribute('aria-label'" in flat and "seconds${delta<0?'aheadof':'behind'}bestsplit" in flat, "pace chip must preserve explicit accessible split wording")
 
