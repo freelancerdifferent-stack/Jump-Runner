@@ -14,7 +14,7 @@ if RECAP.is_file():
     require("currentbestsplitstreak=isbest?currentbestsplitstreak+1:0" in flat, "result recap must track consecutive best checkpoint splits")
     require("peakbestsplitstreak=math.max(peakbestsplitstreak,currentbestsplitstreak)" in flat, "result recap must preserve the run peak best-split streak")
     require("peakbestsplitstreak>=2" in flat, "best-split streak recap must stay restrained to meaningful streaks")
-    require("best split streak" in flat and "×${peakbestsplitstreak}" in flat, "result recap must visibly report the peak best-split streak")
+    require("bestsplitstreak" in flat and "×${peakbestsplitstreak}" in flat, "result recap must visibly report the peak best-split streak")
     require("bestcheckpointsplitstreak:${peakbestsplitstreak}inarow" in flat, "best-split streak recap must remain explicit for assistive technology")
     require("currentbestsplitstreak=0;peakbestsplitstreak=0" in flat, "best-split streak recap state must reset between runs")
     require("run-split-recap-achievement" in flat, "best-split streak recap needs a dedicated compact achievement treatment")
