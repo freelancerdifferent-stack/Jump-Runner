@@ -2,12 +2,14 @@ from pathlib import Path
 import sys
 
 AUDIO = Path('app/src/main/assets/audio.js')
+PACE = Path('app/src/main/assets/run-pace-milestones.js')
 errors=[]
 
 def require(condition,message):
     if not condition: errors.append(message)
 
 require(AUDIO.is_file(),'audio.js is missing')
+require(PACE.is_file(),'run-pace-milestones.js is missing')
 if AUDIO.is_file():
     flat=''.join(AUDIO.read_text(encoding='utf-8').lower().split())
     require("addeventlistener('jumprunnerpause',suspendaudio)" in flat,'audio must suspend on Android pause')
@@ -32,10 +34,24 @@ if AUDIO.is_file():
             'Sentinel core-open audio cue must fire once per open-window transition')
     require("state==='play'&&typeofboss!=='undefined'&&boss.active&&!boss.dead&&boss.coreopen" in flat,
             'Sentinel core-open cue must only run for a live active encounter')
+    require('functionsfxpacemilestone(maxpace)' in flat and "addeventlistener('jumprunnerpacemilestone'" in flat,
+            'automatic pace milestones must connect to the procedural audio layer')
+    require('if(maxpace){chord([659,784,988]' in flat and 'else{tone(610' in flat,
+            'maximum pace must sound distinct from intermediate pace increases')
+    require('boolean(e.detail&&e.detail.max)' in flat,
+            'pace audio must derive the maximum-pace treatment from the gameplay event')
+if PACE.is_file():
+    pace=''.join(PACE.read_text(encoding='utf-8').lower().split())
+    require("newcustomevent('jumprunnerpacemilestone'" in pace,
+            'pace milestone feedback must dispatch the shared audio event')
+    require('speed:tier.speed' in pace and 'max:tier.speed===455' in pace,
+            'pace milestone event must expose reached speed and the maximum-pace state')
+    require('announced.add(tier.speed)' in pace,
+            'pace milestone feedback must remain one-shot per run')
 
 if errors:
     print('AUDIO LIFECYCLE QUALITY GATE: FAILED')
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes')
