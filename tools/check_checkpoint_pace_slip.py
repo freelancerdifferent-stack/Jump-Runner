@@ -18,6 +18,7 @@ if PACE.is_file():
     reduced_motion = 'prefers-reduced-motion:reduce' in flat and (
         '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped{animation:none}' in flat
         or '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped,.checkpoint-pace-chip.streak{animation:none}' in flat
+        or '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped,.checkpoint-pace-chip.streak,.checkpoint-pace-chip.streak-ended{animation:none}' in flat
     )
     require(reduced_motion, "pace slip animation must respect reduced motion")
     require('paceslipped.' in flat and 'secondsbehindbestsplit' in flat, "pace slip must remain explicit for assistive technology")
