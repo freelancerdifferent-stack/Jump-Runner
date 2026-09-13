@@ -18,8 +18,9 @@ if RECAP.is_file():
     require("newstreakrecord" in flat and "is-record" in flat, "new records need a distinct compact result treatment")
     require("newpersonalcheckpointsplitstreakrecord:${peakbestsplitstreak}inarow" in flat, "new streak records must be explicit for assistive technology")
     require("record×${bestsplitstreakrecord}" in flat, "non-record runs must preserve visible personal-record context")
-    require("previou srecord" not in flat, "regression guard sanity check")
+    require("prev×${previousrecord}" in flat, "record-breaking runs should preserve compact previous-record context")
     require("functionresetrunsplits(){runsplits.length=0;currentbestsplitstreak=0;peakbestsplitstreak=0;}" in flat, "run reset must not erase the persistent personal record")
+    require("bestsplitstreakrecord=0" not in flat, "run reset must never clear the persistent personal record")
 
 if errors:
     print("PERSISTENT BEST SPLIT STREAK QUALITY GATE: FAILED")
@@ -28,4 +29,4 @@ if errors:
     sys.exit(1)
 
 print("PERSISTENT BEST SPLIT STREAK QUALITY GATE: PASSED")
-print("storage_key=yes restore=yes meaningful_threshold=yes persistence=yes new_record_treatment=yes accessible_record=yes record_context=yes reset_safe=yes")
+print("storage_key=yes restore=yes meaningful_threshold=yes persistence=yes new_record_treatment=yes accessible_record=yes record_context=yes previous_record=yes reset_safe=yes")
