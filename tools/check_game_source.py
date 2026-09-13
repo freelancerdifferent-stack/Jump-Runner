@@ -60,6 +60,7 @@ if HTML.is_file():
         ('boss-shot-telegraph.js', 'boss shot telegraph is required'),
         ('trial-objective-ribbon.js', 'trial objective ribbon is required'),
         ('start-countdown.js', 'run start countdown is required'),
+        ('run-pace-milestones.js', 'run pace milestone feedback is required'),
     ):
         require(token in flat or token in [s.lower() for s in scripts], message)
     require("addeventlistener('jumprunnerback'" in flat and "setmanualpause(!(typeofpaused!=='undefined'&&paused))" in flat, "Android Back must toggle the active run through the shared pause path")
@@ -75,6 +76,7 @@ if HTML.is_file():
     require("functionbosscoreopen()" in flat and "coreopen&&!lastbosscoreopen" in flat, "Sentinel core-open transition must keep a distinct audio cue")
     require("functionbossshot()" in flat and "bossshots.length>lastbossshots" in flat, "Sentinel projectile launch must keep a distinct audio cue")
     require("'sentinelengaged','waitforcoreglow·dashorstomp'" in flat and "'finishunlocked','sentineldown·crossthefinishline'" in flat and "phase!==lastphase" in flat, "trial objective ribbon must progress from run to boss to finish guidance")
+    require("{speed:380,label:'paceup·380'}" in flat and "{speed:420,label:'paceup·420'}" in flat and "{speed:455,label:'maxpace·455'}" in flat and "baseSpeed=340+Math.min(115,time*3.2)".lower().replace(' ','') in flat, "run pace feedback must mirror the real automatic speed curve and expose restrained milestones")
     for token in ('fetch(', 'xmlhttprequest', 'websocket', 'eventsource', 'admob', 'billingclient', 'play billing', 'rewarded ad'):
         require(token not in flat, f"forbidden token present: {token}")
 
@@ -112,4 +114,4 @@ if errors:
     sys.exit(1)
 
 print('GAME SOURCE QUALITY GATE: PASSED')
-print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes crystal_feedback=yes crystal_milestones=yes checkpoint_splits=yes checkpoint_pace=yes split_recap=yes dynamic_objective_ribbon=yes start_countdown=yes android_back_pause=yes sentinel_audio_cues=yes monetization=absent')
+print('offline=yes crash_safe_host=yes stable_fullscreen=yes boss_readability=yes controls=yes accessibility=yes crystal_feedback=yes crystal_milestones=yes checkpoint_splits=yes checkpoint_pace=yes split_recap=yes dynamic_objective_ribbon=yes start_countdown=yes run_pace_milestones=yes android_back_pause=yes sentinel_audio_cues=yes monetization=absent')
