@@ -86,6 +86,7 @@ jobs:
           python3 tools/check_run_split_streak_recap.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_persistent_best_split_streak.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_menu_split_streak_record.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_split_streak_target.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
