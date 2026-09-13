@@ -14,10 +14,11 @@
   Object.assign(toast.style,{position:'fixed',left:'50%',top:'96px',transform:'translateX(-50%) translateY(-8px)',zIndex:'12',padding:'8px 14px',border:'1px solid rgba(105,237,255,.45)',borderRadius:'999px',background:'rgba(7,16,30,.88)',boxShadow:'0 8px 24px rgba(0,0,0,.2)',color:'#9eefff',font:'800 11px system-ui',letterSpacing:'1.2px',opacity:'0',pointerEvents:'none',transition:'opacity .18s ease,transform .18s ease'});
   document.body.appendChild(toast);
   function reset(){announced=new Set();lastTime=0;toast.style.opacity='0';toast.style.transform='translateX(-50%) translateY(-8px)';clearTimeout(hideTimer);}
-  function show(label){
-    toast.textContent=label;
+  function show(tier){
+    toast.textContent=tier.label;
     toast.style.opacity='1';
     toast.style.transform='translateX(-50%) translateY(0)';
+    window.dispatchEvent(new CustomEvent('jumprunnerpacemilestone',{detail:{speed:tier.speed,max:tier.speed===455}}));
     clearTimeout(hideTimer);
     hideTimer=setTimeout(()=>{toast.style.opacity='0';toast.style.transform='translateX(-50%) translateY(-8px)'},1100);
   }
@@ -29,7 +30,7 @@
       for(const tier of tiers){
         if(baseSpeed>=tier.speed&&!announced.has(tier.speed)){
           announced.add(tier.speed);
-          show(tier.label);
+          show(tier);
           break;
         }
       }
