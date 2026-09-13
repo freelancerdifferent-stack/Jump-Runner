@@ -21,6 +21,7 @@ function sfxBossHit(){chord([220,330,494],.1,.035,'sawtooth');haptic(28);}
 function sfxBossCoreOpen(){chord([523,659,784],.075,.022,'sine');haptic([10,28,16]);}
 function sfxBossCoreClosing(){tone(392,.08,.018,'triangle',-95);haptic(9);}
 function sfxBossCoreMissed(){tone(294,.09,.018,'triangle',-70);haptic([7,22,7]);}
+function sfxPaceMilestone(maxPace){if(maxPace){chord([659,784,988],.075,.018,'triangle');haptic([8,20,12]);}else{tone(610,.07,.017,'triangle',130);haptic(7);}}
 function sfxWin(){chord([392,523,659,784],.2,.035,'triangle');haptic([20,30,20,30,45]);}
 const baseAudioJump=inputJump,baseAudioDash=inputDash,baseAudioDrone=defeatDrone,baseAudioShow=showResult;
 inputJump=function(down){if(down&&state==='play'&&player.jumpBuffer<=0)sfxJump();baseAudioJump(down);};
@@ -47,6 +48,7 @@ update=function(dt){
 function addAudioMenuControls(){const actions=panel&&panel.querySelector('.actions');if(!actions||document.getElementById('audioToggle'))return;const a=document.createElement('button');a.className='btn alt';a.id='audioToggle';a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.setAttribute('aria-pressed',String(jrAudioEnabled));a.onclick=()=>{jrAudioEnabled=!jrAudioEnabled;writeAudioSetting('jr_audio',jrAudioEnabled);a.textContent='SOUND '+(jrAudioEnabled?'ON':'OFF');a.setAttribute('aria-pressed',String(jrAudioEnabled));if(jrAudioEnabled){unlockAudio();tone(520,.08,.03,'triangle',140);}else suspendAudio();};const h=document.createElement('button');h.className='btn alt';h.id='hapticToggle';h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.setAttribute('aria-pressed',String(jrHapticsEnabled));h.onclick=()=>{jrHapticsEnabled=!jrHapticsEnabled;writeAudioSetting('jr_haptics',jrHapticsEnabled);h.textContent='HAPTICS '+(jrHapticsEnabled?'ON':'OFF');h.setAttribute('aria-pressed',String(jrHapticsEnabled));if(jrHapticsEnabled)haptic(20);};actions.append(a,h);}
 const baseAudioMenu=showMenu;showMenu=function(){baseAudioMenu();addAudioMenuControls();};
 addEventListener('pointerdown',unlockAudio,{once:true,passive:true});addEventListener('keydown',unlockAudio,{once:true});
+addEventListener('jumprunnerpacemilestone',e=>sfxPaceMilestone(Boolean(e.detail&&e.detail.max)));
 addEventListener('jumprunnerpause',suspendAudio);addEventListener('jumprunnerresume',resumeAudio);
 addEventListener('pagehide',suspendAudio);addEventListener('pageshow',resumeAudio);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')suspendAudio();else resumeAudio();});
