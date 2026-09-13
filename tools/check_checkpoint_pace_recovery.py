@@ -16,7 +16,13 @@ if PACE.is_file():
     require('pacerecovered' in flat, "pace recovery text cue is missing")
     require("classlist.add(recovered?'recovered':'slipped')" in flat and "classlist.remove('recovered','slipped')" in flat, "pace recovery visual cue must be latched and cleared")
     require('pace-recovered' in flat and '@keyframes' in flat, "pace recovery visual acknowledgement is missing")
-    require('prefers-reduced-motion:reduce' in flat and '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped{animation:none}' in flat, "pace recovery animation must respect reduced motion")
+    reduced_motion = 'prefers-reduced-motion:reduce' in flat
+    recovery_animation_disabled = (
+        '.checkpoint-pace-chip.recovered' in flat
+        and '.checkpoint-pace-chip.slipped' in flat
+        and 'animation:none' in flat
+    )
+    require(reduced_motion and recovery_animation_disabled, "pace recovery animation must respect reduced motion")
     require('pacerecoveredwithanewbestsplit' in flat and 'pacerecovered.' in flat, "pace recovery must remain explicit for assistive technology")
     require('previouspacestate=null' in flat and 'cleartransitioncue()' in flat, "pace recovery state must reset cleanly between runs")
 

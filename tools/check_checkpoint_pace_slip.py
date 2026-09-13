@@ -15,7 +15,11 @@ if PACE.is_file():
     require('paceslipped' in flat, "pace slip text cue is missing")
     require("classlist.add(recovered?'recovered':'slipped')" in flat and "classlist.remove('recovered','slipped')" in flat, "pace slip visual cue must be one-shot and cleared")
     require('pace-slipped' in flat and '@keyframes' in flat, "pace slip visual acknowledgement is missing")
-    require('prefers-reduced-motion:reduce' in flat and '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped{animation:none}' in flat, "pace slip animation must respect reduced motion")
+    reduced_motion = 'prefers-reduced-motion:reduce' in flat and (
+        '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped{animation:none}' in flat
+        or '.checkpoint-pace-chip.recovered,.checkpoint-pace-chip.slipped,.checkpoint-pace-chip.streak{animation:none}' in flat
+    )
+    require(reduced_motion, "pace slip animation must respect reduced motion")
     require('paceslipped.' in flat and 'secondsbehindbestsplit' in flat, "pace slip must remain explicit for assistive technology")
     require('previouspacestate=null' in flat and 'cleartransitioncue()' in flat, "pace slip state must reset cleanly between runs")
 
