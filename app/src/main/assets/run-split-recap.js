@@ -1,13 +1,17 @@
 'use strict';
 // Replay-value polish: preserve checkpoint split context on the result screen.
 const runSplits=[];
+let currentBestSplitStreak=0,peakBestSplitStreak=0;
 const splitRecapStyle=document.createElement('style');
-splitRecapStyle.textContent='.run-split-recap{display:grid;gap:6px;margin:14px 0 2px;padding:10px 12px;border:1px solid #69edff24;border-radius:14px;background:#07152299;text-align:left}.run-split-recap-title{color:#9eefff;font:900 9px/1.2 system-ui;letter-spacing:.14em}.run-split-recap-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;color:#dffbff;font:800 10px/1.2 system-ui}.run-split-recap-row .time{font-variant-numeric:tabular-nums;color:#fff}.run-split-recap-row .pace{font-size:9px;color:#ffd86b}.run-split-recap-row .pace.ahead,.run-split-recap-row .pace.best{color:#74f7c5}@media(max-height:390px){.run-split-recap{margin-top:9px;padding:8px 10px;gap:4px}.run-split-recap-row{font-size:9px;gap:7px}.run-split-recap-row .pace{font-size:8px}}';
+splitRecapStyle.textContent='.run-split-recap{display:grid;gap:6px;margin:14px 0 2px;padding:10px 12px;border:1px solid #69edff24;border-radius:14px;background:#07152299;text-align:left}.run-split-recap-title{color:#9eefff;font:900 9px/1.2 system-ui;letter-spacing:.14em}.run-split-recap-achievement{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 8px;border:1px solid #74f7c536;border-radius:10px;background:#74f7c50b;color:#bfffe8;font:900 9px/1.2 system-ui;letter-spacing:.08em}.run-split-recap-achievement strong{color:#74f7c5;font-size:11px;white-space:nowrap}.run-split-recap-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;color:#dffbff;font:800 10px/1.2 system-ui}.run-split-recap-row .time{font-variant-numeric:tabular-nums;color:#fff}.run-split-recap-row .pace{font-size:9px;color:#ffd86b}.run-split-recap-row .pace.ahead,.run-split-recap-row .pace.best{color:#74f7c5}@media(max-height:390px){.run-split-recap{margin-top:9px;padding:8px 10px;gap:4px}.run-split-recap-achievement{padding:5px 7px;font-size:8px}.run-split-recap-achievement strong{font-size:10px}.run-split-recap-row{font-size:9px;gap:7px}.run-split-recap-row .pace{font-size:8px}}';
 document.head.appendChild(splitRecapStyle);
-function resetRunSplits(){runSplits.length=0;}
+function resetRunSplits(){runSplits.length=0;currentBestSplitStreak=0;peakBestSplitStreak=0;}
 function rememberSplit(detail){
  if(!detail||!Number.isInteger(detail.index))return;
- runSplits[detail.index]={index:detail.index,label:String(detail.label||`GATE ${detail.index+1}`),current:Number(detail.current)||0,delta:Number(detail.delta)||0,isBest:Boolean(detail.isBest)};
+ const isBest=Boolean(detail.isBest);
+ currentBestSplitStreak=isBest?currentBestSplitStreak+1:0;
+ peakBestSplitStreak=Math.max(peakBestSplitStreak,currentBestSplitStreak);
+ runSplits[detail.index]={index:detail.index,label:String(detail.label||`GATE ${detail.index+1}`),current:Number(detail.current)||0,delta:Number(detail.delta)||0,isBest};
 }
 function paceText(split){
  if(split.isBest)return 'BEST';
@@ -18,8 +22,14 @@ function renderRunSplitRecap(){
  const rows=runSplits.filter(Boolean);
  if(!rows.length||!panel)return;
  const old=panel.querySelector('.run-split-recap');if(old)old.remove();
- const recap=document.createElement('div');recap.className='run-split-recap';recap.setAttribute('role','group');recap.setAttribute('aria-label','Checkpoint split recap');
+ const recap=document.createElement('div');recap.className='run-split-recap';recap.setAttribute('role','group');recap.setAttribute('aria-label',peakBestSplitStreak>=2?`Checkpoint split recap. Best split streak ${peakBestSplitStreak} in a row.`:'Checkpoint split recap');
  const title=document.createElement('div');title.className='run-split-recap-title';title.textContent='CHECKPOINT SPLITS';recap.appendChild(title);
+ if(peakBestSplitStreak>=2){
+  const achievement=document.createElement('div');achievement.className='run-split-recap-achievement';achievement.setAttribute('role','status');achievement.setAttribute('aria-label',`Best checkpoint split streak: ${peakBestSplitStreak} in a row.`);
+  const achievementLabel=document.createElement('span');achievementLabel.textContent='BEST SPLIT STREAK';
+  const achievementValue=document.createElement('strong');achievementValue.textContent=`×${peakBestSplitStreak}`;
+  achievement.append(achievementLabel,achievementValue);recap.appendChild(achievement);
+ }
  for(const split of rows){
   const row=document.createElement('div');row.className='run-split-recap-row';
   const label=document.createElement('span');label.textContent=split.label;
