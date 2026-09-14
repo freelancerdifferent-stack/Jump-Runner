@@ -76,10 +76,16 @@ if SPEED_FX.is_file():
             'maximum pace personal best reads must survive unavailable localStorage')
     require('functionwritespeedfxbest(value){try{' in fx and 'catch(_){returnfalse;}' in fx,
             'maximum pace personal best writes must survive unavailable localStorage')
-    require("localsTorage".lower() in fx and "filltext('best'+math.min(99.9,speedfxbestheld).tofixed(1)+'s',vw/2,y+27)" in fx,
+    require("localstorage" in fx and "filltext('best'+math.min(99.9,speedfxbestheld).tofixed(1)+'s',vw/2,y+27)" in fx,
             'maximum pace HUD must expose the persisted personal best')
     require('commitspeedfxbest()' in fx and 'speedfxbestheld=bounded' in fx,
             'maximum pace personal best must update as a new sustained record is reached')
+    require('speedfxrecordbaseline=speedfxbestheld' in fx and 'speedfxrecordcelebrated=false' in fx,
+            'maximum pace record celebration must arm from the pre-run personal best')
+    require('!speedfxrecordcelebrated&&bounded>speedfxrecordbaseline+.049' in fx and 'speedfxrecordpulse=' in fx,
+            'maximum pace record celebration must trigger once when the previous record is beaten')
+    require("recording?'newmaxpacerecord':'best'+math.min(99.9,speedfxbestheld).tofixed(1)+'s'" in fx,
+            'maximum pace HUD must surface a restrained new-record acknowledgement')
     require("constreduced=speedfxreducedmotion()" in fx and "if(!reduced){" in fx,
             'sustained max-pace acknowledgement must honor reduced motion')
 
@@ -88,4 +94,4 @@ if errors:
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes pace_hold_record_celebration=yes')
