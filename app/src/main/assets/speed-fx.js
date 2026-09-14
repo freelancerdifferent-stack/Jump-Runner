@@ -1,12 +1,13 @@
 'use strict';
 // Lightweight momentum feedback: speed lines, dash bloom, landing ring and one-shot pace milestone accents.
 // Visual only; physics, scoring and difficulty remain untouched.
-let speedFxPhase=0,speedFxLand=0,lastGround=true,speedFxPacePulse=0,speedFxMaxPace=false;
+let speedFxPhase=0,speedFxLand=0,lastGround=true,speedFxPacePulse=0,speedFxMaxPace=false,speedFxMaxHeld=0;
 const speedFxBaseUpdate=update,speedFxBaseDrawWorld=drawWorld;
 function sentinelArenaPinned(){
  return typeof boss!=='undefined'&&typeof BOSS_ARENA_LIMIT!=='undefined'&&boss.active&&!boss.dead&&player.x>=BOSS_ARENA_LIMIT-1;
 }
 function speedFxReducedMotion(){return document.documentElement.hasAttribute('data-reduced-motion');}
+function atAutomaticMaxPace(){return state==='play'&&time>=115/3.2;}
 addEventListener('jumprunnerpacemilestone',e=>{
  speedFxPacePulse=speedFxReducedMotion()?.18:(e.detail&&e.detail.max?.72:.46);
  speedFxMaxPace=Boolean(e.detail&&e.detail.max);
@@ -15,12 +16,29 @@ update=function(dt){
  speedFxBaseUpdate(dt);
  speedFxPacePulse=Math.max(0,speedFxPacePulse-dt);
  if(speedFxPacePulse<=0)speedFxMaxPace=false;
- if(state!=='play')return;
+ if(state!=='play'){speedFxMaxHeld=0;return;}
  const arenaPinned=sentinelArenaPinned();
+ speedFxMaxHeld=atAutomaticMaxPace()&&!arenaPinned?Math.min(3,speedFxMaxHeld+dt):0;
  if(!arenaPinned)speedFxPhase=(speedFxPhase+dt*(2.2+Math.min(2.8,time*.06)+(player.dash>0?5:0)))%1;
  if(!lastGround&&player.onGround&&player.vy===0)speedFxLand=.18;
  speedFxLand=Math.max(0,speedFxLand-dt);lastGround=player.onGround;
 };
+function drawMaxPaceHold(){
+ if(speedFxMaxHeld<.8||sentinelArenaPinned())return;
+ const reduced=speedFxReducedMotion(),fade=Math.min(1,(speedFxMaxHeld-.8)/.45);
+ ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.textAlign='center';
+ const w=126,h=26,x=VW/2-w/2,y=22;
+ ctx.globalAlpha=(reduced?.62:.82)*fade;ctx.fillStyle='#08111ed9';
+ ctx.beginPath();ctx.roundRect(x,y,w,h,13);ctx.fill();
+ ctx.strokeStyle='#ffd86b';ctx.lineWidth=1.5;ctx.stroke();
+ ctx.globalAlpha=(reduced?.82:1)*fade;ctx.fillStyle='#ffd86b';ctx.font='900 10px system-ui';ctx.fillText('MAX PACE',VW/2,y+17);
+ if(!reduced){
+  ctx.globalAlpha=.18*fade;ctx.strokeStyle='#ffd86b';ctx.lineWidth=2;
+  const sweep=(speedFxPhase*56)%56;
+  ctx.beginPath();ctx.moveTo(x+14+sweep,y+h+5);ctx.lineTo(x+36+sweep,y+h+5);ctx.stroke();
+ }
+ ctx.restore();
+}
 function drawMomentumFx(){
  ctx.save();ctx.setTransform(1,0,0,1,0,0);
  const arenaPinned=sentinelArenaPinned();
@@ -50,5 +68,6 @@ function drawMomentumFx(){
  if(player.dash>0){const g=ctx.createRadialGradient(VW*.25,VH*.55,12,VW*.25,VH*.55,180);g.addColorStop(0,'rgba(255,216,107,.16)');g.addColorStop(1,'rgba(255,216,107,0)');ctx.globalAlpha=1;ctx.fillStyle=g;ctx.fillRect(0,0,VW,VH);}
  if(speedFxLand>0){const p=1-speedFxLand/.18,r=18+p*78;ctx.globalAlpha=(1-p)*.28;ctx.strokeStyle='#9eefff';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse((player.x-cam)+player.w/2,GROUND-3,r,r*.24,0,0,Math.PI*2);ctx.stroke();}
  ctx.restore();
+ drawMaxPaceHold();
 }
 drawWorld=function(){speedFxBaseDrawWorld();drawMomentumFx();};
