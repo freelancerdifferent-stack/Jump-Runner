@@ -64,10 +64,18 @@ if SPEED_FX.is_file():
             'pace visual accent must decay automatically')
     require('if(speedfxpacepulse>0&&!arenapinned)' in fx,
             'pace visual accent must remain suppressed while the Sentinel arena is pinned')
+    require('functionatautomaticmaxpace(){returnstate===\'play\'&&time>=115/3.2;}' in fx,
+            'sustained max-pace state must mirror the automatic runner speed cap')
+    require('speedfxmaxheld=atautomaticmaxpace()&&!arenapinned?math.min(3,speedfxmaxheld+dt):0' in fx,
+            'sustained max-pace state must reset outside valid non-boss play')
+    require("filltext('maxpace',vw/2,y+17)" in fx and "if(speedfxmaxheld<.8||sentinelarenapinned())return" in fx,
+            'maximum pace must expose a restrained sustained HUD acknowledgement')
+    require("constreduced=speedfxreducedmotion()" in fx and "if(!reduced){" in fx,
+            'sustained max-pace acknowledgement must honor reduced motion')
 
 if errors:
     print('AUDIO LIFECYCLE QUALITY GATE: FAILED')
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes')
