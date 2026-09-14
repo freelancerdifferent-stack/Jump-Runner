@@ -3,6 +3,7 @@ import sys
 
 AUDIO = Path('app/src/main/assets/audio.js')
 PACE = Path('app/src/main/assets/run-pace-milestones.js')
+SPEED_FX = Path('app/src/main/assets/speed-fx.js')
 errors=[]
 
 def require(condition,message):
@@ -10,6 +11,7 @@ def require(condition,message):
 
 require(AUDIO.is_file(),'audio.js is missing')
 require(PACE.is_file(),'run-pace-milestones.js is missing')
+require(SPEED_FX.is_file(),'speed-fx.js is missing')
 if AUDIO.is_file():
     flat=''.join(AUDIO.read_text(encoding='utf-8').lower().split())
     require("addeventlistener('jumprunnerpause',suspendaudio)" in flat,'audio must suspend on Android pause')
@@ -48,10 +50,24 @@ if PACE.is_file():
             'pace milestone event must expose reached speed and the maximum-pace state')
     require('announced.add(tier.speed)' in pace,
             'pace milestone feedback must remain one-shot per run')
+if SPEED_FX.is_file():
+    fx=''.join(SPEED_FX.read_text(encoding='utf-8').lower().split())
+    require("addeventlistener('jumprunnerpacemilestone'" in fx,
+            'automatic pace milestones must connect to the visual momentum layer')
+    require('speedfxpacepulse' in fx and 'speedfxmaxpace' in fx,
+            'pace visual feedback must be latched as a short one-shot accent')
+    require("document.documentelement.hasattribute('data-reduced-motion')" in fx,
+            'pace visual feedback must honor the reduced-motion preference')
+    require("speedfxmaxpace?'#ffd86b':'#69edff'" in fx,
+            'maximum pace must remain visually distinct from intermediate milestones')
+    require('speedfxpacepulse=math.max(0,speedfxpacepulse-dt)' in fx,
+            'pace visual accent must decay automatically')
+    require('if(speedfxpacepulse>0&&!arenapinned)' in fx,
+            'pace visual accent must remain suppressed while the Sentinel arena is pinned')
 
 if errors:
     print('AUDIO LIFECYCLE QUALITY GATE: FAILED')
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes')
