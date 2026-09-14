@@ -18,7 +18,7 @@ update=function(dt){
  if(speedFxPacePulse<=0)speedFxMaxPace=false;
  if(state!=='play'){speedFxMaxHeld=0;return;}
  const arenaPinned=sentinelArenaPinned();
- speedFxMaxHeld=atAutomaticMaxPace()&&!arenaPinned?Math.min(3,speedFxMaxHeld+dt):0;
+ speedFxMaxHeld=atAutomaticMaxPace()&&!arenaPinned?Math.min(99.9,speedFxMaxHeld+dt):0;
  if(!arenaPinned)speedFxPhase=(speedFxPhase+dt*(2.2+Math.min(2.8,time*.06)+(player.dash>0?5:0)))%1;
  if(!lastGround&&player.onGround&&player.vy===0)speedFxLand=.18;
  speedFxLand=Math.max(0,speedFxLand-dt);lastGround=player.onGround;
@@ -27,15 +27,17 @@ function drawMaxPaceHold(){
  if(speedFxMaxHeld<.8||sentinelArenaPinned())return;
  const reduced=speedFxReducedMotion(),fade=Math.min(1,(speedFxMaxHeld-.8)/.45);
  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.textAlign='center';
- const w=126,h=26,x=VW/2-w/2,y=22;
+ const w=154,h=26,x=VW/2-w/2,y=22;
  ctx.globalAlpha=(reduced?.62:.82)*fade;ctx.fillStyle='#08111ed9';
  ctx.beginPath();ctx.roundRect(x,y,w,h,13);ctx.fill();
  ctx.strokeStyle='#ffd86b';ctx.lineWidth=1.5;ctx.stroke();
- ctx.globalAlpha=(reduced?.82:1)*fade;ctx.fillStyle='#ffd86b';ctx.font='900 10px system-ui';ctx.fillText('MAX PACE',VW/2,y+17);
+ ctx.globalAlpha=(reduced?.82:1)*fade;ctx.fillStyle='#ffd86b';ctx.font='900 10px system-ui';
+ const held=Math.min(99.9,speedFxMaxHeld).toFixed(1);
+ ctx.fillText('MAX PACE · '+held+'s',VW/2,y+17);
  if(!reduced){
   ctx.globalAlpha=.18*fade;ctx.strokeStyle='#ffd86b';ctx.lineWidth=2;
-  const sweep=(speedFxPhase*56)%56;
-  ctx.beginPath();ctx.moveTo(x+14+sweep,y+h+5);ctx.lineTo(x+36+sweep,y+h+5);ctx.stroke();
+  const sweep=(speedFxPhase*72)%72;
+  ctx.beginPath();ctx.moveTo(x+16+sweep,y+h+5);ctx.lineTo(x+38+sweep,y+h+5);ctx.stroke();
  }
  ctx.restore();
 }
