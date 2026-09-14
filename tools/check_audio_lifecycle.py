@@ -118,8 +118,12 @@ if RESULT_MAX_PACE.is_file():
             'result max-pace recap must safely read and bound the current run hold')
     require("if(held<.05)return" in recap,
             'result max-pace recap must stay hidden when the run never sustained max pace')
-    require("typeofspeedfxrecordcelebrated!=='undefined'" in recap and "record?'newrecord':'best'+best.tofixed(1)+'s'" in recap,
-            'result max-pace recap must distinguish a new record from the persistent best')
+    require("typeofspeedfxrecordcelebrated!=='undefined'" in recap and "record?'newrecord':matched?'matchedbest':gap.tofixed(1)+'sshort'" in recap,
+            'result max-pace recap must distinguish a new record, matched best, and record gap')
+    require('constgap=math.max(0,best-held)' in recap and 'constmatched=!record&&gap<.05' in recap,
+            'result max-pace recap must compute a bounded non-negative personal-best gap')
+    require('shortofyour${best.tofixed(1)}secondpersonalbest' in recap and 'matchingyourpersonalbest' in recap,
+            'result max-pace recap accessibility copy must explain the replay gap or tie')
     require("setattribute('role','status')" in recap and "setattribute('aria-live','polite')" in recap and "setattribute('aria-atomic','true')" in recap,
             'result max-pace recap must remain accessible')
     require("queryselector('.actions')" in recap and "insertadjacentelement('beforebegin',card)" in recap,
@@ -130,4 +134,4 @@ if errors:
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes pace_hold_record_celebration=yes menu_max_pace_record=yes result_max_pace_recap=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes pace_hold_record_celebration=yes menu_max_pace_record=yes result_max_pace_recap=yes result_max_pace_gap=yes')
