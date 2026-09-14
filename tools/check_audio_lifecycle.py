@@ -4,6 +4,7 @@ import sys
 AUDIO = Path('app/src/main/assets/audio.js')
 PACE = Path('app/src/main/assets/run-pace-milestones.js')
 SPEED_FX = Path('app/src/main/assets/speed-fx.js')
+MENU_MAX_PACE = Path('app/src/main/assets/menu-max-pace-record.js')
 errors=[]
 
 def require(condition,message):
@@ -12,6 +13,7 @@ def require(condition,message):
 require(AUDIO.is_file(),'audio.js is missing')
 require(PACE.is_file(),'run-pace-milestones.js is missing')
 require(SPEED_FX.is_file(),'speed-fx.js is missing')
+require(MENU_MAX_PACE.is_file(),'menu-max-pace-record.js is missing')
 if AUDIO.is_file():
     flat=''.join(AUDIO.read_text(encoding='utf-8').lower().split())
     require("addeventlistener('jumprunnerpause',suspendaudio)" in flat,'audio must suspend on Android pause')
@@ -90,10 +92,26 @@ if SPEED_FX.is_file():
             'maximum pace HUD must surface a restrained new-record acknowledgement')
     require("constreduced=speedfxreducedmotion()" in fx and "if(!reduced){" in fx,
             'sustained max-pace acknowledgement must honor reduced motion')
+if MENU_MAX_PACE.is_file():
+    menu=''.join(MENU_MAX_PACE.read_text(encoding='utf-8').lower().split())
+    require("conststorage_key='jr_max_pace_best'" in menu,
+            'start-menu max-pace challenge must reuse the persisted gameplay record')
+    require('try{constvalue=number(localstorage.getitem(storage_key)||0)' in menu and 'catch(_){return0;}' in menu,
+            'start-menu max-pace record reads must survive unavailable localStorage')
+    require('math.max(0,math.min(99.9,value))' in menu,
+            'start-menu max-pace record must remain bounded')
+    require("record.tofixed(1)" in menu and "goal.textcontent='beatitthisrun'" in menu,
+            'existing max-pace records must become a clear replay challenge')
+    require("value.textcontent='setarecord'" in menu and "goal.textcontent='holdmaxpace1.0s+'" in menu,
+            'players without a max-pace record must get a clear first target')
+    require("setattribute('role','status')" in menu and "setattribute('aria-live','polite')" in menu and "setattribute('aria-atomic','true')" in menu,
+            'start-menu max-pace challenge must remain accessible')
+    require("constbaseshowmenu=window.showmenu" in menu and "window.showmenu=function(){baseshowmenu();decoratemenu();}" in menu,
+            'start-menu max-pace challenge must survive menu rebuilds')
 
 if errors:
     print('AUDIO LIFECYCLE QUALITY GATE: FAILED')
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes pace_hold_record_celebration=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes pace_hold_record_celebration=yes menu_max_pace_record=yes')
