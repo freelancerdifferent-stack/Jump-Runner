@@ -66,12 +66,20 @@ if SPEED_FX.is_file():
             'pace visual accent must remain suppressed while the Sentinel arena is pinned')
     require('functionatautomaticmaxpace(){returnstate===\'play\'&&time>=115/3.2;}' in fx,
             'sustained max-pace state must mirror the automatic runner speed cap')
-    require('speedfxmaxheld=atautomaticmaxpace()&&!arenapinned?math.min(99.9,speedfxmaxheld+dt):0' in fx,
-            'sustained max-pace timer must reset outside valid non-boss play')
+    require('speedfxmaxheld=math.min(99.9,speedfxmaxheld+dt)' in fx and 'speedfxmaxheld=0' in fx,
+            'sustained max-pace timer must advance only during valid non-boss play and reset otherwise')
     require("if(speedfxmaxheld<.8||sentinelarenapinned())return" in fx,
             'maximum pace must expose a restrained sustained HUD acknowledgement')
-    require("constheld=math.min(99.9,speedfxmaxheld).tofixed(1)" in fx and "filltext('maxpace·'+held+'s',vw/2,y+17)" in fx,
+    require("constheld=math.min(99.9,speedfxmaxheld).tofixed(1)" in fx and "filltext('maxpace·'+held+'s',vw/2,y+15)" in fx,
             'sustained maximum pace HUD must report a bounded one-decimal hold duration')
+    require("constspeed_fx_best_key='jr_max_pace_best'" in fx and 'functionreadspeedfxbest(){try{' in fx and 'catch(_){return0;}' in fx,
+            'maximum pace personal best reads must survive unavailable localStorage')
+    require('functionwritespeedfxbest(value){try{' in fx and 'catch(_){returnfalse;}' in fx,
+            'maximum pace personal best writes must survive unavailable localStorage')
+    require("localsTorage".lower() in fx and "filltext('best'+math.min(99.9,speedfxbestheld).tofixed(1)+'s',vw/2,y+27)" in fx,
+            'maximum pace HUD must expose the persisted personal best')
+    require('commitspeedfxbest()' in fx and 'speedfxbestheld=bounded' in fx,
+            'maximum pace personal best must update as a new sustained record is reached')
     require("constreduced=speedfxreducedmotion()" in fx and "if(!reduced){" in fx,
             'sustained max-pace acknowledgement must honor reduced motion')
 
@@ -80,4 +88,4 @@ if errors:
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes')
