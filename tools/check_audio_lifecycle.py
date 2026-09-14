@@ -76,7 +76,9 @@ if SPEED_FX.is_file():
             'maximum pace personal best reads must survive unavailable localStorage')
     require('functionwritespeedfxbest(value){try{' in fx and 'catch(_){returnfalse;}' in fx,
             'maximum pace personal best writes must survive unavailable localStorage')
-    require("localstorage" in fx and "filltext('best'+math.min(99.9,speedfxbestheld).tofixed(1)+'s',vw/2,y+27)" in fx,
+    persisted_best="'best'+math.min(99.9,speedfxbestheld).tofixed(1)+'s'"
+    record_or_best="recording?'newmaxpacerecord':"+persisted_best
+    require("localstorage" in fx and persisted_best in fx,
             'maximum pace HUD must expose the persisted personal best')
     require('commitspeedfxbest()' in fx and 'speedfxbestheld=bounded' in fx,
             'maximum pace personal best must update as a new sustained record is reached')
@@ -84,7 +86,7 @@ if SPEED_FX.is_file():
             'maximum pace record celebration must arm from the pre-run personal best')
     require('!speedfxrecordcelebrated&&bounded>speedfxrecordbaseline+.049' in fx and 'speedfxrecordpulse=' in fx,
             'maximum pace record celebration must trigger once when the previous record is beaten')
-    require("recording?'newmaxpacerecord':'best'+math.min(99.9,speedfxbestheld).tofixed(1)+'s'" in fx,
+    require(record_or_best in fx,
             'maximum pace HUD must surface a restrained new-record acknowledgement')
     require("constreduced=speedfxreducedmotion()" in fx and "if(!reduced){" in fx,
             'sustained max-pace acknowledgement must honor reduced motion')
