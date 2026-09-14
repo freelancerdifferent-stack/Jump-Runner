@@ -3,7 +3,7 @@
 // Visual only; physics, scoring and difficulty remain untouched.
 let speedFxPhase=0,speedFxLand=0,lastGround=true,speedFxPacePulse=0,speedFxMaxPace=false,speedFxMaxHeld=0;
 const SPEED_FX_BEST_KEY='jr_max_pace_best';
-let speedFxBestHeld=readSpeedFxBest();
+let speedFxBestHeld=readSpeedFxBest(),speedFxRecordBaseline=speedFxBestHeld,speedFxRecordCelebrated=false,speedFxRecordPulse=0;
 const speedFxBaseUpdate=update,speedFxBaseDrawWorld=drawWorld;
 function sentinelArenaPinned(){
  return typeof boss!=='undefined'&&typeof BOSS_ARENA_LIMIT!=='undefined'&&boss.active&&!boss.dead&&player.x>=BOSS_ARENA_LIMIT-1;
@@ -19,6 +19,10 @@ function writeSpeedFxBest(value){
 function commitSpeedFxBest(){
  const bounded=Math.min(99.9,speedFxMaxHeld);
  if(bounded<=speedFxBestHeld+.049)return;
+ if(speedFxRecordBaseline>0&&!speedFxRecordCelebrated&&bounded>speedFxRecordBaseline+.049){
+  speedFxRecordCelebrated=true;
+  speedFxRecordPulse=speedFxReducedMotion()?.85:1.6;
+ }
  speedFxBestHeld=bounded;
  writeSpeedFxBest(speedFxBestHeld.toFixed(1));
 }
@@ -29,8 +33,13 @@ addEventListener('jumprunnerpacemilestone',e=>{
 update=function(dt){
  speedFxBaseUpdate(dt);
  speedFxPacePulse=Math.max(0,speedFxPacePulse-dt);
+ speedFxRecordPulse=Math.max(0,speedFxRecordPulse-dt);
  if(speedFxPacePulse<=0)speedFxMaxPace=false;
- if(state!=='play'){commitSpeedFxBest();speedFxMaxHeld=0;return;}
+ if(state!=='play'){
+  commitSpeedFxBest();speedFxMaxHeld=0;
+  speedFxRecordBaseline=speedFxBestHeld;speedFxRecordCelebrated=false;speedFxRecordPulse=0;
+  return;
+ }
  const arenaPinned=sentinelArenaPinned();
  if(atAutomaticMaxPace()&&!arenaPinned){
   speedFxMaxHeld=Math.min(99.9,speedFxMaxHeld+dt);
@@ -45,19 +54,19 @@ update=function(dt){
 };
 function drawMaxPaceHold(){
  if(speedFxMaxHeld<.8||sentinelArenaPinned())return;
- const reduced=speedFxReducedMotion(),fade=Math.min(1,(speedFxMaxHeld-.8)/.45);
+ const reduced=speedFxReducedMotion(),fade=Math.min(1,(speedFxMaxHeld-.8)/.45),recording=speedFxRecordPulse>0;
  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.textAlign='center';
  const w=174,h=34,x=VW/2-w/2,y=18;
  ctx.globalAlpha=(reduced?.62:.82)*fade;ctx.fillStyle='#08111ed9';
  ctx.beginPath();ctx.roundRect(x,y,w,h,13);ctx.fill();
- ctx.strokeStyle='#ffd86b';ctx.lineWidth=1.5;ctx.stroke();
- ctx.globalAlpha=(reduced?.82:1)*fade;ctx.fillStyle='#ffd86b';ctx.font='900 10px system-ui';
+ ctx.strokeStyle=recording?'#74f7c5':'#ffd86b';ctx.lineWidth=recording?2:1.5;ctx.stroke();
+ ctx.globalAlpha=(reduced?.82:1)*fade;ctx.fillStyle=recording?'#74f7c5':'#ffd86b';ctx.font='900 10px system-ui';
  const held=Math.min(99.9,speedFxMaxHeld).toFixed(1);
  ctx.fillText('MAX PACE · '+held+'s',VW/2,y+15);
- ctx.globalAlpha=(reduced?.65:.82)*fade;ctx.fillStyle='#d9e6f7';ctx.font='800 8px system-ui';
- ctx.fillText('BEST '+Math.min(99.9,speedFxBestHeld).toFixed(1)+'s',VW/2,y+27);
+ ctx.globalAlpha=(reduced?.65:.82)*fade;ctx.fillStyle=recording?'#74f7c5':'#d9e6f7';ctx.font='800 8px system-ui';
+ ctx.fillText(recording?'NEW MAX PACE RECORD':'BEST '+Math.min(99.9,speedFxBestHeld).toFixed(1)+'s',VW/2,y+27);
  if(!reduced){
-  ctx.globalAlpha=.18*fade;ctx.strokeStyle='#ffd86b';ctx.lineWidth=2;
+  ctx.globalAlpha=(recording?.28:.18)*fade;ctx.strokeStyle=recording?'#74f7c5':'#ffd86b';ctx.lineWidth=recording?3:2;
   const sweep=(speedFxPhase*82)%82;
   ctx.beginPath();ctx.moveTo(x+16+sweep,y+h+5);ctx.lineTo(x+38+sweep,y+h+5);ctx.stroke();
  }
