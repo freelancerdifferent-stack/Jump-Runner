@@ -5,6 +5,7 @@ AUDIO = Path('app/src/main/assets/audio.js')
 PACE = Path('app/src/main/assets/run-pace-milestones.js')
 SPEED_FX = Path('app/src/main/assets/speed-fx.js')
 MENU_MAX_PACE = Path('app/src/main/assets/menu-max-pace-record.js')
+RESULT_MAX_PACE = Path('app/src/main/assets/result-max-pace-recap.js')
 errors=[]
 
 def require(condition,message):
@@ -14,6 +15,7 @@ require(AUDIO.is_file(),'audio.js is missing')
 require(PACE.is_file(),'run-pace-milestones.js is missing')
 require(SPEED_FX.is_file(),'speed-fx.js is missing')
 require(MENU_MAX_PACE.is_file(),'menu-max-pace-record.js is missing')
+require(RESULT_MAX_PACE.is_file(),'result-max-pace-recap.js is missing')
 if AUDIO.is_file():
     flat=''.join(AUDIO.read_text(encoding='utf-8').lower().split())
     require("addeventlistener('jumprunnerpause',suspendaudio)" in flat,'audio must suspend on Android pause')
@@ -108,10 +110,24 @@ if MENU_MAX_PACE.is_file():
             'start-menu max-pace challenge must remain accessible')
     require("constbaseshowmenu=window.showmenu" in menu and "window.showmenu=function(){baseshowmenu();decoratemenu();}" in menu,
             'start-menu max-pace challenge must survive menu rebuilds')
+if RESULT_MAX_PACE.is_file():
+    recap=''.join(RESULT_MAX_PACE.read_text(encoding='utf-8').lower().split())
+    require("addeventlistener('jumprunnerresult',decorateresult)" in recap,
+            'result max-pace recap must attach to the shared result transition')
+    require("typeofspeedfxmaxheld==='undefined'" in recap and 'math.max(0,math.min(99.9,value))' in recap,
+            'result max-pace recap must safely read and bound the current run hold')
+    require("if(held<.05)return" in recap,
+            'result max-pace recap must stay hidden when the run never sustained max pace')
+    require("typeofspeedfxrecordcelebrated!=='undefined'" in recap and "record?'newrecord':'best'+best.tofixed(1)+'s'" in recap,
+            'result max-pace recap must distinguish a new record from the persistent best')
+    require("setattribute('role','status')" in recap and "setattribute('aria-live','polite')" in recap and "setattribute('aria-atomic','true')" in recap,
+            'result max-pace recap must remain accessible')
+    require("queryselector('.actions')" in recap and "insertadjacentelement('beforebegin',card)" in recap,
+            'result max-pace recap must sit with result summary content before actions')
 
 if errors:
     print('AUDIO LIFECYCLE QUALITY GATE: FAILED')
     for i,error in enumerate(errors,1): print(f'{i}. {error}')
     sys.exit(1)
 print('AUDIO LIFECYCLE QUALITY GATE: PASSED')
-print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes pace_hold_record_celebration=yes menu_max_pace_record=yes')
+print('android_pause=yes visibility_pause=yes restore=yes user_gesture_guard=yes sound_toggle_suspend=yes storage_fallback=yes toggle_accessibility=yes boss_core_open_cue=yes boss_core_open_latch=yes pace_event=yes pace_audio=yes pace_haptics=yes pace_visual=yes pace_reduced_motion=yes pace_hold_state=yes pace_hold_timer=yes pace_hold_personal_best=yes pace_hold_record_celebration=yes menu_max_pace_record=yes result_max_pace_recap=yes')
