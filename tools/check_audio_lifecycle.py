@@ -122,8 +122,8 @@ if RESULT_MAX_PACE.is_file():
             'result max-pace recap must distinguish a new record, matched best, and record gap')
     require('constgap=math.max(0,best-held)' in recap and 'constmatched=!record&&gap<.05' in recap,
             'result max-pace recap must compute a bounded non-negative personal-best gap')
-    require('shortofyour${best.tofixed(1)}secondpersonalbest' in recap and 'matchingyourpersonalbest' in recap,
-            'result max-pace recap accessibility copy must explain the replay gap or tie')
+    require('shortofyour${best.tofixed(1)}secondpersonalbest' in recap and 'matchingyour${best.tofixed(1)}secondpersonalbest' in recap,
+            'result max-pace recap accessibility copy must explain the replay gap or tie with the explicit best reference')
     require("setattribute('role','status')" in recap and "setattribute('aria-live','polite')" in recap and "setattribute('aria-atomic','true')" in recap,
             'result max-pace recap must remain accessible')
     require("queryselector('.actions')" in recap and "insertadjacentelement('beforebegin',card)" in recap,

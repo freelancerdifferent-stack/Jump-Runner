@@ -87,6 +87,7 @@ jobs:
           python3 tools/check_persistent_best_split_streak.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_menu_split_streak_record.py 2>&1 | tee -a ci-diagnostics/latest.log
           python3 tools/check_split_streak_target.py 2>&1 | tee -a ci-diagnostics/latest.log
+          python3 tools/check_result_max_pace_best_reference.py 2>&1 | tee -a ci-diagnostics/latest.log
 
       - name: Validate packaged game JavaScript
         shell: bash
@@ -119,6 +120,8 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
 
       - name: Install Android 35
         shell: bash
