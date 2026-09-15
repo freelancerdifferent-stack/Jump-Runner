@@ -17,7 +17,7 @@ require("meta.append(besttext,progresstext)" in source, "best reference and perc
 require("personalbest${best.tofixed(1)}seconds" in source, "new-record accessibility copy must include the personal-best reference")
 require("matchingyour${best.tofixed(1)}secondpersonalbest" in source, "matched-best accessibility copy must include the personal-best reference")
 require("Math.max(0,Math.min(99.9,Number(speedFxBestHeld)))".lower().replace(" ", "") in source, "personal-best result value must remain bounded")
-require("progresspct>=100?'elite':progresspct>=90?'close':'building'" in source, "pace grade must use deterministic elite/close/building thresholds")
+require("record||matched||progresspct>=100?'elite':progresspct>=90?'close':'building'" in source, "pace grade must use deterministic elite/close/building thresholds")
 require("gradeText.textContent='PACE GRADE · '+grade".lower().replace(" ", "") in source, "result recap must expose a visible pace grade")
 require("pacegrade${grade}" in source, "pace grade must be included in the accessible result announcement")
 require("card.append(label,value,note,meter,meta,gradetext)" in source, "pace grade must remain inside the compact result card")
