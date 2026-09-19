@@ -24,6 +24,9 @@ require("constnexttarget=grade==='building'?best*.9:grade==='close'?best:held" i
 require("constnextgap=math.max(0,nexttarget-held)" in source, "next pace-grade coaching must clamp the remaining seconds at zero")
 require("'next·close+'+nextgap.tofixed(1)+'s'" in source and "'next·elite+'+nextgap.tofixed(1)+'s'" in source, "next pace-grade coaching must show an actionable seconds gap")
 require("${nextgap.tofixed(1)}secondsmore" in source, "accessible coaching must announce the seconds needed for the next grade")
+require("constnexttargetpct=grade==='building'?90:100" in source, "next-grade meter marker must share the deterministic grade thresholds")
+require("--pace-next-target" in source and "result-max-pace-marker" in source, "result meter must expose a visible next-grade target marker")
+require("if(grade!=='elite')" in source, "top pace grade must not render a redundant target marker")
 require("gradetext.append(gradelabel,nextlabel)" in source, "pace grade and next target must share the compact grade row")
 require("card.append(label,value,note,meter,meta,gradetext)" in source, "pace grade must remain inside the compact result card")
 
@@ -34,4 +37,4 @@ if errors:
     sys.exit(1)
 
 print("RESULT MAX-PACE BEST REFERENCE GATE: PASSED")
-print("visible_best=yes bounded=yes percent_context=yes pace_grade=yes next_grade_coaching=yes next_grade_gap=yes accessible=yes")
+print("visible_best=yes bounded=yes percent_context=yes pace_grade=yes next_grade_coaching=yes next_grade_gap=yes next_grade_marker=yes accessible=yes")
