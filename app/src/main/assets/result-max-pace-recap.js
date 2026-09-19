@@ -22,7 +22,9 @@
   const progress=Math.max(0,Math.min(1,held/progressBase));
   const progressPct=Math.round(progress*100);
   const grade=record||matched||progressPct>=100?'ELITE':progressPct>=90?'CLOSE':'BUILDING';
-  const nextGrade=grade==='BUILDING'?'NEXT · CLOSE AT 90%':grade==='CLOSE'?'NEXT · ELITE AT 100%':'TOP PACE GRADE';
+  const nextTarget=grade==='BUILDING'?best*.9:grade==='CLOSE'?best:held;
+  const nextGap=Math.max(0,nextTarget-held);
+  const nextGrade=grade==='BUILDING'?'NEXT · CLOSE +'+nextGap.toFixed(1)+'s':grade==='CLOSE'?'NEXT · ELITE +'+nextGap.toFixed(1)+'s':'TOP PACE GRADE';
   const card=document.createElement('div');card.className='result-max-pace-recap'+(record?' is-record':'');card.setAttribute('role','status');card.setAttribute('aria-live','polite');card.setAttribute('aria-atomic','true');
   const label=document.createElement('span');label.textContent='RUN MAX PACE HOLD';
   const value=document.createElement('strong');value.textContent=held.toFixed(1)+'s';
@@ -35,7 +37,7 @@
   const gradeLabel=document.createElement('span');gradeLabel.textContent='PACE GRADE · '+grade;
   const nextLabel=document.createElement('span');nextLabel.className='result-max-pace-next';nextLabel.textContent=nextGrade;
   gradeText.append(gradeLabel,nextLabel);meta.append(bestText,progressText);
-  const coaching=grade==='BUILDING'?' Next pace grade: Close at 90 percent.':grade==='CLOSE'?' Next pace grade: Elite at 100 percent.':' Top pace grade achieved.';
+  const coaching=grade==='BUILDING'?` Next pace grade: Close, ${nextGap.toFixed(1)} seconds more.`:grade==='CLOSE'?` Next pace grade: Elite, ${nextGap.toFixed(1)} seconds more.`:' Top pace grade achieved.';
   card.setAttribute('aria-label',(record?`New maximum pace hold record: ${held.toFixed(1)} seconds. Personal best ${best.toFixed(1)} seconds. Pace grade ${grade}.`:matched?`Maximum pace held for ${held.toFixed(1)} seconds this run, matching your ${best.toFixed(1)} second personal best. Pace grade ${grade}.`:`Maximum pace held for ${held.toFixed(1)} seconds this run. ${gap.toFixed(1)} seconds short of your ${best.toFixed(1)} second personal best. ${progressPct} percent of your best. Pace grade ${grade}.`)+coaching);
   card.append(label,value,note,meter,meta,gradeText);
   const actions=panel.querySelector('.actions');if(actions)actions.insertAdjacentElement('beforebegin',card);else panel.appendChild(card);
