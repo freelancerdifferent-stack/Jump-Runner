@@ -18,8 +18,10 @@ require("personalbest${best.tofixed(1)}seconds" in source, "new-record accessibi
 require("matchingyour${best.tofixed(1)}secondpersonalbest" in source, "matched-best accessibility copy must include the personal-best reference")
 require("Math.max(0,Math.min(99.9,Number(speedFxBestHeld)))".lower().replace(" ", "") in source, "personal-best result value must remain bounded")
 require("record||matched||progresspct>=100?'elite':progresspct>=90?'close':'building'" in source, "pace grade must use deterministic elite/close/building thresholds")
-require("gradeText.textContent='PACE GRADE · '+grade".lower().replace(" ", "") in source, "result recap must expose a visible pace grade")
+require("gradelabel.textcontent='pacegrade·'+grade" in source, "result recap must expose a visible pace grade")
 require("pacegrade${grade}" in source, "pace grade must be included in the accessible result announcement")
+require("grade==='building'?'next·closeat90%':grade==='close'?'next·eliteat100%':'toppacegrade'" in source, "pace grade must expose the next-grade coaching target")
+require("gradetext.append(gradelabel,nextlabel)" in source, "pace grade and next target must share the compact grade row")
 require("card.append(label,value,note,meter,meta,gradetext)" in source, "pace grade must remain inside the compact result card")
 
 if errors:
@@ -29,4 +31,4 @@ if errors:
     sys.exit(1)
 
 print("RESULT MAX-PACE BEST REFERENCE GATE: PASSED")
-print("visible_best=yes bounded=yes percent_context=yes pace_grade=yes accessible=yes")
+print("visible_best=yes bounded=yes percent_context=yes pace_grade=yes next_grade_coaching=yes accessible=yes")
