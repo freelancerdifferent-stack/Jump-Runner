@@ -15,7 +15,7 @@
     // but stop its decorative pulse when the player's reduced-motion preference is active.
     const reducedMotion=document.documentElement.hasAttribute('data-reduced-motion');
     const phase=reducedMotion?0:Math.sin(performance.now()/180);
-    const pulse=reducedMotion?.72:.58+.22*phase;
+    const pulse=reducedMotion ? .72 : .58+.22*phase;
     ctx.save();
     ctx.globalAlpha=pulse;
     ctx.strokeStyle='#74f7c5';
@@ -23,7 +23,7 @@
     ctx.setLineDash([8,8]);
     ctx.beginPath();ctx.moveTo(x,214);ctx.lineTo(x,392);ctx.stroke();
     ctx.setLineDash([]);
-    ctx.globalAlpha=reducedMotion?.2:.16+.08*phase;
+    ctx.globalAlpha=reducedMotion ? .2 : .16+.08*phase;
     ctx.fillStyle='#74f7c5';ctx.fillRect(x-5,214,10,178);
     ctx.globalAlpha=.92;
     ctx.fillStyle='#07101edb';ctx.fillRect(x-48,226,96,22);
