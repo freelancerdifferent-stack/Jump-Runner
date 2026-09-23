@@ -11,7 +11,11 @@
     if(!locked)return;
     const x=BOSS_ARENA_LIMIT-cam-54;
     if(x<-40||x>VW+40)return;
-    const pulse=.58+.22*Math.sin(performance.now()/180);
+    // The boundary is an important spatial cue, so keep it visible in calm-motion mode,
+    // but stop its decorative pulse when the player's reduced-motion preference is active.
+    const reducedMotion=document.documentElement.hasAttribute('data-reduced-motion');
+    const phase=reducedMotion?0:Math.sin(performance.now()/180);
+    const pulse=reducedMotion ? .72 : .58+.22*phase;
     ctx.save();
     ctx.globalAlpha=pulse;
     ctx.strokeStyle='#74f7c5';
@@ -19,7 +23,7 @@
     ctx.setLineDash([8,8]);
     ctx.beginPath();ctx.moveTo(x,214);ctx.lineTo(x,392);ctx.stroke();
     ctx.setLineDash([]);
-    ctx.globalAlpha=.16+.08*Math.sin(performance.now()/180);
+    ctx.globalAlpha=reducedMotion ? .2 : .16+.08*phase;
     ctx.fillStyle='#74f7c5';ctx.fillRect(x-5,214,10,178);
     ctx.globalAlpha=.92;
     ctx.fillStyle='#07101edb';ctx.fillRect(x-48,226,96,22);
