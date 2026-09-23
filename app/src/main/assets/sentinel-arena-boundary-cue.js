@@ -11,9 +11,11 @@
     if(!locked)return;
     const x=BOSS_ARENA_LIMIT-cam-54;
     if(x<-40||x>VW+40)return;
-    // The boundary is an important spatial cue, so keep it visible in calm-motion mode,
-    // but stop its decorative pulse when the player's reduced-motion preference is active.
-    const reducedMotion=document.documentElement.hasAttribute('data-reduced-motion');
+    // Both motion controls are supported: the dedicated MOTION CALM toggle exposes
+    // data-reduced-motion, while Player Comfort exposes the reduced-motion class.
+    // Treat either as authoritative so this decorative pulse never ignores a comfort choice.
+    const root=document.documentElement;
+    const reducedMotion=root.hasAttribute('data-reduced-motion')||root.classList.contains('reduced-motion');
     const phase=reducedMotion?0:Math.sin(performance.now()/180);
     const pulse=reducedMotion ? .72 : .58+.22*phase;
     ctx.save();
